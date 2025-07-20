@@ -9,6 +9,8 @@
         <Nullable>disable</Nullable>
         <Configurations>Debug;Release</Configurations>
         <Platforms>x64</Platforms>
+        <IsPackable>false</IsPackable>
+        <AssemblyVersion>1.0.0</AssemblyVersion>
     </PropertyGroup>
 
     <ItemGroup>

@@ -8,7 +8,7 @@ namespace ShinRyuModManager;
 
 public static class GameModel {
     public static bool SupportsUBIK(Game game) {
-        return game >= Game.LostJudgment && game != Game.eve;
+        return game >= Game.LostJudgment && game != Game.Eve;
     }
     
     // Yakuza 5 is quirky in the sense that accessing the loose files won't be enough

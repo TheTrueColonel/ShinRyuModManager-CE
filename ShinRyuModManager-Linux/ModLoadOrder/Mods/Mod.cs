@@ -4,7 +4,7 @@ using Utils;
 namespace ShinRyuModManager.ModLoadOrder.Mods;
 
 public class Mod {
-    public string Name { get; init; }
+    public string Name { get; }
     
     /// <summary>
     /// Files that can be directly loaded from the mod path.
@@ -110,7 +110,7 @@ public class Mod {
                     
                     break;
                 case "stage":
-                    needsRepack = GamePath.CurrentGame == Game.eve && basename == "sct" &&
+                    needsRepack = GamePath.CurrentGame == Game.Eve && basename == "sct" &&
                         GamePath.ExistsInDataAsParNested(path);
                     
                     break;
@@ -171,7 +171,7 @@ public class Mod {
                     break;
             }
 
-            if (GamePath.CurrentGame >= Game.likeadragonpirates) {
+            if (GamePath.CurrentGame >= Game.LikeADragonPirates) {
                 // Additional game specific checks
                 switch (basename) {
                     // Pirates in Hawaii stores gmts inside folders based on the lowercase filename checksum.

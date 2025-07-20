@@ -17,12 +17,12 @@
         YakuzaLikeADragon,
         Judgment,
         LostJudgment,
-        eve, // Virtua Fighter eSports
-        likeadragongaiden,
-        likeadragon8,
-        likeadragonpirates,
+        Eve, // Virtua Fighter eSports
+        LikeADragonGaiden,
+        LikeADragon8,
+        LikeADragonPirates,
         VFREVOBETA,
         VFREVO,
-        century
+        Century
     }
 }

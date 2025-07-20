@@ -22,7 +22,7 @@ public static class GamePath {
         
         // Try to get game
         foreach (var file in Directory.GetFiles(FullGamePath, "*.exe")) {
-            if (!Enum.TryParse(Path.GetFileNameWithoutExtension(file), out Game game))
+            if (!Enum.TryParse<Game>(Path.GetFileNameWithoutExtension(file), true, out var game))
                 continue;
             
             CurrentGame = game;
@@ -127,9 +127,9 @@ public static class GamePath {
             Game.YakuzaLikeADragon => "Yakuza: Like a Dragon",
             Game.Judgment => "Judgment",
             Game.LostJudgment => "Lost Judgment",
-            Game.likeadragongaiden => "Like a Dragon Gaiden: The Man Who Erased His Name",
-            Game.likeadragon8 => "Like a Dragon: Infinite Wealth",
-            Game.likeadragonpirates => "Like a Dragon: Pirate Yakuza In Hawaii",
+            Game.LikeADragonGaiden => "Like a Dragon Gaiden: The Man Who Erased His Name",
+            Game.LikeADragon8 => "Like a Dragon: Infinite Wealth",
+            Game.LikeADragonPirates => "Like a Dragon: Pirate Yakuza In Hawaii",
             Game.VFREVOBETA => "Virtua Fighter 5 R.E.V.O. Beta",
             Game.VFREVO => "Virtua Fighter 5 R.E.V.O.",
             _ => "<unknown>"

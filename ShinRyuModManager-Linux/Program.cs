@@ -36,8 +36,8 @@ public static class Program {
             _logger = null;
         }
         
-        Console.WriteLine($"Shin Ryu Mod Manager v{AssemblyVersion.GetVersion()}");
-        Console.WriteLine("By SRMM Studio (a continuation of SutandoTsukai181's work)\n");
+        Console.WriteLine($"Shin Ryu Mod Manager-Linux v{AssemblyVersion.GetVersion()}");
+        Console.WriteLine("By TheTrueColonel (a port of SRMM Studio's work)\n");
         
         // Parse arguments
         var list = new List<string>(args);
@@ -146,7 +146,7 @@ public static class Program {
         
         // TODO: Maybe move this to a separate "Game patches" file
         // Virtua Fighter eSports crashes when used with dinput8.dll as the ASI loader
-        if (GamePath.CurrentGame == Game.eve && File.Exists(Constants.DINPUT8DLL)) {
+        if (GamePath.CurrentGame == Game.Eve && File.Exists(Constants.DINPUT8DLL)) {
             if (File.Exists(Constants.VERSIONDLL)) {
                 Console.Write($"Game specific patch: Deleting {Constants.DINPUT8DLL} because {Constants.VERSIONDLL} exists...");
                 
@@ -192,7 +192,7 @@ public static class Program {
         // Read ini (again) to check if we should try importing the old load order file
         ini = iniParser.ReadFile(Constants.INI);
             
-        if (GamePath.CurrentGame is Game.Judgment or Game.LostJudgment or Game.likeadragonpirates) {
+        if (GamePath.CurrentGame is Game.Judgment or Game.LostJudgment or Game.LikeADragonPirates) {
             // Disable RebuildMLO when using an external mod manager
             if (ini.TryGetKey("Overrides.RebuildMLO", out _)) {
                 Console.Write(
@@ -260,7 +260,7 @@ public static class Program {
         return mods;
     }
     
-    private static async Task<bool> RunGeneration(List<string> mods) {
+    private static async Task RunGeneration(List<string> mods) {
         if (File.Exists(Constants.MLO)) {
             Console.Write("Removing old MLO...");
             
@@ -297,16 +297,14 @@ public static class Program {
                 
                 sw.Stop();
                 Log($"MLO Generation took: {sw.Elapsed.TotalSeconds} seconds");
-                
-                return true;
+
+                return;
             }
             
             Console.WriteLine("Aborting: No mods were found, and .parless paths are disabled\n");
         }
         
         Console.WriteLine("Aborting: No supported game was found in this directory\n");
-        
-        return false;
     }
 
     private static void PostRun() {
