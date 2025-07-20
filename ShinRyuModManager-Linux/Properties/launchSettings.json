@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "ShinRyuModManager-Linux": {
+      "commandName": "Project",
+      "workingDirectory": "/mnt/nvme-storage/SteamLibrary/steamapps/common/LikeADragonPirates/runtime/media/"
+    }
+  }
+}

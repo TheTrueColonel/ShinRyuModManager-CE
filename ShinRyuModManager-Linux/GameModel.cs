@@ -1,0 +1,120 @@
+using ParLibrary;
+using ParLibrary.Converter;
+using ShinRyuModManager.ModLoadOrder;
+using Utils;
+using Yarhl.FileSystem;
+
+namespace ShinRyuModManager;
+
+public static class GameModel {
+    public static bool SupportsUBIK(Game game) {
+        return game >= Game.LostJudgment && game != Game.eve;
+    }
+    
+    // Yakuza 5 is quirky in the sense that accessing the loose files wont be enough
+    // Things have to be duplicated in places like this
+    // 1) Folder in root hact folder (hact/h1000_my_cool_new_hact)
+    // 2) Par in root hact folder (hact/h1000_my_cool_new_hact.par)
+    // 3) Folder + par in new hact folder (hact/h1000_my_cool_new_hact/000   AND   hact/h1000_my_cool_new_hact/000.par)
+    // This can seriously bloat mod size. Instead of making modders duplicate their hacts like this
+    // Let's do this for them (because we are nice)
+    public static void DoY5HActProcedure(MLO mlo) {
+        var hasHacts = false;
+        var hactDirs = new HashSet<string>();
+
+        foreach (var file in mlo.Files) {
+            if (file.Name.Contains("/hact/") && !file.Name.EndsWith(".par")) {
+                var mod = mlo.Mods[file.Index];
+                var filePath = Path.Combine("mods", mod, file.Name);
+                var fileInfo = new FileInfo(filePath);
+                // Get the folder from a path like so -> data/hact/h5000_some_hact/cmn/cmn.bin
+                var hactDir = fileInfo.Directory.Parent.Name;
+
+                if (fileInfo.Directory.Parent.Parent.Name == "hact") {
+                    var hactName = fileInfo.Directory.Parent.Name;
+                    var hactPath = fileInfo.Directory.Parent.FullName;
+
+                    if (hactDirs.Contains(hactPath))
+                        continue;
+
+                    if (GamePath.ExistsInDataAsPar(hactPath))
+                        continue;
+
+                    hactDirs.Add(hactPath);
+                }
+
+                hasHacts = true;
+            }
+            
+            if (!hasHacts)
+                return;
+
+            foreach (var hactDirPath in hactDirs) {
+                var hactDir = new DirectoryInfo(hactDirPath);
+                var parlessDir = new DirectoryInfo(Path.Combine(GamePath.GetModsPath(), "Parless", "hact", hactDir.Name));
+
+                if (!parlessDir.Exists)
+                    parlessDir.Create();
+
+                foreach (var dir in hactDir.GetDirectories()) {
+                    // We already repack ptc
+                    if (dir.Name == "ptc" && File.Exists(Path.Combine(hactDir.FullName, "ptc.par")))
+                        continue;
+
+                    var outputPath = Path.Combine(parlessDir.FullName, $"{dir.Name}.par");
+                    Gibbed.Yakuza0.Pack.Program.Main([dir.FullName], outputPath);
+                }
+                
+                Gibbed.Yakuza0.Pack.Program.Main([parlessDir.FullName], Path.Combine(parlessDir.Parent.FullName, $"{hactDir.Name}.par"));
+            }
+        }
+    }
+    
+    // Got to be a better way to do this...
+    public static void DoUBIKProcedure(MLO mlo) {
+        var charaPath = Path.Combine("data/chara.par");
+        
+        if (!File.Exists(charaPath))
+            return;
+        
+        var hasUbiks = mlo.Files.Any(file => file.Name.EndsWith(".ubik"));
+        
+        if (!hasUbiks)
+            return;
+        
+        var ubikDir = Path.Combine(Constants.PARLESS_MODS_PATH, "ubik");
+        var par = NodeFactory.FromFile(charaPath, "par");
+        
+        par.TransformWith(typeof(ParArchiveReader), new ParArchiveReaderParameters { Recursive = true });
+        
+        var ubik = Navigator.IterateNodes(par).FirstOrDefault(x => x.Path.EndsWith("ubik"));
+        
+        if (!Directory.Exists(Constants.PARLESS_MODS_PATH))
+            Directory.CreateDirectory(Constants.PARLESS_MODS_PATH);
+        
+        if (!Directory.Exists(ubikDir))
+            Directory.CreateDirectory(ubikDir);
+        
+        foreach (var node in ubik!.Children) {
+            var ubikFile = node.GetFormatAs<ParFile>();
+            
+            if (ubikFile.IsCompressed)
+                node.TransformWith<ParLibrary.Sllz.Decompressor>();
+            
+            var filePath = Path.Combine(ubikDir, node.Name);
+            
+            if (node.Stream.Length > 0)
+                node.Stream.WriteTo(filePath);
+        }
+        
+        foreach (var file in mlo.Files) {
+            if (!file.Name.EndsWith(".ubik"))
+                continue;
+            
+            var path = Path.Combine("mods", mlo.Mods[file.Index] + file.Name);
+            File.Copy(path, Path.Combine(ubikDir, Path.GetFileName(file.Name)), true);
+        }
+        
+        par.Dispose();
+    }
+}

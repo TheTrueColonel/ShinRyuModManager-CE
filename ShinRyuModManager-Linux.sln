@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShinRyuModManager-Linux", "ShinRyuModManager-Linux\ShinRyuModManager-Linux.csproj", "{6D3C8A4B-5CA2-4929-B575-18E7AE18FA99}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParLibrary", "ParLibrary\ParLibrary.csproj", "{B8691802-6EBC-4C1B-A2A3-87C8F2973F6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParLibrary.Tests", "ParLibrary.Tests\ParLibrary.Tests.csproj", "{B1731DF3-ABFB-45DE-93C8-C1DC2D2CEFC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "Utils\Utils.csproj", "{7F2462E1-FB0A-4BFA-BBF9-91CD9DB1FC56}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B8691802-6EBC-4C1B-A2A3-87C8F2973F6B}.Debug|x64.ActiveCfg = Debug|x64
+		{B8691802-6EBC-4C1B-A2A3-87C8F2973F6B}.Debug|x64.Build.0 = Debug|x64
+		{B8691802-6EBC-4C1B-A2A3-87C8F2973F6B}.Release|x64.ActiveCfg = Release|x64
+		{B8691802-6EBC-4C1B-A2A3-87C8F2973F6B}.Release|x64.Build.0 = Release|x64
+		{B1731DF3-ABFB-45DE-93C8-C1DC2D2CEFC5}.Debug|x64.ActiveCfg = Debug|x64
+		{B1731DF3-ABFB-45DE-93C8-C1DC2D2CEFC5}.Debug|x64.Build.0 = Debug|x64
+		{B1731DF3-ABFB-45DE-93C8-C1DC2D2CEFC5}.Release|x64.ActiveCfg = Release|x64
+		{B1731DF3-ABFB-45DE-93C8-C1DC2D2CEFC5}.Release|x64.Build.0 = Release|x64
+		{6D3C8A4B-5CA2-4929-B575-18E7AE18FA99}.Debug|x64.ActiveCfg = Debug|x64
+		{6D3C8A4B-5CA2-4929-B575-18E7AE18FA99}.Debug|x64.Build.0 = Debug|x64
+		{6D3C8A4B-5CA2-4929-B575-18E7AE18FA99}.Release|x64.ActiveCfg = Release|x64
+		{6D3C8A4B-5CA2-4929-B575-18E7AE18FA99}.Release|x64.Build.0 = Release|x64
+		{7F2462E1-FB0A-4BFA-BBF9-91CD9DB1FC56}.Debug|x64.ActiveCfg = Debug|x64
+		{7F2462E1-FB0A-4BFA-BBF9-91CD9DB1FC56}.Debug|x64.Build.0 = Debug|x64
+		{7F2462E1-FB0A-4BFA-BBF9-91CD9DB1FC56}.Release|x64.ActiveCfg = Release|x64
+		{7F2462E1-FB0A-4BFA-BBF9-91CD9DB1FC56}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+EndGlobal
