@@ -24,14 +24,14 @@ public class ParlessMod() : Mod(Constants.PARLESS_NAME, 0) {
         
         if (index != -1) {
             // Call the base class AddFiles method
-            base.AddFiles(path, check, GamePath.GetGame());
+            base.AddFiles(path, check);
             
             // Remove ".parless" from the path
             path = path.Remove(index, 8);
             
             // Add .parless folders to the list to make it easier to check for them in the ASI
             var loosePath = GamePath.RemoveParlessPath(path);
-            var folder = new ParlessFolder(loosePath, index - GamePath.GetDataPath().Length);
+            var folder = new ParlessFolder(loosePath, index - GamePath.DataPath.Length);
             
             ParlessFolders.Add(folder);
             

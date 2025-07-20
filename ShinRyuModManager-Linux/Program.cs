@@ -61,11 +61,11 @@ public static class Program {
         PostRun();
 
         if (list.Contains("-r") || list.Contains("--run")) {
-            if (File.Exists(GamePath.GetGameExe())) {
-                Console.WriteLine($"Launching \"{GamePath.GetGameExe()}\"...");
-                Process.Start(GamePath.GetGameExe());
+            if (File.Exists(GamePath.GameExe)) {
+                Console.WriteLine($"Launching \"{GamePath.GameExe}\"...");
+                Process.Start(GamePath.GameExe);
             } else {
-                Console.WriteLine($"Warning: Could not run game because \"{GamePath.GetGameExe()}\" does not exist.");
+                Console.WriteLine($"Warning: Could not run game because \"{GamePath.GameExe}\" does not exist.");
             }
         }
     }
@@ -73,8 +73,6 @@ public static class Program {
     private static List<ModInfo> PreRun() {
         var iniParser = new FileIniDataParser();
         iniParser.Parser.Configuration.AssigmentSpacer = string.Empty;
-        
-        var game = GamePath.GetGame();
         
         IniData ini;
         
@@ -130,7 +128,7 @@ public static class Program {
             Console.WriteLine("DONE!\n");
         }
         
-        if (game != Game.Unsupported && !Directory.Exists(GamePath.MODS)) {
+        if (GamePath.CurrentGame != Game.Unsupported && !Directory.Exists(GamePath.MODS)) {
             if (!Directory.Exists(GamePath.MODS)) {
                 // Create mods folder if it does not exist
                 Console.Write($"\"{GamePath.MODS}\" folder was not found. Creating empty folder... ");
@@ -148,7 +146,7 @@ public static class Program {
         
         // TODO: Maybe move this to a separate "Game patches" file
         // Virtua Fighter eSports crashes when used with dinput8.dll as the ASI loader
-        if (game == Game.eve && File.Exists(Constants.DINPUT8DLL)) {
+        if (GamePath.CurrentGame == Game.eve && File.Exists(Constants.DINPUT8DLL)) {
             if (File.Exists(Constants.VERSIONDLL)) {
                 Console.Write($"Game specific patch: Deleting {Constants.DINPUT8DLL} because {Constants.VERSIONDLL} exists...");
                 
@@ -162,8 +160,7 @@ public static class Program {
             }
             
             Console.WriteLine(" DONE!\n");
-        //} else if (game >= Game.Judgment && game != Game.likeadragongaiden) {
-        } else if (game is Game.Judgment or Game.LostJudgment) {
+        } else if (GamePath.CurrentGame is Game.Judgment or Game.LostJudgment) {
             // Lost Judgment (and Judgment post update 1) does not like Ultimate ASI Loader, so instead we use a custom build of DllSpoofer (https://github.com/Kazurin-775/DllSpoofer)
             if (File.Exists(Constants.DINPUT8DLL)) {
                 Console.Write($"Game specific patch: Deleting {Constants.DINPUT8DLL} because it causes crashes with Judgment games...");
@@ -195,7 +192,7 @@ public static class Program {
         // Read ini (again) to check if we should try importing the old load order file
         ini = iniParser.ReadFile(Constants.INI);
             
-        if (game is Game.Judgment or Game.LostJudgment or Game.likeadragonpirates) {
+        if (GamePath.CurrentGame is Game.Judgment or Game.LostJudgment or Game.likeadragonpirates) {
             // Disable RebuildMLO when using an external mod manager
             if (ini.TryGetKey("Overrides.RebuildMLO", out _)) {
                 Console.Write(
@@ -247,10 +244,10 @@ public static class Program {
             }
         }
         
-        if (!GamePath.IsXbox(Path.Combine(GamePath.GetGamePath())))
+        if (!GamePath.IsXbox(Path.Combine(GamePath.FullGamePath)))
             return mods;
         
-        if (!ini.TryGetKey("Overrides.RebuildMLO", out var _))
+        if (!ini.TryGetKey("Overrides.RebuildMLO", out _))
             return mods;
         
         Console.Write($"Game specific patch: Disabling RebuildMLO for Xbox games...");
@@ -275,10 +272,8 @@ public static class Program {
         
         // Remove previously repacked pars, to avoid unwanted side effects
         ParRepacker.RemoveOldRepackedPars();
-
-        var game = GamePath.GetGame();
         
-        if (game != Game.Unsupported) {
+        if (GamePath.CurrentGame != Game.Unsupported) {
             if (mods is { Count: > 0 } || _looseFilesEnabled) {
                 // Create Parless mod as highest priority
                 mods.Remove("Parless");
@@ -292,11 +287,11 @@ public static class Program {
                 
                 var result = await Generator.GenerateModeLoadOrder(mods, _looseFilesEnabled, _cpkRepackingEnabled);
                 
-                if (GameModel.SupportsUBIK(game)) {
+                if (GameModel.SupportsUBIK(GamePath.CurrentGame)) {
                     GameModel.DoUBIKProcedure(result);
                 }
 
-                if (game == Game.Yakuza5) {
+                if (GamePath.CurrentGame == Game.Yakuza5) {
                     GameModel.DoY5HActProcedure(result);
                 }
                 
@@ -371,11 +366,11 @@ public static class Program {
     }
     
     private static bool ShouldBeExternalOnly() {
-        return _externalModsOnly && Directory.Exists(GamePath.GetExternalModsPath());
+        return _externalModsOnly && Directory.Exists(GamePath.ExternalModsPath);
     }
     
     private static List<string> ScanMods() {
-        return Directory.GetDirectories(GamePath.GetModsPath())
+        return Directory.GetDirectories(GamePath.ModsPath)
                         .Select(d => Path.GetFileName(d.TrimEnd(Path.DirectorySeparatorChar)))
                         .Where(m => !string.Equals(m, "Parless") && !string.Equals(m, Constants.EXTERNAL_MODS))
                         .ToList();

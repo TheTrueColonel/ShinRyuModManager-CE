@@ -11,7 +11,7 @@ public static class GameModel {
         return game >= Game.LostJudgment && game != Game.eve;
     }
     
-    // Yakuza 5 is quirky in the sense that accessing the loose files wont be enough
+    // Yakuza 5 is quirky in the sense that accessing the loose files won't be enough
     // Things have to be duplicated in places like this
     // 1) Folder in root hact folder (hact/h1000_my_cool_new_hact)
     // 2) Par in root hact folder (hact/h1000_my_cool_new_hact.par)
@@ -31,7 +31,7 @@ public static class GameModel {
                 var hactDir = fileInfo.Directory.Parent.Name;
 
                 if (fileInfo.Directory.Parent.Parent.Name == "hact") {
-                    var hactName = fileInfo.Directory.Parent.Name;
+                    var hactName = hactDir;
                     var hactPath = fileInfo.Directory.Parent.FullName;
 
                     if (hactDirs.Contains(hactPath))
@@ -51,7 +51,7 @@ public static class GameModel {
 
             foreach (var hactDirPath in hactDirs) {
                 var hactDir = new DirectoryInfo(hactDirPath);
-                var parlessDir = new DirectoryInfo(Path.Combine(GamePath.GetModsPath(), "Parless", "hact", hactDir.Name));
+                var parlessDir = new DirectoryInfo(Path.Combine(GamePath.ModsPath, "Parless", "hact", hactDir.Name));
 
                 if (!parlessDir.Exists)
                     parlessDir.Create();

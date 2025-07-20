@@ -11,20 +11,20 @@ internal static class CpkPatcher {
         
         Program.Log("Repacking CPKs...");
         
-        var cpkPath = Path.Combine(GamePath.GetModsPath(), "Parless");
+        var cpkPath = Path.Combine(GamePath.ModsPath, "Parless");
         
         if (!Directory.Exists(cpkPath))
             Directory.CreateDirectory(cpkPath);
         
         foreach (var kvp in cpkDict) {
             var cpkDir = cpkPath + kvp.Key;
-            var origCpk = GamePath.GetDataPath() + kvp.Key + ".cpk";
+            var origCpk = GamePath.DataPath + kvp.Key + ".cpk";
             
             if (!Directory.Exists(cpkDir))
                 Directory.CreateDirectory(cpkDir);
             
             foreach (var mod in kvp.Value) {
-                var modCpkDir = Path.Combine(GamePath.GetModsPath(), mod);
+                var modCpkDir = Path.Combine(GamePath.ModsPath, mod);
                 var cpkFiles = Directory.GetFiles(modCpkDir, "*.");
                 
                 foreach (var file in cpkFiles) {

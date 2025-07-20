@@ -9,12 +9,11 @@ public static class Generator {
         var files = new SortedSet<string>();
         var modsWithFoldersNotFound = new Dictionary<string, List<string>>(); // Dict of Mod, ListOfFolders
         var parDictionary = new Dictionary<string, List<string>>(); // Dict of PathToPar, ListOfMods
-        var game = GamePath.GetGame();
         
         var loose = new ParlessMod();
         
         if (looseFilesEnabled) {
-            loose.AddFiles(GamePath.GetDataPath(), "");
+            loose.AddFiles(GamePath.DataPath, "");
             loose.PrintInfo();
             
             // Add all pars to the dictionary
@@ -42,8 +41,8 @@ public static class Generator {
         // Use a reverse loop to be able to remove items from the list when necessary
         for (var i = mods.Count - 1; i >= 0; i--) {
             var mod = new Mod(mods[i]);
-            var modPath = Path.Combine(GamePath.GetModsPath(), mods[i]);
-            mod.AddFiles(modPath, "", game);
+            var modPath = Path.Combine(GamePath.ModsPath, mods[i]);
+            mod.AddFiles(modPath, "");
             
             mod.PrintInfo();
             
@@ -102,7 +101,7 @@ public static class Generator {
         // Generate MLO
         var mlo = new MLO(modIndices, mods, files, loose.ParlessFolders, cpkDictionary);
         
-        mlo.WriteMLO(Path.Combine(GamePath.GetGamePath(), Constants.MLO));
+        mlo.WriteMLO(Path.Combine(GamePath.FullGamePath, Constants.MLO));
         
         Console.WriteLine(" DONE!\n");
         

@@ -122,7 +122,7 @@ public class Compressor : IConverter<ParFile, ParFile> {
         // It's easier to implement working with a byte array.
         var inputData = new byte[inputDataStream.Length];
         
-        inputDataStream.Read(inputData, 0, inputData.Length);
+        inputDataStream.ReadExactly(inputData, 0, inputData.Length);
         
         var outputSize = (uint)inputData.Length + 2048;
         var outputData = new byte[outputSize];
@@ -220,7 +220,7 @@ public class Compressor : IConverter<ParFile, ParFile> {
     private static DataStream CompressV2(DataStream inputDataStream) {
         var input = new byte[inputDataStream.Length];
         
-        inputDataStream.Read(input, 0, input.Length);
+        inputDataStream.ReadExactly(input, 0, input.Length);
         
         var outputDataStream = DataStreamFactory.FromMemory();
         var writer = new DataWriter(outputDataStream);

@@ -61,7 +61,7 @@ public class Mod {
         ConsoleOutput.Flush();
     }
     
-    public void AddFiles(string path, string check, Game game) {
+    public void AddFiles(string path, string check) {
         var needsRepack = false;
         var basename = GamePath.GetBasename(path);
         
@@ -76,7 +76,7 @@ public class Mod {
                     break;
                 case "prep":
                 case "light_anim":
-                    needsRepack = game < Game.Yakuza0 && GamePath.ExistsInDataAsPar(path);
+                    needsRepack = GamePath.CurrentGame < Game.Yakuza0 && GamePath.ExistsInDataAsPar(path);
                     
                     break;
                 case "2d":
@@ -86,7 +86,7 @@ public class Mod {
                     
                     break;
                 case "pausepar":
-                    if (game >= Game.Yakuza0)
+                    if (GamePath.CurrentGame >= Game.Yakuza0)
                         needsRepack = true;
                     else
                         needsRepack = !basename.StartsWith("pause") && GamePath.ExistsInDataAsPar(path);
@@ -97,7 +97,7 @@ public class Mod {
                     
                     break;
                 case "particle":
-                    if (game >= Game.Yakuza6 && basename == "arc") {
+                    if (GamePath.CurrentGame >= Game.Yakuza6 && basename == "arc") {
                         check = "particle/arc";
                     }
                     
@@ -110,7 +110,7 @@ public class Mod {
                     
                     break;
                 case "stage":
-                    needsRepack = game == Game.eve && basename == "sct" &&
+                    needsRepack = GamePath.CurrentGame == Game.eve && basename == "sct" &&
                         GamePath.ExistsInDataAsParNested(path);
                     
                     break;
@@ -139,7 +139,7 @@ public class Mod {
                 case "speech":
                     cpkDataPath = GamePath.RemoveModPath(path);
                 
-                    if (game == Game.Yakuza5) {
+                    if (GamePath.CurrentGame == Game.Yakuza5) {
                         CpkFolders.Add(cpkDataPath + ".cpk");
                         ConsoleOutput.WriteLineIfVerbose($"Adding CPK folder: {cpkDataPath}");
                     } else {
@@ -156,7 +156,7 @@ public class Mod {
                 case "moviesd_dlc":
                     cpkDataPath = GamePath.RemoveModPath(path);
                 
-                    if (game is Game.Judgment or Game.LostJudgment) {
+                    if (GamePath.CurrentGame is Game.Judgment or Game.LostJudgment) {
                         CpkFolders.Add(cpkDataPath + ".par");
                         ConsoleOutput.WriteLineIfVerbose($"Adding CPK folder: {cpkDataPath}");
                     }
@@ -171,7 +171,7 @@ public class Mod {
                     break;
             }
 
-            if (game >= Game.likeadragonpirates) {
+            if (GamePath.CurrentGame >= Game.likeadragonpirates) {
                 // Additional game specific checks
                 switch (basename) {
                     // Pirates in Hawaii stores gmts inside folders based on the lowercase filename checksum.
@@ -183,7 +183,7 @@ public class Mod {
                         if (!Directory.Exists(gmtFolderPath))
                             break;
 
-                        var baseParlessPath = Path.Combine(GamePath.GetModsPath(), "Parless", "motion", "gmt");
+                        var baseParlessPath = Path.Combine(GamePath.ModsPath, "Parless", "motion", "gmt");
 
                         foreach (var p in Directory.GetFiles(gmtFolderPath).Where(f => !f.EndsWith(Constants.VORTEX_MANAGED_FILE)).Select(GamePath.GetDataPathFrom)) {
                             // Copy any gmts to the appropriate hash folder in Parless
@@ -229,7 +229,7 @@ public class Mod {
                 if (isParlessMod) {
                     ((ParlessMod)this).AddFiles(folder, check);
                 } else {
-                    AddFiles(folder, check, game);
+                    AddFiles(folder, check);
                 }
             }
         }

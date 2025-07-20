@@ -7,12 +7,13 @@ namespace ShinRyuModManager.ModLoadOrder.Mods;
 public class ModInfo : IEqualityComparer<ModInfo>, INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
     
-    private string _name;
+    private readonly string _name;
     private bool _enabled;
     
     public string Name {
         get => _name;
-        set {
+        
+        private init {
             _name = value;
             NotifyPropertyChanged();
         }
@@ -20,8 +21,8 @@ public class ModInfo : IEqualityComparer<ModInfo>, INotifyPropertyChanged {
     
     public bool Enabled {
         get => _enabled;
-        
-        set {
+
+        private set {
             _enabled = value;
             NotifyPropertyChanged();
         }

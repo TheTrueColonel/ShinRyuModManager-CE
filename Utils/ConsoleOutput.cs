@@ -4,24 +4,22 @@
         public static bool ShowWarnings = true;
         
         private static readonly List<string> PrintQueue = [];
-        
-        public int Id { get; }
-        
-        public int Indent { get; set; }
+
+        private readonly int _id;
+        private readonly int _indent;
         
         public ConsoleOutput() {
-            Id = PrintQueue.Count;
-            Indent = 0;
+            _id = PrintQueue.Count;
+            _indent = 0;
             PrintQueue.Add("");
         }
         
-        public ConsoleOutput(int indent)
-            : this() {
-            Indent = indent;
+        public ConsoleOutput(int indent) : this() {
+            _indent = indent;
         }
         
         public void Write(string text) {
-            PrintQueue[Id] += new string(' ', Indent) + text;
+            PrintQueue[_id] += new string(' ', _indent) + text;
         }
         
         public void WriteLine(string text = "") {
@@ -30,7 +28,7 @@
         
         public void WriteIfVerbose(string text) {
             if (Verbose) {
-                PrintQueue[Id] += new string(' ', Indent) + text;
+                PrintQueue[_id] += new string(' ', _indent) + text;
             }
         }
         
@@ -39,8 +37,8 @@
         }
         
         public void Flush() {
-            Console.WriteLine(PrintQueue[Id]);
-            PrintQueue[Id] = "";
+            Console.WriteLine(PrintQueue[_id]);
+            PrintQueue[_id] = "";
         }
         
         public static void Clear() {

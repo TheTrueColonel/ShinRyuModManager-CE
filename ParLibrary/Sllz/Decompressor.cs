@@ -69,7 +69,7 @@ public class Decompressor : IConverter<ParFile, ParFile> {
         var inputData = new byte[compressedSize];
         var outputData = new byte[decompressedSize];
         
-        inputDataStream.Read(inputData, 0, compressedSize - 0x10);
+        inputDataStream.ReadExactly(inputData, 0, compressedSize - 0x10);
         
         var inputPosition = 0;
         var outputPosition = 0;
@@ -128,7 +128,7 @@ public class Decompressor : IConverter<ParFile, ParFile> {
         var inputData = new byte[compressedSize];
         var outputData = new byte[decompressedSize];
         
-        inputDataStream.Read(inputData, 0, compressedSize - 0x10);
+        inputDataStream.ReadExactly(inputData, 0, compressedSize - 0x10);
         
         var inputPosition = 0;
         var outputPosition = 0;

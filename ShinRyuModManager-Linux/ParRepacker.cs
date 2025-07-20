@@ -24,7 +24,7 @@ public static class ParRepacker {
     }
     
     public static void RemoveOldRepackedPars() {
-        var pathToParlessMods = Path.Combine(GamePath.GetModsPath(), "Parless");
+        var pathToParlessMods = Path.Combine(GamePath.ModsPath, "Parless");
         
         if (!Directory.Exists(pathToParlessMods))
             return;
@@ -51,7 +51,7 @@ public static class ParRepacker {
         
         Program.Log("Repacking pars...\n");
         
-        /*foreach (var parModPair in parDictionary) {
+        foreach (var parModPair in parDictionary) {
             var consoleOutput = new ConsoleOutput(2);
             
             parTasks.Add(Task.Run(() => RepackPar(parModPair.Key, parModPair.Value, consoleOutput)));
@@ -63,15 +63,15 @@ public static class ParRepacker {
             console.Result?.Flush();
             
             parTasks.Remove(console);
-        }*/
+        }
 
-        foreach (var parModPair in parDictionary) {
+        /*foreach (var parModPair in parDictionary) {
             var consoleOutput = new ConsoleOutput(2);
 
             RepackPar(parModPair.Key, parModPair.Value, consoleOutput);
             
             consoleOutput.Flush();
-        }
+        }*/
         
         Program.Log($"Repacked {parDictionary.Count} par(s)!\n");
     }
@@ -80,8 +80,8 @@ public static class ParRepacker {
         parPath = parPath.TrimStart(Path.DirectorySeparatorChar);
         
         var parPathReal = GamePath.GetRootParPath(parPath + ".par");
-        var pathToPar = Path.Combine(GamePath.GetDataPath(), parPathReal);
-        var pathToModPar = Path.Combine(GamePath.GetModsPath(), "Parless", parPath + ".par");
+        var pathToPar = Path.Combine(GamePath.DataPath, parPathReal);
+        var pathToModPar = Path.Combine(GamePath.ModsPath, "Parless", parPath + ".par");
         
         // Check if actual repackable par is nested
         if (parPath + ".par" != parPathReal) {
@@ -127,7 +127,7 @@ public static class ParRepacker {
             
             if (fileModPair.Value.StartsWith(Constants.PARLESS_NAME)) {
                 // 15 = ParlessMod.NAME.Length + 1
-                fileInModFolder = Path.Combine(GamePath.GetDataPath(), parPath.Insert(int.Parse(fileModPair.Value[15..]) - 1, ".parless"), fileModPair.Key);
+                fileInModFolder = Path.Combine(GamePath.DataPath, parPath.Insert(int.Parse(fileModPair.Value[15..]) - 1, ".parless"), fileModPair.Key);
             } else {
                 fileInModFolder = GamePath.GetModPathFromDataPath(fileModPair.Value, Path.Combine(parPath, fileModPair.Key));
             }
@@ -204,7 +204,7 @@ public static class ParRepacker {
         if (mod.StartsWith(Constants.PARLESS_NAME)) {
             // Get index of ".parless" in par path
             // 15 = ParlessMod.NAME.Length + 1
-            result = GetModFiles(Path.Combine(GamePath.GetDataPath(), par.Insert(int.Parse(mod[15..]) - 1, ".parless")), console);
+            result = GetModFiles(Path.Combine(GamePath.DataPath, par.Insert(int.Parse(mod[15..]) - 1, ".parless")), console);
         } else {
             result = GetModFiles(GamePath.GetModPathFromDataPath(mod, par), console);
         }

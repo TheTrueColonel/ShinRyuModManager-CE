@@ -1,12 +1,22 @@
+using System.Text;
+
 namespace ShinRyuModManager;
 
 public static class Utils {
     public static string NormalizeSeparator(string path) {
-        return path.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
+        var sb = new StringBuilder(path.Length);
+
+        foreach (var c in path) {
+            sb.Append(c is '/' or '\\' 
+                ? Path.DirectorySeparatorChar 
+                : c);
+        }
+
+        return sb.ToString();
     }
 
     public static string NormalizeNameLower(string path) {
-        return path.ToLowerInvariant().Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
+        return NormalizeSeparator(path.ToLowerInvariant());
     }
     
     internal static bool IsFileBlocked(string path) {
