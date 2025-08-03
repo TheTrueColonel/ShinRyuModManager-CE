@@ -6,7 +6,7 @@ namespace ShinRyuModManager.ModLoadOrder;
 public static class Generator {
     public static async Task<MLO> GenerateModeLoadOrder(List<string> mods, bool looseFilesEnabled, bool cpkRepackingEnabled) {
         var modIndices = new List<int> { 0 };
-        var files = new SortedSet<string>();
+        var files = new OrderedSet<string>();
         var modsWithFoldersNotFound = new Dictionary<string, List<string>>(); // Dict of Mod, ListOfFolders
         var parDictionary = new Dictionary<string, List<string>>(); // Dict of PathToPar, ListOfMods
         
@@ -109,7 +109,7 @@ public static class Generator {
         foreach (var key in parDictionary.Keys.ToList()) {
             var value = parDictionary[key];
             
-            // Faster lookup by checking in the SortedSet
+            // Faster lookup by checking in the OrderedSet
             if (!files.Contains($"{key}.par"))
                 continue;
             

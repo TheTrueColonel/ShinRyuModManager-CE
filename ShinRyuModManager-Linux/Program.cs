@@ -195,8 +195,7 @@ public static class Program {
         if (GamePath.CurrentGame is Game.Judgment or Game.LostJudgment or Game.LikeADragonPirates) {
             // Disable RebuildMLO when using an external mod manager
             if (ini.TryGetKey("Overrides.RebuildMLO", out _)) {
-                Console.Write(
-                    $"Game specific patch: Disabling RebuildMLO for some games when using an external mod manager...");
+                Console.Write("Game specific patch: Disabling RebuildMLO for some games when using an external mod manager...");
                     
                 ini.Sections["Overrides"]["RebuildMLO"] = "0";
                 iniParser.WriteFile(Constants.INI, ini);

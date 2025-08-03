@@ -1,4 +1,5 @@
 using ShinRyuModManager;
+using Utils;
 using Yarhl.IO;
 
 namespace ShinRyuModManager.ModLoadOrder;
@@ -14,7 +15,7 @@ public class MLO {
     public readonly List<ParlessFolder> ParlessFolders;
     public readonly List<CpkFolder> CpkFolders;
     
-    public MLO(List<int> modIndices, List<string> mods, SortedSet<string> fileSet, List<ParlessFolder> parlessFolders, Dictionary<string, List<int>> cpkFolders) {
+    public MLO(List<int> modIndices, List<string> mods, OrderedSet<string> fileSet, List<ParlessFolder> parlessFolders, Dictionary<string, List<int>> cpkFolders) {
         var files = fileSet.ToList();
         
         Mods = mods;
