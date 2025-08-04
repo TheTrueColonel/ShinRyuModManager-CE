@@ -93,7 +93,7 @@ public static class ParRepacker {
         }
         
         // Normalize directory separators
-        parPathReal = Utils.NormalizeSeparator(parPathReal);
+        parPathReal = Utils.NormalizeToNodePath(parPathReal);
         
         // Dictionary of fileInPar, ModName
         var fileDict = new Dictionary<string, string>();

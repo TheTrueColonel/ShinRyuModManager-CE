@@ -1,14 +1,13 @@
-using ShinRyuModManager;
 using Utils;
 using Yarhl.IO;
 
 namespace ShinRyuModManager.ModLoadOrder;
 
 public class MLO {
-    public const string MAGIC = "_OLM"; // MLO_ but in little endian, because that's how the yakuza works
-    public const uint ENDIANNESS = 0x21; // Little endian
-    public const uint VERSION = 0x020000; // 2.0
-    public const uint FILESIZE = 0x0; // Remaining faithful to RGG by adding a filesize that's not used
+    private const string MAGIC = "_OLM";   // MLO_ but in little endian, because that's how the yakuza works
+    private const uint ENDIANNESS = 0x21;  // Little endian
+    private const uint VERSION = 0x020000; // 2.0
+    private const uint FILESIZE = 0x0;     // Remaining faithful to RGG by adding a filesize that's not used
     
     public readonly List<string> Mods;
     public readonly List<ParlessFile> Files;
@@ -23,16 +22,16 @@ public class MLO {
         
         for (var i = 0; i < modIndices.Count - 1; i++) {
             for (var j = modIndices[i]; j < modIndices[i + 1]; j++) {
-                var file = new ParlessFile(Utils.NormalizeNameLower(files[j]), i);
+                var file = new ParlessFile(Utils.NormalizeToNodePath(files[j].ToLowerInvariant()), i);
                 
                 Files.Add(file);
             }
         }
         
-        ParlessFolders = parlessFolders.Select(f => f with { Name = Utils.NormalizeNameLower(f.Name) }).ToList();
+        ParlessFolders = parlessFolders.Select(f => f with { Name = Utils.NormalizeToNodePath(f.Name.ToLowerInvariant()) }).ToList();
         
         CpkFolders = cpkFolders
-                     .Select(pair => new CpkFolder(Utils.NormalizeNameLower(pair.Key), pair.Value.Select(v => (ushort)v).ToList()))
+                     .Select(pair => new CpkFolder(Utils.NormalizeToNodePath(pair.Key.ToLowerInvariant()), pair.Value.Select(v => (ushort)v).ToList()))
                      .ToList();
     }
     

@@ -3,23 +3,16 @@ using System.Text;
 namespace ShinRyuModManager;
 
 public static class Utils {
-    public static string NormalizeSeparator(string path) {
-        var sb = new StringBuilder(path.Length);
-
-        foreach (var c in path) {
-            sb.Append(c is '/' or '\\' 
-                ? Path.DirectorySeparatorChar 
-                : c);
-        }
-
-        return sb.ToString();
-    }
 
     public static string NormalizeNameLower(string path) {
         return NormalizeSeparator(path.ToLowerInvariant());
     }
+
+    public static string NormalizeToNodePath(string path) {
+        return NormalizeSeparator(path, '/');
+    }
     
-    internal static bool IsFileBlocked(string path) {
+    internal static bool IsFileLocked(string path) {
         if (!File.Exists(path))
             return false;
         
@@ -36,5 +29,19 @@ public static class Utils {
         {
             return true;
         }
+    }
+    
+    private static string NormalizeSeparator(string path, char? separator = null) {
+        separator ??= Path.DirectorySeparatorChar;
+        
+        var sb = new StringBuilder(path.Length);
+
+        foreach (var c in path) {
+            sb.Append(c is '/' or '\\' 
+                ? separator 
+                : c);
+        }
+
+        return sb.ToString();
     }
 }

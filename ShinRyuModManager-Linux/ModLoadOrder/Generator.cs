@@ -114,7 +114,7 @@ public static class Generator {
                 continue;
             
             // Get the mod's index from the ModLoadOrder's Files
-            var matchIndex = mlo.Files.Find(f => f.Name == Utils.NormalizeNameLower($"{key}.par")).Index;
+            var matchIndex = mlo.Files.Find(f => f.Name == Utils.NormalizeToNodePath($"{key}.par")).Index;
             
             // Avoid repacking pars which exist as a file in mods that have a higher priority that the first mod in the par to be repacked
             if (mods.IndexOf(value[0]) > matchIndex) {
