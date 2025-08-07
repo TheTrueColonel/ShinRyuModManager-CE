@@ -3,7 +3,7 @@
   "profiles": {
     "ShinRyuModManager-Linux": {
       "commandName": "Project",
-      "commandLineArgs": "-s",
+      "commandLineArgs": "",
       "workingDirectory": "/mnt/nvme-storage/SteamLibrary/steamapps/common/LikeADragon8/runtime/media/"
     }
   }

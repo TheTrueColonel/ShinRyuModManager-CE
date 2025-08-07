@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="ShinRyuModManager-Linux/UserInterface/App.axaml" value="ShinRyuModManager-Linux/ShinRyuModManager-Linux.csproj" />
+        <entry key="ShinRyuModManager-Linux/UserInterface/Views/MainWindow.axaml" value="ShinRyuModManager-Linux/ShinRyuModManager-Linux.csproj" />
+      </map>
+    </option>
+  </component>
+</project>

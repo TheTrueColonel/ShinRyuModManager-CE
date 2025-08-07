@@ -1,0 +1,187 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ShinRyuModManager.UserInterface.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="950" d:DesignHeight="600"
+        x:Class="ShinRyuModManager.UserInterface.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/UserInterface/Assets/Icons/SRMM_icon.ico"
+        Title="Shin Ryu Mod Manager" 
+        Height="600" 
+        Width="950" 
+        Background="#FF373535" 
+        Foreground="White">
+    
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+    
+    <Window.Styles>
+        <Style Selector="Button">
+            <Setter Property="Background" Value="#FF4B4B4B"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        
+        <Style Selector="StackPanel Button">
+            <Setter Property="Background" Value="#FF4B4B4B" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Opacity" Value="0.8" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="Height" Value="44" />
+            <Setter Property="Width" Value="44" />
+        </Style>
+        
+        <Style Selector="DataGridCell:focus /template/ Grid#FocusVisual">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="DataGridCell:current /template/ Rectangle#CurrencyVisual">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+    </Window.Styles>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            Auto
+            1*
+        </Grid.RowDefinitions>
+        
+        <Menu Grid.Row="0">
+            <MenuItem Header="Manage">
+                <MenuItem Header="Install Mod" />
+                <MenuItem Header="Uninstall Mod (WIP)" />
+            </MenuItem>
+            <MenuItem Header="Libraries" />
+            <MenuItem Header="Mod Meta">
+                <MenuItem Header="Export sample mod-meta.yaml" />
+                <MenuItem Header="Export sample mod-image.yaml" />
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem Header="About Shin Ryu Mod Manager" />
+                <MenuItem Header="Changelog" />
+                <MenuItem Header="Check for updates" />
+            </MenuItem>
+        </Menu>
+        
+        <Image Grid.Row="1" Source="../Assets/SRMMLogo1BG.png" Opacity="0.05" />
+        
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                0.45*
+                0.55*
+            </Grid.ColumnDefinitions>
+            
+            <Label Grid.Column="0" Name="AppVersion" Content="SRMM Version" HorizontalAlignment="Left" VerticalAlignment="Bottom" Foreground="White" Opacity="0.4" />
+            
+            <Grid Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    0.75*
+                    0.25*
+                </Grid.ColumnDefinitions>
+                
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        0.10*
+                        0.75*
+                        0.15*
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Grid.Row="0" Margin="20" Text="MOD LOAD ORDER (Hover for more information)" 
+                               ToolTip.Tip="Mods will get loaded in order (top to bottom). If a mod has a file conflict with another, the files of the latest mod to load will have priority." Foreground="LightGray" />
+                    
+                    <ThemeVariantScope Grid.Row="1" RequestedThemeVariant="Light">
+                        <DataGrid Margin="20, 0, 20, 20" Background="#FF4B4B4B" ItemsSource="{Binding Mods}">
+                            <DataGrid.Columns>
+                                <DataGridCheckBoxColumn Header="Enabled" Width="*" Binding="{Binding Enabled}" />
+                                <DataGridTextColumn Header="Mod Name" Width="2*" IsReadOnly="True" Binding="{Binding ModName}" Foreground="White" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </ThemeVariantScope>
+                    
+                    <Grid Grid.Row="2" Grid.Column="0" Margin="20, 0, 20, 40">
+                        <Grid.ColumnDefinitions>
+                            0.5*
+                            0.5*
+                        </Grid.ColumnDefinitions>
+                        
+                        <Button Name="ModInstall" Grid.Column="0" Margin="0" Content="Install Mod" FontSize="16" />
+                        <Button Name="ModListViewRefresh" Grid.Column="1" Margin="0" Content="Refresh List" FontSize="16" />
+                    </Grid>
+                </Grid>
+                
+                <Grid Grid.Column="1">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0, -70, 0, 0">
+                        <Button Name="ModToggle">
+                            <Image Source="{SvgImage ../Assets/Icons/SVG/Toggle.svg}" />
+                        </Button>
+                        <Button Name="ModUp">
+                            <Image Source="{SvgImage ../Assets/Icons/SVG/ArrowUp.svg}" />
+                        </Button>
+                        <Button Name="ModDown">
+                            <Image Source="{SvgImage ../Assets/Icons/SVG/ArrowDown.svg}" />
+                        </Button>
+                        <Button Name="ModSave" Margin="5, 55, 5, 5" BorderThickness="3">
+                            <Image Source="{SvgImage ../Assets/Icons/SVG/Check.svg}" />
+                        </Button>
+                        <Button Name="ModClose" BorderThickness="3">
+                            <Image Source="{SvgImage ../Assets/Icons/SVG/X.svg}" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+            
+            <Grid Grid.Column="1" Margin="20">
+                <Grid.RowDefinitions>
+                    0.30*
+                    0.70*
+                </Grid.RowDefinitions>
+                
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        0.35*
+                        0.65*
+                    </Grid.ColumnDefinitions>
+                    
+                    <Border Grid.Column="0" BorderThickness="2" BorderBrush="#32808080" Background="#32808080" Height="155" Width="155" HorizontalAlignment="Left">
+                        <Image Name="ModImage" RenderOptions.BitmapInterpolationMode="HighQuality" Source="../Assets/NoImage.png" Height="150" Width="150" HorizontalAlignment="Center" />
+                    </Border>
+                    
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            0.50*
+                            0.25*
+                            0.25*
+                        </Grid.RowDefinitions>
+                        
+                        <TextBlock Name="ModName" Grid.Row="0" Text="Mod Name" FontSize="26" Foreground="White" TextWrapping="WrapWithOverflow" />
+                        
+                        <StackPanel Grid.Row="1" Orientation="Horizontal">
+                            <Label Content="Author: " FontSize="18" Foreground="LightGray" />
+                            <Label Name="ModAuthor" Content="Author Name" FontSize="18" Foreground="White" />
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Row="2" Orientation="Horizontal">
+                            <Label Content="Version:" FontSize="18" Foreground="LightGray" />
+                            <Label Name="ModVersion" Content="Version" FontSize="18" Foreground="White" />
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+                
+                <Grid Grid.Row="1" Margin="0, 20">
+                    <Rectangle Fill="#32808080" Opacity="1"/>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel x:Name="ModDescription" Margin="10">
+                            <TextBlock TextWrapping="Wrap" Foreground="White">
+                                Mod Description
+                            </TextBlock>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+
+</Window>

@@ -1,9 +1,12 @@
 ﻿using System.Diagnostics;
+using Avalonia;
+using Avalonia.Svg.Skia;
 using IniParser;
 using IniParser.Model;
 using ShinRyuModManager.ModLoadOrder;
 using ShinRyuModManager.ModLoadOrder.Mods;
 using ShinRyuModManager.Templates;
+using ShinRyuModManager.UserInterface;
 using Utils;
 
 namespace ShinRyuModManager;
@@ -28,7 +31,25 @@ public static class Program {
         _logger?.WriteLine(messageStr);
     }
     
-    private static async Task Main(string[] args) {
+    [STAThread]
+    private static void Main(string[] args) {
+        if (args.Length == 0) {
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        } else {
+            MainCLI(args).GetAwaiter().GetResult();
+        }
+    }
+    
+    private static AppBuilder BuildAvaloniaApp() {
+        GC.KeepAlive(typeof(SvgImageExtension).Assembly);
+        GC.KeepAlive(typeof(Svg.Skia.SKSvg).Assembly);
+        return AppBuilder.Configure<App>()
+                         .UsePlatformDetect()
+                         .WithInterFont()
+                         .LogToTrace();
+    }
+    
+    private static async Task MainCLI(string[] args) {
         try {
             _logger = new StreamWriter("srmm_log.txt");
             _logger.AutoFlush = true;
