@@ -10,7 +10,7 @@
         <Configurations>Debug;Release</Configurations>
         <Platforms>x64</Platforms>
         <IsPackable>false</IsPackable>
-        <AssemblyVersion>1.0.0</AssemblyVersion>
+        <AssemblyVersion>1.1.0</AssemblyVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -27,9 +27,11 @@
       <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.3" />
       <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
       <PackageReference Include="ini-parser" Version="2.5.2" />
+      <PackageReference Include="Markdown.Avalonia" Version="11.0.2" />
       <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
       <PackageReference Include="Skia.Controls.Avalonia" Version="11.3.0.3" />
       <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="11.3.0.3" />
+      <PackageReference Include="YamlDotNet" Version="16.3.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -41,32 +43,9 @@
     <ItemGroup>
       <Folder Include="UserInterface\Models\" />
     </ItemGroup>
-
+    
     <ItemGroup>
-      <None Remove="UserInterface\Assets\avalonia-logo.ico" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="UserInterface\Assets\Icons\SRMM_icon.ico" />
-      <AvaloniaResource Include="UserInterface\Assets\Icons\SRMM_icon.ico" />
-      <None Remove="UserInterface\Assets\NoImage.png" />
-      <AvaloniaResource Include="UserInterface\Assets\NoImage.png" />
-      <None Remove="UserInterface\Assets\SRMMLogo1BG.png" />
-      <AvaloniaResource Include="UserInterface\Assets\SRMMLogo1BG.png" />
-      <None Remove="UserInterface\Assets\SRMMLogo250.png" />
-      <AvaloniaResource Include="UserInterface\Assets\SRMMLogo250.png" />
-      <None Remove="UserInterface\Assets\Icons\SVG\ArrowDown.svg" />
-      <AvaloniaResource Include="UserInterface\Assets\Icons\SVG\ArrowDown.svg" />
-      <None Remove="UserInterface\Assets\Icons\SVG\ArrowUp.svg" />
-      <AvaloniaResource Include="UserInterface\Assets\Icons\SVG\ArrowUp.svg" />
-      <None Remove="UserInterface\Assets\Icons\SVG\Check.svg" />
-      <AvaloniaResource Include="UserInterface\Assets\Icons\SVG\Check.svg" />
-      <None Remove="UserInterface\Assets\Icons\SVG\Toggle.svg" />
-      <AvaloniaResource Include="UserInterface\Assets\Icons\SVG\Toggle.svg" />
-      <None Remove="UserInterface\Assets\Icons\SVG\X.svg" />
-      <AvaloniaResource Include="UserInterface\Assets\Icons\SVG\X.svg" />
-      <None Remove="UserInterface\Assets\Icons\PNG\Github_Light.png" />
-      <AvaloniaResource Include="UserInterface\Assets\Icons\PNG\Github_Light.png" />
+      <AvaloniaResource Include="UserInterface\Assets\**" />
     </ItemGroup>
 
 </Project>

@@ -1,27 +1,41 @@
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using ShinRyuModManager.ModLoadOrder.Mods;
+using Utils;
 
 namespace ShinRyuModManager.UserInterface.ViewModels;
 
-public class MainWindowViewModel : ViewModelBase {
-    public ObservableCollection<ModInfo> Mods { get; }
+public partial class MainWindowViewModel : ViewModelBase {
+    public string TitleText { get; private set; } = "Shin Ryu Mod Manager";
+    public string AppVersionText { get; private set; } = "SRMM Version";
+
+    [ObservableProperty] private string _modName = "Mod Name";
+    [ObservableProperty] private string _modDescription = "Mod Description";
+    [ObservableProperty] private string _modAuthor = "Author";
+    [ObservableProperty] private string _modVersion = "Version";
+    [ObservableProperty] private ObservableCollection<ModInfo> _modList;
 
     public MainWindowViewModel() {
-        var mods = new List<ModInfo> {
-            new ModInfo("Test Mod 1", true),
-            new ModInfo("Test Mod 2", true),
-            new ModInfo("Test Mod 3", false)
-        };
-
-        Mods = new ObservableCollection<ModInfo>(mods);
+        Initialize();
+        LoadModList();
     }
-}
 
-public class ModInfo() {
-    public string ModName { get; set; }
-    public bool Enabled { get; set; }
+    public void SelectMod(ModMeta mod) {
+        ModName = mod.Name;
+        ModDescription = mod.Description;
+        ModAuthor = mod.Author;
+        ModVersion = mod.Version;
+    }
 
-    public ModInfo(string modName, bool enabled) : this() {
-        ModName = modName;
-        Enabled = enabled;
+    private void Initialize() {
+        TitleText = $"Shin Ryu Mod Manager [{GamePath.GetGameFriendlyName(GamePath.CurrentGame)}]";
+        AppVersionText = $"v{Utils.GetAppVersion()}";
+
+        Directory.CreateDirectory(GamePath.MODS);
+        Directory.CreateDirectory(GamePath.LIBRARIES);
+    }
+
+    internal void LoadModList() {
+        ModList = new ObservableCollection<ModInfo>(Program.PreRun());
     }
 }

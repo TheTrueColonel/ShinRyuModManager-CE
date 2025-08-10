@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text;
 using Avalonia;
 using Avalonia.Svg.Skia;
 using IniParser;
@@ -91,7 +92,7 @@ public static class Program {
         }
     }
 
-    private static List<ModInfo> PreRun() {
+    internal static List<ModInfo> PreRun() {
         var iniParser = new FileIniDataParser();
         iniParser.Parser.Configuration.AssigmentSpacer = string.Empty;
         
@@ -280,7 +281,7 @@ public static class Program {
         return mods;
     }
     
-    private static async Task RunGeneration(List<string> mods) {
+    internal static async Task RunGeneration(List<string> mods) {
         if (File.Exists(Constants.MLO)) {
             Console.Write("Removing old MLO...");
             
@@ -379,7 +380,7 @@ public static class Program {
         return mods.Select(m => new ModInfo(m)).ToList();
     }
     
-    private static List<string> ConvertNewToOldModList(List<ModInfo> mods) {
+    internal static List<string> ConvertNewToOldModList(List<ModInfo> mods) {
         return mods.Where(m => m.Enabled).Select(m => m.Name).ToList();
     }
     
@@ -440,5 +441,47 @@ public static class Program {
         }
 
         return mods;
+    }
+
+    internal static async Task<bool> SaveModListAsync(List<ModInfo> mods) {
+        var result = await WriteModListTextAsync(mods);
+
+        if (!_migrated)
+            return result;
+
+        try {
+            File.Delete(Constants.TXT_OLD);
+
+            var iniParser = new FileIniDataParser();
+            iniParser.Parser.Configuration.AssigmentSpacer = string.Empty;
+
+            var ini = iniParser.ReadFile(Constants.INI);
+
+            ini.Sections.AddSection("SavedSettings");
+            ini["SavedSettings"].AddKey("ModListImported", "true");
+            iniParser.WriteFile(Constants.INI, ini);
+        } catch {
+            Console.WriteLine($"Could not delete {Constants.TXT_OLD}. This file should be deleted manually.");
+        }
+
+        return result;
+    }
+
+    private static async Task<bool> WriteModListTextAsync(List<ModInfo> mods) {
+        if (mods == null || mods.Count == 0)
+            return false;
+
+        var sb = new StringBuilder();
+
+        foreach (var mod in mods) {
+            sb.Append($"{(mod.Enabled ? "<" : ">")}{mod.Name}|");
+        }
+
+        // Remove leftover pipe
+        sb.Length -= 1;
+        
+        await File.WriteAllTextAsync(Constants.TXT, sb.ToString());
+
+        return true;
     }
 }

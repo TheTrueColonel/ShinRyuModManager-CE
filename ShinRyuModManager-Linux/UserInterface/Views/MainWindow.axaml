@@ -1,17 +1,20 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:ShinRyuModManager.UserInterface.ViewModels"
+        xmlns:svg="using:Avalonia.Svg.Skia"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mods="clr-namespace:ShinRyuModManager.ModLoadOrder.Mods"
         mc:Ignorable="d" d:DesignWidth="950" d:DesignHeight="600"
         x:Class="ShinRyuModManager.UserInterface.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/UserInterface/Assets/Icons/SRMM_icon.ico"
-        Title="Shin Ryu Mod Manager" 
+        Title="{Binding TitleText}" 
         Height="600" 
         Width="950" 
         Background="#FF373535" 
-        Foreground="White">
+        Foreground="White"
+        CanResize="False">
     
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -38,6 +41,7 @@
         <Style Selector="DataGridCell:focus /template/ Grid#FocusVisual">
             <Setter Property="IsVisible" Value="False"/>
         </Style>
+        
         <Style Selector="DataGridCell:current /template/ Rectangle#CurrencyVisual">
             <Setter Property="IsVisible" Value="False"/>
         </Style>
@@ -51,18 +55,18 @@
         
         <Menu Grid.Row="0">
             <MenuItem Header="Manage">
-                <MenuItem Header="Install Mod" />
-                <MenuItem Header="Uninstall Mod (WIP)" />
+                <MenuItem Name="ModInstallMenuItem" Header="Install Mod" Click="ModInstall_OnClick" />
+                <!--<MenuItem Header="Uninstall Mod (WIP)" />-->
             </MenuItem>
             <MenuItem Header="Libraries" />
             <MenuItem Header="Mod Meta">
-                <MenuItem Header="Export sample mod-meta.yaml" />
-                <MenuItem Header="Export sample mod-image.yaml" />
+                <MenuItem Name="ModMetaSampleYaml" Header="Export sample mod-meta.yaml" Click="ModMetaSampleYaml_OnClick" />
+                <MenuItem Name="ModMetaSampleImage" Header="Export sample mod-image.yaml" Click="ModMetaSampleImage_OnClick" />
             </MenuItem>
             <MenuItem Header="Help">
-                <MenuItem Header="About Shin Ryu Mod Manager" />
-                <MenuItem Header="Changelog" />
-                <MenuItem Header="Check for updates" />
+                <MenuItem Name="About" Header="About Shin Ryu Mod Manager" Click="About_OnClick" />
+                <MenuItem Name="ChangeLog" Header="Changelog" Click="ChangeLog_OnClick" />
+                <MenuItem Name="CheckUpdates" Header="Check for updates" />
             </MenuItem>
         </Menu>
         
@@ -74,7 +78,7 @@
                 0.55*
             </Grid.ColumnDefinitions>
             
-            <Label Grid.Column="0" Name="AppVersion" Content="SRMM Version" HorizontalAlignment="Left" VerticalAlignment="Bottom" Foreground="White" Opacity="0.4" />
+            <Label Grid.Column="0" x:Name="AppVersion" Content="{Binding AppVersionText}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Foreground="White" Opacity="0.4" />
             
             <Grid Grid.Column="0">
                 <Grid.ColumnDefinitions>
@@ -93,10 +97,17 @@
                                ToolTip.Tip="Mods will get loaded in order (top to bottom). If a mod has a file conflict with another, the files of the latest mod to load will have priority." Foreground="LightGray" />
                     
                     <ThemeVariantScope Grid.Row="1" RequestedThemeVariant="Light">
-                        <DataGrid Margin="20, 0, 20, 20" Background="#FF4B4B4B" ItemsSource="{Binding Mods}">
+                        <DataGrid Name="ModListView" Margin="20, 0, 20, 20" Background="#FF4B4B4B" Width="318" ItemsSource="{Binding ModList}" SelectionChanged="ModList_OnSelectionChanged">
                             <DataGrid.Columns>
-                                <DataGridCheckBoxColumn Header="Enabled" Width="*" Binding="{Binding Enabled}" />
-                                <DataGridTextColumn Header="Mod Name" Width="2*" IsReadOnly="True" Binding="{Binding ModName}" Foreground="White" />
+                                <DataGridTemplateColumn Header="Enabled" CanUserSort="False">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate DataType="mods:ModInfo">
+                                            <CheckBox IsChecked="{Binding Enabled}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                
+                                <DataGridTextColumn Header="Mod Name" Width="*" Binding="{Binding Name}" CanUserSort="False" IsReadOnly="True" Foreground="White" />
                             </DataGrid.Columns>
                         </DataGrid>
                     </ThemeVariantScope>
@@ -107,27 +118,27 @@
                             0.5*
                         </Grid.ColumnDefinitions>
                         
-                        <Button Name="ModInstall" Grid.Column="0" Margin="0" Content="Install Mod" FontSize="16" />
-                        <Button Name="ModListViewRefresh" Grid.Column="1" Margin="0" Content="Refresh List" FontSize="16" />
+                        <Button Name="ModInstall" Grid.Column="0" Margin="0" Content="Install Mod" FontSize="16" Click="ModInstall_OnClick" />
+                        <Button Name="ModListViewRefresh" Grid.Column="1" Margin="0" Content="Refresh List" FontSize="16" Click="ModListViewRefresh_OnClick" />
                     </Grid>
                 </Grid>
                 
                 <Grid Grid.Column="1">
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0, -70, 0, 0">
-                        <Button Name="ModToggle">
-                            <Image Source="{SvgImage ../Assets/Icons/SVG/Toggle.svg}" />
+                        <Button Name="ModToggle" Click="ModToggle_OnClick">
+                            <Image Source="{svg:SvgImage ../Assets/Icons/SVG/Toggle.svg}" ToolTip.Tip="Toggle the selected mod(s)" />
                         </Button>
-                        <Button Name="ModUp">
-                            <Image Source="{SvgImage ../Assets/Icons/SVG/ArrowUp.svg}" />
+                        <Button Name="ModUp" Click="ModUp_OnClick">
+                            <Image Source="{svg:SvgImage ../Assets/Icons/SVG/ArrowUp.svg}" ToolTip.Tip="Move the selected mod(s) up" />
                         </Button>
-                        <Button Name="ModDown">
-                            <Image Source="{SvgImage ../Assets/Icons/SVG/ArrowDown.svg}" />
+                        <Button Name="ModDown" Click="ModDown_OnClick">
+                            <Image Source="{svg:SvgImage ../Assets/Icons/SVG/ArrowDown.svg}" ToolTip.Tip="Move the selected mod(s) down" />
                         </Button>
-                        <Button Name="ModSave" Margin="5, 55, 5, 5" BorderThickness="3">
-                            <Image Source="{SvgImage ../Assets/Icons/SVG/Check.svg}" />
+                        <Button Name="ModSave" Margin="5, 55, 5, 5" BorderThickness="3" Click="ModSave_OnClick">
+                            <Image Source="{svg:SvgImage ../Assets/Icons/SVG/Check.svg}" ToolTip.Tip="Save mod list" />
                         </Button>
-                        <Button Name="ModClose" BorderThickness="3">
-                            <Image Source="{SvgImage ../Assets/Icons/SVG/X.svg}" />
+                        <Button Name="ModClose" BorderThickness="3" Click="ModClose_OnClick">
+                            <Image Source="{svg:SvgImage ../Assets/Icons/SVG/X.svg}" ToolTip.Tip="Close and cancel all changes" />
                         </Button>
                     </StackPanel>
                 </Grid>
@@ -156,16 +167,16 @@
                             0.25*
                         </Grid.RowDefinitions>
                         
-                        <TextBlock Name="ModName" Grid.Row="0" Text="Mod Name" FontSize="26" Foreground="White" TextWrapping="WrapWithOverflow" />
+                        <TextBlock x:Name="ModName" Grid.Row="0" Text="{Binding ModName}" FontSize="26" Foreground="White" TextWrapping="WrapWithOverflow" />
                         
                         <StackPanel Grid.Row="1" Orientation="Horizontal">
                             <Label Content="Author: " FontSize="18" Foreground="LightGray" />
-                            <Label Name="ModAuthor" Content="Author Name" FontSize="18" Foreground="White" />
+                            <Label Name="ModAuthor" Content="{Binding ModAuthor}" FontSize="18" Foreground="White" />
                         </StackPanel>
                         
                         <StackPanel Grid.Row="2" Orientation="Horizontal">
                             <Label Content="Version:" FontSize="18" Foreground="LightGray" />
-                            <Label Name="ModVersion" Content="Version" FontSize="18" Foreground="White" />
+                            <Label Name="ModVersion" Content="{Binding ModVersion}" FontSize="18" Foreground="White" />
                         </StackPanel>
                     </Grid>
                 </Grid>
@@ -174,9 +185,7 @@
                     <Rectangle Fill="#32808080" Opacity="1"/>
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel x:Name="ModDescription" Margin="10">
-                            <TextBlock TextWrapping="Wrap" Foreground="White">
-                                Mod Description
-                            </TextBlock>
+                            <TextBlock TextWrapping="Wrap" Foreground="White" Text="{Binding ModDescription}" />
                         </StackPanel>
                     </ScrollViewer>
                 </Grid>

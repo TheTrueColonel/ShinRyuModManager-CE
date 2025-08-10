@@ -25,7 +25,7 @@ public static class GameModel {
         foreach (var file in mlo.Files) {
             if (file.Name.Contains("/hact/") && !file.Name.EndsWith(".par")) {
                 var mod = mlo.Mods[file.Index];
-                var filePath = Path.Combine("mods", mod, file.Name);
+                var filePath = Path.Combine(GamePath.MODS, mod, file.Name);
                 var fileInfo = new FileInfo(filePath);
                 // Get the folder from a path like so -> data/hact/h5000_some_hact/cmn/cmn.bin
                 var hactDir = fileInfo.Directory.Parent.Name;

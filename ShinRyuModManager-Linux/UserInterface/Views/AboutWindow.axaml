@@ -1,0 +1,43 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ShinRyuModManager.UserInterface.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
+        x:Class="ShinRyuModManager.UserInterface.Views.AboutWindow"
+        x:DataType="vm:AboutWindowViewModel"
+        Title="About" 
+        Height="600" 
+        Width="500"
+        Background="#FF373535" 
+        Foreground="White"
+        CanResize="False">
+    
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:AboutWindowViewModel/>
+    </Design.DataContext>
+    
+    <Window.Styles>
+        <Style Selector="HyperlinkButton">
+            <Setter Property="TextBlock.TextDecorations" Value="" />
+        </Style>
+    </Window.Styles>
+    
+    <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Center">
+        <Image Source="../Assets/SRMMLogo250.png" Width="250" Height="250" />
+        
+        <TextBlock Margin="20, 0" FontSize="20" TextAlignment="Center">
+            <LineBreak />
+            <HyperlinkButton NavigateUri="https://github.com/TheTrueColonel/ShinRyuModManager-Linux"
+                Foreground="Gold">
+                Shin Ryu Mod Manager - Linux
+            </HyperlinkButton>
+        </TextBlock>
+        <TextBlock Margin="20, 0" HorizontalAlignment="Center" Text="{Binding Version}" />
+        <TextBlock Margin="0, 40, 0, 0" HorizontalAlignment="Center" FontSize="16" Foreground="#FFf59b42" Text="Credits" />
+        <TextBlock Margin="15" HorizontalAlignment="Center" TextAlignment="Center" Text="{Binding CreditsText}" />
+    </StackPanel>
+        
+</Window>
