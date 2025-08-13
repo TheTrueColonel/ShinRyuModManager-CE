@@ -9,6 +9,7 @@ using ShinRyuModManager.ModLoadOrder.Mods;
 using ShinRyuModManager.Templates;
 using ShinRyuModManager.UserInterface;
 using Utils;
+using YamlDotNet.Serialization;
 
 namespace ShinRyuModManager;
 
@@ -23,6 +24,8 @@ public static class Program {
     
     public static bool RebuildMlo = true;
     public static bool IsRebuildMloSupported = true;
+
+    public static List<LibMeta> LibraryMetaCache = new List<LibMeta>();
 
     public static void Log(object message) {
         var messageStr = message.ToString();
@@ -483,5 +486,97 @@ public static class Program {
         await File.WriteAllTextAsync(Constants.TXT, sb.ToString());
 
         return true;
+    }
+    
+    public static string GetModDirectory(string mod)
+    {
+        return Path.Combine(GamePath.ModsPath, mod);
+    }
+
+
+    public static string[] GetModDependencies(string mod)
+    {
+        string modDir = GetModDirectory(mod);
+
+        if (!Directory.Exists(modDir))
+            return [];
+
+        string metaFile = Path.Combine(modDir, "mod-meta.yaml");
+
+        if (!File.Exists(metaFile))
+            return [];
+        
+        var meta = UIHelpers.DeserializeYamlFromPath<ModMeta>(metaFile);
+
+        if (string.IsNullOrEmpty(meta.Dependencies))
+            return [];
+
+        return meta.Dependencies.Split(';');
+    }
+
+    public static string GetLibraryPath(string guid)
+    {
+        return Path.Combine(GamePath.LibrariesPath, guid);
+    }
+
+    public static string GetLocalLibraryCopyPath()
+    {
+        return Path.Combine(GamePath.LibrariesPath, Settings.LIBRARIES_INFO_REPO_FILE_PATH);
+    }
+
+    //Read cached data at startup if it exists
+    public static void ReadCachedLocalLibraryData()
+    {
+        string path = GetLocalLibraryCopyPath();
+
+        if (!File.Exists(path))
+            return;
+
+        LibMeta.ReadLibMetaManifest(File.ReadAllText(path));
+    }
+
+    public static LibMeta GetLibMeta(string guid)
+    {
+        return LibraryMetaCache.FirstOrDefault(x => x.GUID.ToString() == guid);
+    }
+
+    public static bool DoesLibraryExist(string guid)
+    {
+        string libDir = GetLibraryPath(guid);
+
+        if (!Directory.Exists(libDir))
+            return false;
+
+        return true;
+    }
+
+    public static bool IsLibraryEnabled(string guid)
+    {
+        if (!DoesLibraryExist(guid))
+            return false;
+
+        if (File.Exists(Path.Combine(GetLibraryPath(guid), ".disabled")))
+            return false;
+
+        return true;
+    }
+
+    public static string GetLibraryName(string guid)
+    {
+        var metaData = GetLibMeta(guid);
+
+        if (metaData != null)
+            return metaData.Name;
+
+        var path = Path.Combine(GetLibraryPath(guid), Settings.LIBRARIES_LIBMETA_FILE_NAME);
+
+        if (!File.Exists(path))
+            return guid;
+
+        var yamlString = File.ReadAllText(path);
+        var meta = LibMeta.ReadLibMeta(yamlString);
+            
+        return meta.Name;
+
     }
 }

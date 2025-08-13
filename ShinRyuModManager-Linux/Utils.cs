@@ -7,6 +7,9 @@ using Utils;
 namespace ShinRyuModManager;
 
 public static class Utils {
+    // Statically instantiated to be used through project
+    public static readonly HttpClient Client = new HttpClient();
+    
     public static string NormalizeNameLower(string path) {
         return NormalizeSeparator(path.ToLowerInvariant());
     }
@@ -68,5 +71,32 @@ public static class Utils {
         }
 
         return true;
+    }
+    
+    /// <summary>
+    /// Compares two versions and returns true if the target version is higher than the current one.
+    /// </summary>
+    /// <param name="versionTarget">Target version.</param>
+    /// <param name="versionCurrent">Current version to compare against.</param>
+    /// <returns>A boolean.</returns>
+    internal static bool CompareVersionIsHigher(string versionTarget, string versionCurrent)
+    {
+        var v1 = new Version(versionTarget);
+        var v2 = new Version(versionCurrent);
+        
+        switch (v1.CompareTo(v2))
+        {
+            case 0: //same
+                return false;
+
+            case 1: //target is higher
+                return true;
+
+            case -1: //target is lower
+                return false;
+
+            default:
+                return false;
+        }
     }
 }

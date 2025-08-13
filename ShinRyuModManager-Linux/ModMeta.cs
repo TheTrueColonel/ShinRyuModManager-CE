@@ -5,13 +5,15 @@ public class ModMeta {
     public string Author { get; internal init; }
     public string Version { get; internal init; }
     public string Description { get; internal init; }
+    public string Dependencies { get; internal init; }
 
     public static ModMeta GetPlaceholder() {
         return new ModMeta {
             Name = "Mod Name",
             Author = "Author",
             Version = "1.0.0",
-            Description = "Mod description"
+            Description = "Mod description",
+            Dependencies = ""
         };
     }
 

@@ -58,7 +58,7 @@
                 <MenuItem Name="ModInstallMenuItem" Header="Install Mod" Click="ModInstall_OnClick" />
                 <!--<MenuItem Header="Uninstall Mod (WIP)" />-->
             </MenuItem>
-            <MenuItem Header="Libraries" />
+            <MenuItem Header="Libraries" Click="MenuItem_OnClick" />
             <MenuItem Header="Mod Meta">
                 <MenuItem Name="ModMetaSampleYaml" Header="Export sample mod-meta.yaml" Click="ModMetaSampleYaml_OnClick" />
                 <MenuItem Name="ModMetaSampleImage" Header="Export sample mod-image.yaml" Click="ModMetaSampleImage_OnClick" />

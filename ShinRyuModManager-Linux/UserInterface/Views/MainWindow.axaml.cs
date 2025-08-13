@@ -144,6 +144,11 @@ public partial class MainWindow : Window {
         }
     }
 
+    private void MenuItem_OnClick(object sender, RoutedEventArgs e) {
+        var window = new LibraryManagerWindow();
+        window.Show(this);
+    }
+
     private void ModListViewRefresh_OnClick(object sender, RoutedEventArgs e) => RefreshModList();
 
     private async void ModMetaSampleYaml_OnClick(object sender, RoutedEventArgs e) {
@@ -222,7 +227,7 @@ public partial class MainWindow : Window {
 
             if (File.Exists(modMetaPath)) {
                 var metaFileContent = await File.ReadAllTextAsync(modMetaPath, Encoding.UTF8);
-                var deserializer = new DeserializerBuilder().IgnoreUnmatchedProperties().Build();
+                var deserializer = new DeserializerBuilder().Build();
 
                 meta = deserializer.Deserialize<ModMeta>(metaFileContent);
             }
