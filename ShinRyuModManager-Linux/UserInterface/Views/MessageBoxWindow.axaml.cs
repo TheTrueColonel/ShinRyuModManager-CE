@@ -8,11 +8,11 @@ namespace ShinRyuModManager.UserInterface.Views;
 public partial class MessageBoxWindow : Window {
     private bool _result;
 
-    public MessageBoxWindow() { 
+    private MessageBoxWindow() { 
         InitializeComponent();
     }
-    
-    public MessageBoxWindow(string message, bool showCancel = false) : this() {
+
+    private MessageBoxWindow(string message, bool showCancel = false) : this() {
         DataContext = new MessageBoxWindowViewModel(message, showCancel);
     }
     

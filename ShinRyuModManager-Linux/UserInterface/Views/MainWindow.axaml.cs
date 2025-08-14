@@ -3,17 +3,27 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
+using ShinRyuModManager.Helpers;
 using ShinRyuModManager.ModLoadOrder.Mods;
 using ShinRyuModManager.UserInterface.ViewModels;
 using Utils;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization;
+using Constants = Utils.Constants;
 
 namespace ShinRyuModManager.UserInterface.Views;
 
+// TODO: Add ability to edit ModMeta
 public partial class MainWindow : Window {
     public MainWindow() {
         InitializeComponent();
+    }
+
+    // TODO: Add changelog auto popup
+    private void Window_OnLoaded(object sender, RoutedEventArgs e) {
+        Program.ReadCachedLocalLibraryData();
+        
+        RefreshModList();
     }
 
     // Event Handlers
@@ -84,6 +94,8 @@ public partial class MainWindow : Window {
             if (DataContext is not MainWindowViewModel viewModel) return;
 
             if (await Program.SaveModListAsync(viewModel.ModList.ToList())) {
+                await CheckModDependenciesAsync();
+                
                 // Run generation only if it will not be run on game launch (i.e. if RebuildMlo is disabled or unsupported)
                 if (Program.RebuildMlo && Program.IsRebuildMloSupported) {
                     _ = await MessageBoxWindow.Show(this, "Information", "Mod list was saved. Mods will be applied next time the game is run.");
@@ -113,6 +125,60 @@ public partial class MainWindow : Window {
             }
         } catch (Exception ex) {
             _ = await MessageBoxWindow.Show(this, "Fatal", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
+        }
+    }
+
+    private async Task CheckModDependenciesAsync() {
+        var modList = Program.ReadModListTxt(Constants.TXT);
+
+        var modsWithDependencyProblems = new List<string>();
+        var disabledLibraries = new List<string>();
+        var missingLibraries = new List<string>();
+
+        foreach (var enabledMod in modList.Where(x => x.Enabled)) {
+            foreach (var dependencyGuid in Program.GetModDependencies(enabledMod.Name)) {
+                if (!Program.DoesLibraryExist(dependencyGuid)) {
+                    if(!modsWithDependencyProblems.Contains(enabledMod.Name))
+                        modsWithDependencyProblems.Add(enabledMod.Name);
+
+                    missingLibraries.Add(dependencyGuid);
+                } else if (!Program.IsLibraryEnabled(dependencyGuid)) {
+                    if (!modsWithDependencyProblems.Contains(enabledMod.Name))
+                        modsWithDependencyProblems.Add(enabledMod.Name);
+
+                    disabledLibraries.Add(dependencyGuid);
+                }
+            }
+        }
+
+        if (disabledLibraries.Count > 0 || missingLibraries.Count > 0) {
+            var sb = new StringBuilder();
+
+            if (missingLibraries.Count > 0) {
+                sb.AppendLine("Missing libraries:");
+
+                sb.AppendJoin('\n', missingLibraries.Select(Program.GetLibraryName));
+
+                sb.AppendLine();
+            }
+
+            if (disabledLibraries.Count > 0) {
+                sb.AppendLine("Disabled libraries:");
+
+                sb.AppendJoin('\n', disabledLibraries.Select(Program.GetLibraryName));
+
+                sb.AppendLine();
+            }
+
+            sb.AppendLine("The following mods depend on these libraries:");
+
+            sb.AppendJoin('\n', modsWithDependencyProblems.Select(Program.GetLibraryName));
+
+            sb.AppendLine();
+
+            sb.Append("Your mods may not properly work without them. Consider installing or enabling them from the Libraries tab.");
+            
+            _ = await MessageBoxWindow.Show(this, "Mod Library Dependency Warning", sb.ToString());
         }
     }
 
@@ -226,10 +292,7 @@ public partial class MainWindow : Window {
             var meta = ModMeta.GetPlaceholder(mod.Name);
 
             if (File.Exists(modMetaPath)) {
-                var metaFileContent = await File.ReadAllTextAsync(modMetaPath, Encoding.UTF8);
-                var deserializer = new DeserializerBuilder().Build();
-
-                meta = deserializer.Deserialize<ModMeta>(metaFileContent);
+                meta = await YamlHelpers.DeserializeYamlFromPathAsync<ModMeta>(modMetaPath);
             }
 
             viewModel.SelectMod(meta);

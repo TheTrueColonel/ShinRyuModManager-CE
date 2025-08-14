@@ -1,4 +1,4 @@
-using YamlDotNet.Serialization;
+using ShinRyuModManager.Helpers;
 
 namespace ShinRyuModManager;
 
@@ -19,9 +19,7 @@ public class LibMeta {
     public string MainBinary { get; set; }
 
     public static LibMeta ReadLibMeta(string yamlString) {
-        var deserializer = new DeserializerBuilder().Build();
-        
-        return deserializer.Deserialize<LibMeta>(yamlString);
+        return YamlHelpers.DeserializeYaml<LibMeta>(yamlString);
     }
 
     public static List<LibMeta> Fetch() {
@@ -38,9 +36,8 @@ public class LibMeta {
 
     public static List<LibMeta> ReadLibMetaManifest(string yamlString) {
         var returnList = new List<LibMeta>();
-
-        var deserializer = new DeserializerBuilder().Build();
-        var yamlObject = deserializer.Deserialize<Dictionary<string, LibMeta>>(yamlString);
+        var yamlObject = YamlHelpers.DeserializeYaml<Dictionary<string, LibMeta>>(yamlString);
+        
         foreach (var key in yamlObject.Keys)
         {
             var meta = yamlObject[key];

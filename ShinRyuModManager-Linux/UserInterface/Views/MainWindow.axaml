@@ -14,7 +14,8 @@
         Width="950" 
         Background="#FF373535" 
         Foreground="White"
-        CanResize="False">
+        CanResize="False"
+        Loaded="Window_OnLoaded">
     
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,

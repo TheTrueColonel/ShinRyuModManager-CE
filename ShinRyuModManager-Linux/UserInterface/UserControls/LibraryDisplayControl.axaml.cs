@@ -1,6 +1,9 @@
+using System.Diagnostics;
+using System.IO.Compression;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using ShinRyuModManager.UserInterface.ViewModels;
+using ShinRyuModManager.UserInterface.Views;
 using Utils;
 
 namespace ShinRyuModManager.UserInterface.UserControls;
@@ -11,8 +14,8 @@ public partial class LibraryDisplayControl : UserControl {
     private bool _isLibraryInstalled;
     private bool _isLibraryEnabled;
     private bool _isLibraryUpdateAvailable;
-    
-    public LibraryDisplayControl() {
+
+    private LibraryDisplayControl() {
         InitializeComponent();
     }
 
@@ -21,6 +24,10 @@ public partial class LibraryDisplayControl : UserControl {
         
         _meta = meta;
 
+        RefreshComponent();
+    }
+
+    private void RefreshComponent() {
         CompareToLocalInstallation();
         UpdateButtonVisibility();
     }
@@ -49,9 +56,16 @@ public partial class LibraryDisplayControl : UserControl {
 
     private void UpdateButtonVisibility() {
         if (DataContext is not LibraryDisplayControlViewModel viewModel) return;
+
+        viewModel.EnableBtnVisibility = false;
+        viewModel.DisableBtnVisibility = false;
+        viewModel.InstallBtnVisibility = false;
+        viewModel.UninstallBtnVisibility = false;
+        viewModel.UpdateBtnVisibility = false;
+        viewModel.SourceBtnVisibility = false;
         
         if (_isLibraryInstalled) {
-            viewModel.DisableBtnVisibility = true;
+            viewModel.UninstallBtnVisibility = true;
 
             if (_isLibraryUpdateAvailable) {
                 viewModel.UpdateBtnVisibility = true;
@@ -73,28 +87,77 @@ public partial class LibraryDisplayControl : UserControl {
         }
     }
 
-    private void Source_OnClick(object sender, RoutedEventArgs e) {
-        throw new NotImplementedException();
+    private async Task<string> DownloadLibraryPackageAsync(string fileName) {
+        Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Settings.TEMP_DIRECTORY_NAME));
+
+        try {
+            var path = Path.Combine(Path.GetTempPath(), Settings.TEMP_DIRECTORY_NAME, fileName);
+
+            await using var stream = await Utils.Client.GetStreamAsync(_meta.Download);
+            await using var fs = new FileStream(path, FileMode.Create, FileAccess.Write);
+
+            await stream.CopyToAsync(fs);
+            await fs.FlushAsync();
+
+            return path;
+        } catch (Exception ex) {
+            Debug.WriteLine(ex);
+
+            return string.Empty;
+        }
     }
 
-    private void Install_OnClick(object sender, RoutedEventArgs e) {
-        throw new NotImplementedException();
+    private async void InstallOrUpdate_OnClick(object sender, RoutedEventArgs e) {
+        try {
+            var packagePath = await DownloadLibraryPackageAsync($"{_meta.GUID}.zip");
+
+            var destDir = Path.Combine(GamePath.LibrariesPath, _meta.GUID.ToString());
+            
+            if (Directory.Exists(destDir))
+                Directory.Delete(destDir, true);
+            
+            Directory.CreateDirectory(destDir);
+            ZipFile.ExtractToDirectory(packagePath, destDir, true);
+            
+            RefreshComponent();
+        } catch (Exception ex) {
+            var window = TopLevel.GetTopLevel(this) as Window;
+            _ = await MessageBoxWindow.Show(window, "Fatal", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
+        }
     }
 
     private void Uninstall_OnClick(object sender, RoutedEventArgs e) {
-        throw new NotImplementedException();
+        var path = Path.Combine(GamePath.LIBRARIES, _meta.GUID.ToString());
+
+        if (!Directory.Exists(path))
+            return;
+
+        Directory.Delete(path, true);
+            
+        RefreshComponent();
     }
 
     private void Enable_OnClick(object sender, RoutedEventArgs e) {
-        throw new NotImplementedException();
+        _isLibraryEnabled = true;
+        
+        // Delete invisible file
+        var flagFilePath = Path.Combine(GamePath.LibrariesPath, _meta.GUID.ToString(), ".disabled");
+        
+        if (File.Exists(flagFilePath))
+            File.Delete(flagFilePath);
+        
+        UpdateButtonVisibility();
     }
 
     private void Disable_OnClick(object sender, RoutedEventArgs e) {
-        throw new NotImplementedException();
-    }
-
-    private void Update_OnClick(object sender, RoutedEventArgs e) {
-        throw new NotImplementedException();
+        _isLibraryEnabled = false;
+        
+        // Write invisible file as flag for Parless
+        var flagFilePath = Path.Combine(GamePath.LibrariesPath, _meta.GUID.ToString(), ".disabled");
+        File.Create(flagFilePath).Close();
+        File.SetAttributes(flagFilePath, File.GetAttributes(flagFilePath) | FileAttributes.Hidden);
+        
+        UpdateButtonVisibility();
     }
 }
 

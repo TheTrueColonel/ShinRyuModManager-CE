@@ -71,11 +71,11 @@
             </Grid>
             
             <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" Margin="15">
-                <Button Name="Install" Classes="Option" Content="Install" IsVisible="{Binding InstallBtnVisibility}" Click="Install_OnClick" />
+                <Button Name="Install" Classes="Option" Content="Install" IsVisible="{Binding InstallBtnVisibility}" Click="InstallOrUpdate_OnClick" />
                 <Button Name="Uninstall" Classes="Option" Content="Uninstall" IsVisible="{Binding UninstallBtnVisibility}" Click="Uninstall_OnClick" />
                 <Button Name="Enable" Classes="Option" Content="Enable" IsVisible="{Binding EnableBtnVisibility}" Click="Enable_OnClick" />
                 <Button Name="Disable" Classes="Option" Content="Disable" IsVisible="{Binding DisableBtnVisibility}" Click="Disable_OnClick" />
-                <Button Name="Update" Classes="Option" Content="Update" IsVisible="{Binding UpdateBtnVisibility}" Click="Update_OnClick" />
+                <Button Name="Update" Classes="Option" Content="Update" IsVisible="{Binding UpdateBtnVisibility}" Click="InstallOrUpdate_OnClick" />
             </StackPanel>
         </Grid>
     </Border>

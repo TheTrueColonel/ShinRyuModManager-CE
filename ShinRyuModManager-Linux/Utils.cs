@@ -55,6 +55,7 @@ public static class Utils {
         return sb.ToString();
     }
 
+    // TODO: Implement .rar files
     internal static async Task<bool> TryInstallModZipAsync(string path) {
         if (!File.Exists(path))
             return false;

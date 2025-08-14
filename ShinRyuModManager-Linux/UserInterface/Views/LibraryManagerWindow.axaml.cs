@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using Avalonia.Controls;
+using ShinRyuModManager.Helpers;
 using ShinRyuModManager.UserInterface.UserControls;
 using ShinRyuModManager.UserInterface.ViewModels;
 using Utils;
@@ -45,7 +46,7 @@ public partial class LibraryManagerWindow : Window {
                 if (!File.Exists(path))
                     continue;
 
-                var meta = UIHelpers.DeserializeYamlFromPath<LibMeta>(path);
+                var meta = YamlHelpers.DeserializeYamlFromPath<LibMeta>(path);
                     
                 metaList.Add(meta);
             }
@@ -54,8 +55,6 @@ public partial class LibraryManagerWindow : Window {
                 viewModel.Library.Add(new LibraryDisplayControl(meta));
             }
         }
-        
-        
     }
 
     private static List<LibMeta> DownloadLibraryData() {

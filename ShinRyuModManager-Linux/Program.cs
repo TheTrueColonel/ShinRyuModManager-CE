@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Svg.Skia;
 using IniParser;
 using IniParser.Model;
+using ShinRyuModManager.Helpers;
 using ShinRyuModManager.ModLoadOrder;
 using ShinRyuModManager.ModLoadOrder.Mods;
 using ShinRyuModManager.Templates;
@@ -419,7 +420,7 @@ public static class Program {
         */
     }
 
-    private static List<ModInfo> ReadModListTxt(string text) {
+    public static List<ModInfo> ReadModListTxt(string text) {
         var mods = new List<ModInfo>();
 
         if (!File.Exists(text)) {
@@ -506,7 +507,7 @@ public static class Program {
         if (!File.Exists(metaFile))
             return [];
         
-        var meta = UIHelpers.DeserializeYamlFromPath<ModMeta>(metaFile);
+        var meta = YamlHelpers.DeserializeYamlFromPath<ModMeta>(metaFile);
 
         if (string.IsNullOrEmpty(meta.Dependencies))
             return [];
