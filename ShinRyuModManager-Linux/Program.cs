@@ -1,10 +1,16 @@
 ﻿using System.Diagnostics;
+using System.Text;
+using Avalonia;
+using Avalonia.Svg.Skia;
 using IniParser;
 using IniParser.Model;
+using ShinRyuModManager.Helpers;
 using ShinRyuModManager.ModLoadOrder;
 using ShinRyuModManager.ModLoadOrder.Mods;
 using ShinRyuModManager.Templates;
+using ShinRyuModManager.UserInterface;
 using Utils;
+using YamlDotNet.Serialization;
 
 namespace ShinRyuModManager;
 
@@ -20,6 +26,8 @@ public static class Program {
     public static bool RebuildMlo = true;
     public static bool IsRebuildMloSupported = true;
 
+    public static List<LibMeta> LibraryMetaCache = new List<LibMeta>();
+
     public static void Log(object message) {
         var messageStr = message.ToString();
 
@@ -30,14 +38,44 @@ public static class Program {
         Debug.WriteLine(messageStr);
     }
     
-    private static async Task Main(string[] args) {
+    [STAThread]
+    private static void Main(string[] args) {
         try {
             _logger = new StreamWriter("srmm_log.txt");
             _logger.AutoFlush = true;
         } catch {
             _logger = null;
         }
+
+        Log("Shin Ryu Mod Manager Start");
         
+        // Check if there are any args, if so, run in CLI mode
+        // Unfortunately, no one way to detect left Ctrl while being cross-platform
+        if (args.Length == 0) {
+            if (_checkForUpdates) {
+                // TODO
+            }
+            
+            Log("Shin Ryu Mod Manager GUI Application Start");
+            
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        } else {
+            Log("Shin Ryu Mod Manager CLI Mode Start");
+            
+            MainCLI(args).GetAwaiter().GetResult();
+        }
+    }
+    
+    private static AppBuilder BuildAvaloniaApp() {
+        GC.KeepAlive(typeof(SvgImageExtension).Assembly);
+        GC.KeepAlive(typeof(Svg.Skia.SKSvg).Assembly);
+        return AppBuilder.Configure<App>()
+                         .UsePlatformDetect()
+                         .WithInterFont()
+                         .LogToTrace();
+    }
+    
+    private static async Task MainCLI(string[] args) {
         Console.WriteLine($"Shin Ryu Mod Manager-Linux v{AssemblyVersion.GetVersion()}");
         Console.WriteLine("By TheTrueColonel (a port of SRMM Studio's work)\n");
         
@@ -72,12 +110,12 @@ public static class Program {
         }
     }
 
-    private static List<ModInfo> PreRun() {
+    internal static List<ModInfo> PreRun() {
         var iniParser = new FileIniDataParser();
         iniParser.Parser.Configuration.AssigmentSpacer = string.Empty;
         
         IniData ini;
-        
+
         if (File.Exists(Constants.INI)) {
             ini = iniParser.ReadFile(Constants.INI);
             
@@ -257,7 +295,7 @@ public static class Program {
         return mods;
     }
     
-    private static async Task RunGeneration(List<string> mods) {
+    internal static async Task RunGeneration(List<string> mods) {
         if (File.Exists(Constants.MLO)) {
             Console.Write("Removing old MLO...");
             
@@ -371,11 +409,11 @@ public static class Program {
         return mods.Select(m => new ModInfo(m)).ToList();
     }
     
-    private static List<string> ConvertNewToOldModList(List<ModInfo> mods) {
+    internal static List<string> ConvertNewToOldModList(List<ModInfo> mods) {
         return mods.Where(m => m.Enabled).Select(m => m.Name).ToList();
     }
     
-    private static bool ShouldBeExternalOnly() {
+    internal static bool ShouldBeExternalOnly() {
         return _externalModsOnly && Directory.Exists(GamePath.ExternalModsPath);
     }
     
@@ -390,15 +428,15 @@ public static class Program {
         return string.Compare(m, n, StringComparison.InvariantCultureIgnoreCase) == 0;
     }
 
-    private static bool MissingDll() {
+    internal static bool MissingDll() {
         return !(File.Exists(Constants.DINPUT8DLL) || File.Exists(Constants.VERSIONDLL) || File.Exists(Constants.WINMMDLL));
     }
 
-    private static bool MissingAsi() {
+    internal static bool MissingAsi() {
         return !File.Exists(Constants.ASI);
     }
 
-    private static bool InvalidGameExe() {
+    internal static bool InvalidGameExe() {
         return false;
 
         /*
@@ -407,7 +445,7 @@ public static class Program {
         */
     }
 
-    private static List<ModInfo> ReadModListTxt(string text) {
+    public static List<ModInfo> ReadModListTxt(string text) {
         var mods = new List<ModInfo>();
 
         if (!File.Exists(text)) {
@@ -432,5 +470,137 @@ public static class Program {
         }
 
         return mods;
+    }
+
+    internal static async Task<bool> SaveModListAsync(List<ModInfo> mods) {
+        var result = await WriteModListTextAsync(mods);
+
+        if (!_migrated)
+            return result;
+
+        try {
+            File.Delete(Constants.TXT_OLD);
+
+            var iniParser = new FileIniDataParser();
+            iniParser.Parser.Configuration.AssigmentSpacer = string.Empty;
+
+            var ini = iniParser.ReadFile(Constants.INI);
+
+            ini.Sections.AddSection("SavedSettings");
+            ini["SavedSettings"].AddKey("ModListImported", "true");
+            iniParser.WriteFile(Constants.INI, ini);
+        } catch {
+            Console.WriteLine($"Could not delete {Constants.TXT_OLD}. This file should be deleted manually.");
+        }
+
+        return result;
+    }
+
+    private static async Task<bool> WriteModListTextAsync(List<ModInfo> mods) {
+        if (mods == null || mods.Count == 0)
+            return false;
+
+        var sb = new StringBuilder();
+
+        foreach (var mod in mods) {
+            sb.Append($"{(mod.Enabled ? "<" : ">")}{mod.Name}|");
+        }
+
+        // Remove leftover pipe
+        sb.Length -= 1;
+        
+        await File.WriteAllTextAsync(Constants.TXT, sb.ToString());
+
+        return true;
+    }
+    
+    public static string GetModDirectory(string mod)
+    {
+        return Path.Combine(GamePath.ModsPath, mod);
+    }
+    
+    public static string[] GetModDependencies(string mod)
+    {
+        string modDir = GetModDirectory(mod);
+
+        if (!Directory.Exists(modDir))
+            return [];
+
+        string metaFile = Path.Combine(modDir, "mod-meta.yaml");
+
+        if (!File.Exists(metaFile))
+            return [];
+        
+        var meta = YamlHelpers.DeserializeYamlFromPath<ModMeta>(metaFile);
+
+        if (string.IsNullOrEmpty(meta.Dependencies))
+            return [];
+
+        return meta.Dependencies.Split(';');
+    }
+
+    public static string GetLibraryPath(string guid)
+    {
+        return Path.Combine(GamePath.LibrariesPath, guid);
+    }
+
+    public static string GetLocalLibraryCopyPath()
+    {
+        return Path.Combine(GamePath.LibrariesPath, Settings.LIBRARIES_INFO_REPO_FILE_PATH);
+    }
+
+    //Read cached data at startup if it exists
+    public static void ReadCachedLocalLibraryData()
+    {
+        string path = GetLocalLibraryCopyPath();
+
+        if (!File.Exists(path))
+            return;
+
+        LibMeta.ReadLibMetaManifest(File.ReadAllText(path));
+    }
+
+    public static LibMeta GetLibMeta(string guid)
+    {
+        return LibraryMetaCache.FirstOrDefault(x => x.GUID.ToString() == guid);
+    }
+
+    public static bool DoesLibraryExist(string guid)
+    {
+        string libDir = GetLibraryPath(guid);
+
+        if (!Directory.Exists(libDir))
+            return false;
+
+        return true;
+    }
+
+    public static bool IsLibraryEnabled(string guid)
+    {
+        if (!DoesLibraryExist(guid))
+            return false;
+
+        if (File.Exists(Path.Combine(GetLibraryPath(guid), ".disabled")))
+            return false;
+
+        return true;
+    }
+
+    public static string GetLibraryName(string guid)
+    {
+        var metaData = GetLibMeta(guid);
+
+        if (metaData != null)
+            return metaData.Name;
+
+        var path = Path.Combine(GetLibraryPath(guid), Settings.LIBRARIES_LIBMETA_FILE_NAME);
+
+        if (!File.Exists(path))
+            return guid;
+
+        var yamlString = File.ReadAllText(path);
+        var meta = LibMeta.ReadLibMeta(yamlString);
+            
+        return meta.Name;
     }
 }

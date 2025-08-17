@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>net8.0</TargetFramework>
+        <OutputType>WinExe</OutputType>
+        <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
         <RootNamespace>ShinRyuModManager</RootNamespace>
         <LangVersion>12</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -19,14 +19,34 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Avalonia" Version="11.3.3" />
+      <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.3" />
+      <PackageReference Include="Avalonia.Desktop" Version="11.3.3" />
+      <PackageReference Include="Avalonia.Diagnostics" Version="11.3.3" />
+      <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.3" />
+      <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.3" />
+      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
       <PackageReference Include="ini-parser" Version="2.5.2" />
+      <PackageReference Include="Markdown.Avalonia" Version="11.0.2" />
       <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
+      <PackageReference Include="SharpCompress" Version="0.40.0" />
+      <PackageReference Include="Skia.Controls.Avalonia" Version="11.3.0.3" />
+      <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="11.3.0.3" />
+      <PackageReference Include="YamlDotNet" Version="16.3.0" />
     </ItemGroup>
 
     <ItemGroup>
       <Reference Include="Gibbed.Yakuza0.Pack">
         <HintPath>Miscellaneous\GibbedPar\Gibbed.Yakuza0.Pack.dll</HintPath>
       </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="UserInterface\Models\" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <AvaloniaResource Include="UserInterface\Assets\**" />
     </ItemGroup>
 
 </Project>
