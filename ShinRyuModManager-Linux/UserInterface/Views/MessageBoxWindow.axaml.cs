@@ -8,7 +8,8 @@ namespace ShinRyuModManager.UserInterface.Views;
 public partial class MessageBoxWindow : Window {
     private bool _result;
 
-    private MessageBoxWindow() { 
+    // ReSharper disable once MemberCanBePrivate.Global
+    public MessageBoxWindow() { 
         InitializeComponent();
     }
 

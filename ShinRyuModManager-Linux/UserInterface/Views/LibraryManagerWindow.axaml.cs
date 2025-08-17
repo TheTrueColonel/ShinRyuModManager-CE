@@ -34,7 +34,7 @@ public partial class LibraryManagerWindow : Window {
                     viewModel.Library.Add(new LibraryDisplayControl(meta));
                 }
             }
-        } catch (Exception ex) {
+        } catch (Exception) {
             // Fetching library data from github failed. Connection issues or server down?
             // Populate the list with data from the already installed libraries in case the user wants to uninstall or disable any
 

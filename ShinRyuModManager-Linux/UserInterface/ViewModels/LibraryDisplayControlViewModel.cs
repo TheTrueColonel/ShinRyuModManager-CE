@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 namespace ShinRyuModManager.UserInterface.ViewModels;
 
 public partial class LibraryDisplayControlViewModel : ViewModelBase {
-    [ObservableProperty] private string _name = "Name";
+    [ObservableProperty] private string _libName = "Name";
     [ObservableProperty] private string _author = "Author";
     [ObservableProperty] private string _description = "Description";
     [ObservableProperty] private string _guid = "Guid";
@@ -20,7 +20,7 @@ public partial class LibraryDisplayControlViewModel : ViewModelBase {
     public LibraryDisplayControlViewModel() { }
 
     public LibraryDisplayControlViewModel(LibMeta meta) {
-        _name = meta.Name;
+        _libName = meta.Name;
         _author = meta.Author;
         _description = meta.Description;
         _guid = meta.GUID.ToString();

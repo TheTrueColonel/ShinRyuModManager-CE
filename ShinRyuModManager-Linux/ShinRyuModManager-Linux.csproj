@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
         <RootNamespace>ShinRyuModManager</RootNamespace>
         <LangVersion>12</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -11,6 +11,7 @@
         <Platforms>x64</Platforms>
         <IsPackable>false</IsPackable>
         <AssemblyVersion>1.1.0</AssemblyVersion>
+        <ApplicationIcon>UserInterface\Assets\Icons\SRMM_icon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -29,6 +30,7 @@
       <PackageReference Include="ini-parser" Version="2.5.2" />
       <PackageReference Include="Markdown.Avalonia" Version="11.0.2" />
       <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
+      <PackageReference Include="SharpCompress" Version="0.40.0" />
       <PackageReference Include="Skia.Controls.Avalonia" Version="11.3.0.3" />
       <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="11.3.0.3" />
       <PackageReference Include="YamlDotNet" Version="16.3.0" />

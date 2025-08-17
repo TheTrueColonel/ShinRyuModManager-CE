@@ -61,7 +61,7 @@
                         <Image Source="../Assets/Icons/PNG/Github_Light.png" Width="24" Height="24" RenderOptions.BitmapInterpolationMode="HighQuality" />
                     </HyperlinkButton>
                     
-                    <Label Name="Name" Content="{Binding Name}" FontSize="24" Foreground="White" VerticalAlignment="Center" />
+                    <Label Name="LibName" Content="{Binding Name}" FontSize="24" Foreground="White" VerticalAlignment="Center" />
                 </StackPanel>
                 
                 <Label Grid.Row="0" Name="Author" Content="{Binding Author}" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" VerticalAlignment="Center" />

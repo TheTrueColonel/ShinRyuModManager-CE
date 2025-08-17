@@ -1,7 +1,7 @@
-using System.Formats.Tar;
-using System.IO.Compression;
 using System.Reflection;
 using System.Text;
+using SharpCompress.Common;
+using SharpCompress.Readers;
 using Utils;
 
 namespace ShinRyuModManager;
@@ -55,20 +55,22 @@ public static class Utils {
         return sb.ToString();
     }
 
-    // TODO: Implement .rar files
     internal static async Task<bool> TryInstallModZipAsync(string path) {
         if (!File.Exists(path))
             return false;
 
-        var archiveType = FileSystemHelpers.DetectArchiveType(path);
+        await using var fs = File.OpenRead(path);
+        using var reader = ReaderFactory.Open(fs);
 
-        if (archiveType == ArchiveType.Zip) {
-            ZipFile.ExtractToDirectory(path, GamePath.ModsPath);
-        } else if (archiveType == ArchiveType.Gzip) {
-            await using var fs = File.OpenRead(path);
-            await using var gz = new GZipStream(fs, CompressionMode.Decompress, true);
+        var options = new ExtractionOptions {
+            ExtractFullPath = true,
+            Overwrite = true
+        };
 
-            await TarFile.ExtractToDirectoryAsync(gz, GamePath.ModsPath, true);
+        while (reader.MoveToNextEntry()) {
+            if (!reader.Entry.IsDirectory) {
+                reader.WriteEntryToDirectory(GamePath.ModsPath, options);
+            }
         }
 
         return true;

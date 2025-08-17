@@ -15,7 +15,8 @@ public partial class LibraryDisplayControl : UserControl {
     private bool _isLibraryEnabled;
     private bool _isLibraryUpdateAvailable;
 
-    private LibraryDisplayControl() {
+    // ReSharper disable once MemberCanBePrivate.Global
+    public LibraryDisplayControl() {
         InitializeComponent();
     }
 

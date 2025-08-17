@@ -21,9 +21,32 @@ public partial class MainWindow : Window {
 
     // TODO: Add changelog auto popup
     private void Window_OnLoaded(object sender, RoutedEventArgs e) {
+        RunPreInitAsync().ConfigureAwait(false);
+
         Program.ReadCachedLocalLibraryData();
         
         RefreshModList();
+    }
+
+    private async Task RunPreInitAsync() {
+        // Referencing `Program` all the time isn't ideal. Maybe move to global settings/helper file?
+        if (Program.ShouldBeExternalOnly()) {
+            _ = await MessageBoxWindow.Show(this, "Warning", "External mods folder detected. Please run Shin Ryu Mod Manager in CLI mode (use --cli parameter) and use the external mod manager instead.");
+        }
+
+        if (ConsoleOutput.ShowWarnings) {
+            if (Program.MissingDll()) {
+                _ = await MessageBoxWindow.Show(this, "Warning", $"{Constants.DINPUT8DLL} is missing from this directory. Mods will NOT be applied without this file.");
+            }
+
+            if (Program.MissingAsi()) {
+                _ = await MessageBoxWindow.Show(this, "Warning", $"{Constants.ASI} is missing from this directory. Mods will NOT be applied without this file.");
+            }
+
+            if (Program.InvalidGameExe()) {
+                _ = await MessageBoxWindow.Show(this, "Error", $"Game version is unrecognized. Please use the latest Steam version of the game. The mod list will still be saved.\nMods may still work depending on the version.");
+            }
+        }
     }
 
     // Event Handlers
@@ -97,6 +120,7 @@ public partial class MainWindow : Window {
                 await CheckModDependenciesAsync();
                 
                 // Run generation only if it will not be run on game launch (i.e. if RebuildMlo is disabled or unsupported)
+                // TODO: Figure out how RebuildMLO is automatically running
                 if (Program.RebuildMlo && Program.IsRebuildMloSupported) {
                     _ = await MessageBoxWindow.Show(this, "Information", "Mod list was saved. Mods will be applied next time the game is run.");
                 } else {
@@ -184,26 +208,25 @@ public partial class MainWindow : Window {
 
     private void ModClose_OnClick(object sender, RoutedEventArgs e) => Close();
 
-    // TODO: Can support multiple files
     private async void ModInstall_OnClick(object sender, RoutedEventArgs e) {
         try {
             Directory.CreateDirectory(GamePath.MODS);
 
             var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions {
-                AllowMultiple = false,
-                FileTypeFilter = [CustomFilePickerFileTypes.CompressedZip, CustomFilePickerFileTypes.CompressedGzip]
+                AllowMultiple = true,
+                FileTypeFilter = [CustomFilePickerFileTypes.CompressedZip, CustomFilePickerFileTypes.CompressedRar, CustomFilePickerFileTypes.CompressedGzip, FilePickerFileTypes.All]
             });
 
             if (files.Count == 0)
                 return;
 
-            var file = files[0];
-            
-            if (!File.Exists(file.TryGetLocalPath()))
-                return;
+            foreach (var file in files) {
+                if (!File.Exists(file.TryGetLocalPath()))
+                    return;
 
-            if (await Utils.TryInstallModZipAsync(file.TryGetLocalPath()))
-                RefreshModList();
+                if (await Utils.TryInstallModZipAsync(file.TryGetLocalPath()))
+                    RefreshModList();
+            }
                 
         } catch (Exception ex) {
             _ = await MessageBoxWindow.Show(this, "Fatal", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
@@ -224,7 +247,7 @@ public partial class MainWindow : Window {
                 DefaultExtension = ".yaml",
                 ShowOverwritePrompt = true,
                 SuggestedStartLocation = await StorageProvider.TryGetFolderFromPathAsync(GamePath.ModsPath),
-                FileTypeChoices = [CustomFilePickerFileTypes.YamlFile]
+                FileTypeChoices = [CustomFilePickerFileTypes.YamlFile, FilePickerFileTypes.All]
             });
 
             if (saveDialog?.TryGetLocalPath() == null)

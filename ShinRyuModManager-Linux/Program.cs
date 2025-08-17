@@ -38,9 +38,28 @@ public static class Program {
     
     [STAThread]
     private static void Main(string[] args) {
+        try {
+            _logger = new StreamWriter("srmm_log.txt");
+            _logger.AutoFlush = true;
+        } catch {
+            _logger = null;
+        }
+
+        Log("Shin Ryu Mod Manager Start");
+        
+        // Check if there are any args, if so, run in CLI mode
+        // Unfortunately, no one way to detect left Ctrl while being cross-platform
         if (args.Length == 0) {
+            if (_checkForUpdates) {
+                // TODO
+            }
+            
+            Log("Shin Ryu Mod Manager GUI Application Start");
+            
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         } else {
+            Log("Shin Ryu Mod Manager CLI Mode Start");
+            
             MainCLI(args).GetAwaiter().GetResult();
         }
     }
@@ -55,13 +74,6 @@ public static class Program {
     }
     
     private static async Task MainCLI(string[] args) {
-        try {
-            _logger = new StreamWriter("srmm_log.txt");
-            _logger.AutoFlush = true;
-        } catch {
-            _logger = null;
-        }
-        
         Console.WriteLine($"Shin Ryu Mod Manager-Linux v{AssemblyVersion.GetVersion()}");
         Console.WriteLine("By TheTrueColonel (a port of SRMM Studio's work)\n");
         
@@ -101,7 +113,7 @@ public static class Program {
         iniParser.Parser.Configuration.AssigmentSpacer = string.Empty;
         
         IniData ini;
-        
+
         if (File.Exists(Constants.INI)) {
             ini = iniParser.ReadFile(Constants.INI);
             
@@ -388,7 +400,7 @@ public static class Program {
         return mods.Where(m => m.Enabled).Select(m => m.Name).ToList();
     }
     
-    private static bool ShouldBeExternalOnly() {
+    internal static bool ShouldBeExternalOnly() {
         return _externalModsOnly && Directory.Exists(GamePath.ExternalModsPath);
     }
     
@@ -403,15 +415,15 @@ public static class Program {
         return string.Compare(m, n, StringComparison.InvariantCultureIgnoreCase) == 0;
     }
 
-    private static bool MissingDll() {
+    internal static bool MissingDll() {
         return !(File.Exists(Constants.DINPUT8DLL) || File.Exists(Constants.VERSIONDLL) || File.Exists(Constants.WINMMDLL));
     }
 
-    private static bool MissingAsi() {
+    internal static bool MissingAsi() {
         return !File.Exists(Constants.ASI);
     }
 
-    private static bool InvalidGameExe() {
+    internal static bool InvalidGameExe() {
         return false;
 
         /*
@@ -493,8 +505,7 @@ public static class Program {
     {
         return Path.Combine(GamePath.ModsPath, mod);
     }
-
-
+    
     public static string[] GetModDependencies(string mod)
     {
         string modDir = GetModDirectory(mod);
@@ -578,6 +589,5 @@ public static class Program {
         var meta = LibMeta.ReadLibMeta(yamlString);
             
         return meta.Name;
-
     }
 }

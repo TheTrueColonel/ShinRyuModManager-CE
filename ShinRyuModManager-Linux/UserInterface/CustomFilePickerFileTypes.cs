@@ -10,6 +10,14 @@ public static class CustomFilePickerFileTypes {
         MimeTypes = ["application/zip"]
     };
     
+    public static FilePickerFileType CompressedRar { get; } = new("Rar Archive")
+    {
+        Patterns = ["*.rar"],
+        AppleUniformTypeIdentifiers = ["com.rarlab.rar-archive"],
+        MimeTypes = ["application/x-rar-compressed", "application/vnd.rar", "application/x-rar"]
+    };
+
+    
     public static FilePickerFileType CompressedGzip { get; } = new("Gzip Archive")
     {
         Patterns = ["*.gz"],
