@@ -10,8 +10,7 @@
         <Configurations>Debug;Release</Configurations>
         <Platforms>x64</Platforms>
         <IsPackable>false</IsPackable>
-        <AssemblyVersion>1.1.0</AssemblyVersion>
-        <ApplicationIcon>UserInterface\Assets\Icons\SRMM_icon.ico</ApplicationIcon>
+        <AssemblyVersion>1.0.2</AssemblyVersion>
     </PropertyGroup>
 
     <ItemGroup>

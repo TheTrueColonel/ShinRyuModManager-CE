@@ -175,6 +175,7 @@ public static class ParRepacker {
         }
         
         writerParams.IncludeDots = par.Children[0].Name == ".";
+        writerParams.ResetFileDates = true;
         
         containerNode.MoveChildrenTo(writerParams.IncludeDots ? par.Children[0] : par, true);
         par.SortChildren((x, y) => string.CompareOrdinal(x.Name.ToLowerInvariant(), y.Name.ToLowerInvariant()));

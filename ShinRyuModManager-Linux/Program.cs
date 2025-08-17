@@ -17,7 +17,7 @@ namespace ShinRyuModManager;
 public static class Program {
     private static bool _externalModsOnly = true;
     private static bool _looseFilesEnabled = false;
-    private static bool _cpkRepackingEnabled = false;
+    private static bool _cpkRepackingEnabled = true;
     private static bool _checkForUpdates = true;
     private static bool _isSilent = false;
     private static bool _migrated = false;
@@ -34,6 +34,8 @@ public static class Program {
         Console.WriteLine(messageStr);
 
         _logger?.WriteLine(messageStr);
+        
+        Debug.WriteLine(messageStr);
     }
     
     [STAThread]
@@ -116,10 +118,6 @@ public static class Program {
 
         if (File.Exists(Constants.INI)) {
             ini = iniParser.ReadFile(Constants.INI);
-            
-            if (ini.TryGetKey("Debug.CPKRepackingTest", out var cpkRepatch)) {
-                _cpkRepackingEnabled = int.Parse(cpkRepatch) == 1;
-            }
             
             if (ini.TryGetKey("Overrides.LooseFilesEnabled", out var looseFiles)) {
                 _looseFilesEnabled = int.Parse(looseFiles) == 1;
@@ -328,8 +326,23 @@ public static class Program {
                     GameModel.DoUBIKProcedure(result);
                 }
 
-                if (GamePath.CurrentGame == Game.Yakuza5) {
-                    GameModel.DoY5HActProcedure(result);
+                switch (GamePath.CurrentGame) {
+                    case Game.Yakuza5:
+                        GameModel.DoY5HActProcedure(result);
+                        break;
+                    
+                    case Game.Yakuza0:
+                    case Game.YakuzaKiwami:
+                        GameModel.DoOEHActProcedure(result);
+                        break;
+                    
+                    case Game.YakuzaLikeADragon:
+                        GameModel.DoDEHActProcedure(result, "yazawa");
+                        break;
+                    
+                    case Game.LikeADragonGaiden:
+                        GameModel.DoDEHActProcedure(result, "aston");
+                        break;
                 }
                 
                 sw.Stop();

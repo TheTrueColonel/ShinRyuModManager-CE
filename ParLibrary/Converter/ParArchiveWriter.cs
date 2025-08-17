@@ -134,7 +134,7 @@ public class ParArchiveWriter : IConverter<NodeContainerFormat, ParFile> {
         WriteNames(writer, files);
         
         WriteFolders(writer, folders);
-        WriteFiles(writer, files, dataPosition);
+        WriteFiles(writer, files, dataPosition, _parameters);
         
         dataStream.Seek(0, SeekOrigin.End);
         writer.WritePadding(0, 2048);
@@ -269,7 +269,7 @@ public class ParArchiveWriter : IConverter<NodeContainerFormat, ParFile> {
         }
     }
     
-    private static void WriteFiles(DataWriter writer, IEnumerable<Node> files, long dataPosition) {
+    private static void WriteFiles(DataWriter writer, IEnumerable<Node> files, long dataPosition, ParArchiveWriterParameters parameters) {
         long blockSize = 0;
         
         foreach (var node in files) {
@@ -290,24 +290,28 @@ public class ParArchiveWriter : IConverter<NodeContainerFormat, ParFile> {
                     dataPosition = Align(dataPosition, 2048);
                 }
             }
-            
+
+            ulong seconds = 0;
             var attributes = parFile.Attributes;
-            var date = parFile.FileDate;
-            var baseDate = new DateTime(1970, 1, 1);
+
+            if (!parameters.ResetFileDates) {
+                var date = parFile.FileDate;
+                var baseDate = new DateTime(1970, 1, 1);
             
-            if (node.Tags.TryGetValue("Timestamp", out var timestamp)) {
-                date = baseDate.AddSeconds(timestamp);
-            }
-            
-            if (node.Tags.TryGetValue("FileInfo", out var fileInfo)) {
-                if (fileInfo is FileInfo info) {
-                    attributes = HandleAttributes(info);
-                
-                    date = info.LastWriteTime;
+                if (node.Tags.TryGetValue("Timestamp", out var timestamp)) {
+                    date = baseDate.AddSeconds(timestamp);
                 }
-            }
             
-            var seconds = (ulong)(date - baseDate).TotalSeconds;
+                if (node.Tags.TryGetValue("FileInfo", out var fileInfo)) {
+                    if (fileInfo is FileInfo info) {
+                        attributes = HandleAttributes(info);
+                
+                        date = info.LastWriteTime;
+                    }
+                }
+            
+                seconds = (ulong)(date - baseDate).TotalSeconds;
+            }
             
             writer.Write(parFile.IsCompressed ? 0x80000000 : 0x00000000);
             writer.Write(parFile.DecompressedSize);
