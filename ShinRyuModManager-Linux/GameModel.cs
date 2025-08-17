@@ -23,50 +23,199 @@ public static class GameModel {
         var hactDirs = new HashSet<string>();
 
         foreach (var file in mlo.Files) {
-            if (file.Name.Contains("/hact/") && !file.Name.EndsWith(".par")) {
-                var mod = mlo.Mods[file.Index];
-                var filePath = Path.Combine("mods", mod, file.Name);
-                var fileInfo = new FileInfo(filePath);
-                // Get the folder from a path like so -> data/hact/h5000_some_hact/cmn/cmn.bin
-                var hactDir = fileInfo.Directory.Parent.Name;
+            if (!file.Name.Contains("/hact/") || file.Name.EndsWith(".par"))
+                continue;
 
-                if (fileInfo.Directory.Parent.Parent.Name == "hact") {
-                    var hactName = hactDir;
-                    var hactPath = fileInfo.Directory.Parent.FullName;
+            var mod = mlo.Mods[file.Index];
+            var filePath = Path.Combine("mods", mod, file.Name);
+            var fileInfo = new FileInfo(filePath);
+            // Get the folder from a path like so -> data/hact/h5000_some_hact/cmn/cmn.bin
+            var hactDir = fileInfo.Directory.Parent.Name;
 
-                    if (hactDirs.Contains(hactPath))
-                        continue;
+            if (fileInfo.Directory.Parent.Parent.Name == "hact") {
+                var hactPath = fileInfo.Directory.Parent.FullName;
+                    
+                var parPath = Path.Combine(fileInfo.Directory.Parent.Parent.FullName, hactDir + ".par");
+                    
+                // Legacy hact mods
+                if (File.Exists(parPath))
+                    continue;
+                    
+                //Legacy hact mods
+                if (!Directory.Exists(Path.Combine(hactPath, "000")) || !Directory.Exists(Path.Combine(hactPath, "cmn")))
+                    continue;
 
-                    if (GamePath.ExistsInDataAsPar(hactPath))
-                        continue;
+                if (hactDirs.Contains(hactPath))
+                    continue;
 
-                    hactDirs.Add(hactPath);
-                }
+                if (GamePath.ExistsInDataAsPar(hactPath))
+                    continue;
 
-                hasHacts = true;
+                hactDirs.Add(hactPath);
+            }
+
+            hasHacts = true;
+        }
+            
+        if (!hasHacts)
+            return;
+
+        foreach (var hactDirPath in hactDirs) {
+            var hactDir = new DirectoryInfo(hactDirPath);
+            var parlessDir = new DirectoryInfo(Path.Combine(GamePath.ModsPath, "Parless", "hact", hactDir.Name));
+
+            if (!parlessDir.Exists)
+                parlessDir.Create();
+
+            foreach (var dir in hactDir.GetDirectories()) {
+                // We already repack ptc
+                if (dir.Name == "ptc" && File.Exists(Path.Combine(hactDir.FullName, "ptc.par")))
+                    continue;
+
+                var outputPath = Path.Combine(parlessDir.FullName, $"{dir.Name}.par");
+                Gibbed.Yakuza0.Pack.Program.Main([dir.FullName], outputPath);
             }
             
-            if (!hasHacts)
-                return;
+            Gibbed.Yakuza0.Pack.Program.Main([parlessDir.FullName], Path.Combine(parlessDir.Parent.FullName, $"{hactDir.Name}.par"));
+        }
+    }
 
-            foreach (var hactDirPath in hactDirs) {
-                var hactDir = new DirectoryInfo(hactDirPath);
-                var parlessDir = new DirectoryInfo(Path.Combine(GamePath.ModsPath, "Parless", "hact", hactDir.Name));
+    public static void DoOEHActProcedure(MLO mlo) {
+        var hasHacts = false;
+        var hactDirs = new HashSet<string>();
 
-                if (!parlessDir.Exists)
-                    parlessDir.Create();
+        foreach (var file in mlo.Files) {
+            if (!file.Name.Contains("/hact/") || file.Name.EndsWith(".par"))
+                continue;
 
-                foreach (var dir in hactDir.GetDirectories()) {
-                    // We already repack ptc
-                    if (dir.Name == "ptc" && File.Exists(Path.Combine(hactDir.FullName, "ptc.par")))
-                        continue;
+            var mod = mlo.Mods[file.Index];
+            var filePath = Path.Combine("mods", mod, file.Name);
+            var fileInfo = new FileInfo(filePath);
 
-                    var outputPath = Path.Combine(parlessDir.FullName, $"{dir.Name}.par");
-                    Gibbed.Yakuza0.Pack.Program.Main([dir.FullName], outputPath);
-                }
-                
-                Gibbed.Yakuza0.Pack.Program.Main([parlessDir.FullName], Path.Combine(parlessDir.Parent.FullName, $"{hactDir.Name}.par"));
+            //get the folder from a path like this -> data/hact/h5000_some_hact/cmn/cmn.bin
+            var hactDir = fileInfo.Directory.Parent.Name;
+
+            if (fileInfo.Directory.Parent.Parent.Name == "hact") {
+                var hactPath = fileInfo.Directory.Parent.FullName;
+
+                var parPath = Path.Combine(fileInfo.Directory.Parent.Parent.FullName, hactDir + ".par");
+
+                //Legacy hact mods
+                if (File.Exists(parPath))
+                    continue;
+
+                //Legacy hact mods
+                if (!Directory.Exists(Path.Combine(hactPath, "000")) || !Directory.Exists(Path.Combine(hactPath, "cmn")))
+                    continue;
+
+                if (hactDirs.Contains(hactPath))
+                    continue;
+
+                hactDirs.Add(hactPath);
             }
+
+            hasHacts = true;
+        }
+
+        if (!hasHacts)
+            return;
+
+        foreach (var hactDirPath in hactDirs) {
+            var hactDir = new DirectoryInfo(hactDirPath);
+            var parlessDir = new DirectoryInfo(Path.Combine(GamePath.ModsPath, "Parless", "hact", hactDir.Name));
+
+            if (!parlessDir.Exists)
+                parlessDir.Create();
+
+            foreach (var dir in hactDir.GetDirectories()) {
+                //We already repack ptc 
+                if (dir.Name == "ptc" /*&& File.Exists(Path.Combine(hactDir.FullName, "ptc.par"))*/)
+                    continue;
+
+                var outputFakeDir = Path.Combine(parlessDir.FullName, dir.Name);
+               
+                if(!Directory.Exists(outputFakeDir))
+                    Directory.CreateDirectory(outputFakeDir);
+
+                var outputPath = Path.Combine(parlessDir.FullName, dir.Name + ".par");
+                
+                Gibbed.Yakuza0.Pack.Program.Main([outputFakeDir], outputPath);
+                
+                try {
+                    new DirectoryInfo(outputFakeDir).Delete(true);
+                } catch {
+                    // ignored
+                }
+            }
+
+            Gibbed.Yakuza0.Pack.Program.Main([parlessDir.FullName], Path.Combine(parlessDir.Parent.FullName, hactDir.Name + ".par"));
+        }
+    }
+    
+    public static void DoDEHActProcedure(MLO mlo, string codename) {
+        var hasHacts = false;
+        var hactDirs = new HashSet<string>();
+
+        foreach (var file in mlo.Files) {
+            if (!file.Name.Contains($"/hact_{codename}/") || file.Name.EndsWith(".par"))
+                continue;
+
+            var mod = mlo.Mods[file.Index];
+            var filePath = Path.Combine("mods", mod, file.Name);
+            var fileInfo = new FileInfo(filePath);
+
+            //get the folder from a path like this -> data/hact_yazawa/h5000_some_hact/cmn/cmn.bin
+            var hactDir = fileInfo.Directory.Parent.Name;
+
+            if (fileInfo.Directory.Parent.Parent.Name == $"hact_{codename}") {
+                var hactPath = fileInfo.Directory.Parent.FullName;
+
+                var parPath = Path.Combine(fileInfo.Directory.Parent.Parent.FullName, hactDir + ".par");
+
+                //Legacy hact mods
+                if (File.Exists(parPath))
+                    continue;
+
+                //Legacy hact mods
+                if (!Directory.Exists(Path.Combine(hactPath, "000")) || !Directory.Exists(Path.Combine(hactPath, "cmn")))
+                    continue;
+
+                if (hactDirs.Contains(hactPath))
+                    continue;
+
+                var isVanillaHact = GamePath.ExistsInDataAsPar(fileInfo.Directory.Parent.FullName);
+
+                if (isVanillaHact)
+                    continue;
+
+                hactDirs.Add(hactPath);
+            }
+            
+            hasHacts = true;
+        }
+
+        if (!hasHacts)
+            return;
+
+        foreach (var hactDirPath in hactDirs) {
+            var hactDir = new DirectoryInfo(hactDirPath);
+            var parlessDir = new DirectoryInfo(Path.Combine(GamePath.ModsPath, "Parless", "hact_" + codename, hactDir.Name));
+
+            if (!parlessDir.Exists)
+                parlessDir.Create();
+
+            foreach (var dir in hactDir.GetDirectories()) {
+                //We already repack ptc 
+                if (dir.Name == "ptc" && File.Exists(Path.Combine(hactDir.FullName, "ptc.par")))
+                    continue;
+
+                var outputPath = Path.Combine(parlessDir.FullName, dir.Name + ".par");
+                Gibbed.Yakuza0.Pack.Program.Main([dir.FullName], outputPath);
+            }
+
+            Gibbed.Yakuza0.Pack.Program.Main([parlessDir.FullName], Path.Combine(parlessDir.Parent.FullName, hactDir.Name + ".par"));
+
+            new DirectoryInfo(parlessDir.FullName).Delete(true);
         }
     }
     

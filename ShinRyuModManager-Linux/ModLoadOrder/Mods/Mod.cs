@@ -64,6 +64,7 @@ public class Mod {
     public void AddFiles(string path, string check) {
         var needsRepack = false;
         var basename = GamePath.GetBasename(path);
+        var parentDir = new DirectoryInfo(path).Parent.Name;
         
         // Check if this path does not need repacking
         if (Name != "Parless") {
@@ -130,8 +131,10 @@ public class Mod {
         
             switch (basename) {
                 case "bgm":
-                    cpkDataPath = GamePath.RemoveModPath(path);
-                    RepackCpKs.Add(cpkDataPath);
+                    if (GamePath.CurrentGame <= Game.YakuzaKiwami) {
+                        cpkDataPath = GamePath.RemoveModPath(path);
+                        RepackCpKs.Add(cpkDataPath);
+                    }
                 
                     break;
             
@@ -143,7 +146,9 @@ public class Mod {
                         CpkFolders.Add(cpkDataPath + ".cpk");
                         ConsoleOutput.WriteLineIfVerbose($"Adding CPK folder: {cpkDataPath}");
                     } else {
-                        RepackCpKs.Add(cpkDataPath + ".cpk");
+                        if (GamePath.CurrentGame <= Game.YakuzaKiwami) {
+                            RepackCpKs.Add(cpkDataPath + ".cpk");
+                        }
                     }
                 
                     break;
@@ -169,6 +174,30 @@ public class Mod {
                     ConsoleOutput.WriteLineIfVerbose($"Adding CPK folder: {cpkDataPath}");
 
                     break;
+            }
+
+            if (parentDir != basename) {
+                switch (parentDir) {
+                    case "motion":
+                        //if (game == Game.Yakuza5)
+                            // needsRepack = GamePath.ExistsInDataAsPar(path) && basename.ToLowerInvariant().Contains("Battle");
+                        break;
+                }
+            }
+
+            if (GamePath.CurrentGame >= Game.Yakuza6) {
+                //Dragon Engine talks use pars directly for these
+                if (path.Contains("talk_")) {
+                    if (char.IsDigit(basename[0]) || check == "cmn") {
+                        needsRepack = true;
+                    }
+                    else {
+                        var t000Cmn = Path.Combine(path, "cmn");
+                        
+                        if (Directory.Exists(t000Cmn))
+                            needsRepack = true;
+                    }
+                }
             }
 
             if (GamePath.CurrentGame >= Game.LikeADragonPirates) {

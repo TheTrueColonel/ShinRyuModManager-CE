@@ -22,4 +22,9 @@ public class ParArchiveWriterParameters {
     /// Gets or sets a value indicating whether "." nodes are needed.
     /// </summary>
     public bool IncludeDots { get; set; }
+    
+    /// <summary>
+    /// Reset the dates on each file
+    /// </summary>
+    public bool ResetFileDates { get; set; }
 }
