@@ -88,37 +88,9 @@ public partial class LibraryDisplayControl : UserControl {
         }
     }
 
-    private async Task<string> DownloadLibraryPackageAsync(string fileName) {
-        Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Settings.TEMP_DIRECTORY_NAME));
-
-        try {
-            var path = Path.Combine(Path.GetTempPath(), Settings.TEMP_DIRECTORY_NAME, fileName);
-
-            await using var stream = await Utils.Client.GetStreamAsync(_meta.Download);
-            await using var fs = new FileStream(path, FileMode.Create, FileAccess.Write);
-
-            await stream.CopyToAsync(fs);
-            await fs.FlushAsync();
-
-            return path;
-        } catch (Exception ex) {
-            Debug.WriteLine(ex);
-
-            return string.Empty;
-        }
-    }
-
     private async void InstallOrUpdate_OnClick(object sender, RoutedEventArgs e) {
         try {
-            var packagePath = await DownloadLibraryPackageAsync($"{_meta.GUID}.zip");
-
-            var destDir = Path.Combine(GamePath.LibrariesPath, _meta.GUID.ToString());
-            
-            if (Directory.Exists(destDir))
-                Directory.Delete(destDir, true);
-            
-            Directory.CreateDirectory(destDir);
-            ZipFile.ExtractToDirectory(packagePath, destDir, true);
+            await Program.InstallLibraryAsync(_meta.GUID.ToString());
             
             RefreshComponent();
         } catch (Exception ex) {

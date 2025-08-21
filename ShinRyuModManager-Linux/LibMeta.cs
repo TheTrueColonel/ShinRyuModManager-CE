@@ -18,17 +18,31 @@ public class LibMeta {
     public string Download { get; set; }
     public string MainBinary { get; set; }
 
+    private static string Url { get => $"https://raw.githubusercontent.com/{Settings.LIBRARIES_INFO_REPO_OWNER}/{Settings.LIBRARIES_INFO_REPO}/main/{Settings.LIBRARIES_INFO_REPO_FILE_PATH}"; }
+
     public static LibMeta ReadLibMeta(string yamlString) {
         return YamlHelpers.DeserializeYaml<LibMeta>(yamlString);
     }
 
     public static List<LibMeta> Fetch() {
-        var yamlString = Utils.Client.GetStringAsync($"https://raw.githubusercontent.com/{Settings.LIBRARIES_INFO_REPO_OWNER}/{Settings.LIBRARIES_INFO_REPO}/main/{Settings.LIBRARIES_INFO_REPO_FILE_PATH}").GetAwaiter().GetResult();
+        var yamlString = Utils.Client.GetStringAsync(Url).GetAwaiter().GetResult();
 
         var localManifestCopyPath = Program.GetLocalLibraryCopyPath();
 
         if (!File.Exists(localManifestCopyPath) && !Utils.IsFileLocked(localManifestCopyPath)) {
             File.WriteAllText(localManifestCopyPath!, yamlString);
+        }
+
+        return ReadLibMetaManifest(yamlString);
+    }
+
+    public static async Task<List<LibMeta>> FetchAsync() {
+        var yamlString = await Utils.Client.GetStringAsync(Url);
+
+        var localManifestCopyPath = Program.GetLocalLibraryCopyPath();
+
+        if (!File.Exists(localManifestCopyPath) && !Utils.IsFileLocked(localManifestCopyPath)) {
+            await File.WriteAllTextAsync(localManifestCopyPath!, yamlString);
         }
 
         return ReadLibMetaManifest(yamlString);

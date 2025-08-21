@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO.Compression;
 using System.Text;
 using Avalonia;
 using Avalonia.Svg.Skia;
@@ -602,5 +603,79 @@ public static class Program {
         var meta = LibMeta.ReadLibMeta(yamlString);
             
         return meta.Name;
+    }
+
+    public static async Task InstallLibraryAsync(string guid) {
+        var metaFile = GetLibMeta(guid);
+
+        if (metaFile == null || string.IsNullOrEmpty(metaFile.Download))
+            return;
+
+        var packagePath = await DownloadLibraryPackageAsync($"{guid}.zip", metaFile);
+        
+        var destDir = Path.Combine(GamePath.LibrariesPath, metaFile.GUID.ToString());
+        
+        if (Directory.Exists(destDir))
+            Directory.Delete(destDir, true);
+            
+        Directory.CreateDirectory(destDir);
+        ZipFile.ExtractToDirectory(packagePath, destDir, true);
+    }
+    
+    private static async Task<string> DownloadLibraryPackageAsync(string fileName, LibMeta meta) {
+        Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Settings.TEMP_DIRECTORY_NAME));
+
+        try {
+            var path = Path.Combine(Path.GetTempPath(), Settings.TEMP_DIRECTORY_NAME, fileName);
+
+            await using var stream = await Utils.Client.GetStreamAsync(meta.Download);
+            await using var fs = new FileStream(path, FileMode.Create, FileAccess.Write);
+
+            await stream.CopyToAsync(fs);
+            await fs.FlushAsync();
+
+            return path;
+        } catch (Exception ex) {
+            Debug.WriteLine(ex);
+
+            return string.Empty;
+        }
+    }
+
+    public static async Task InstallAllModDependenciesAsync() {
+        try {
+            await LibMeta.FetchAsync();
+        } catch {
+            // ignored
+        }
+
+        var modList = ReadModListTxt(Constants.TXT);
+
+        foreach (var mod in modList.Where(x => x.Enabled)) {
+            await InstallModDependenciesAsync(mod.Name);
+        }
+    }
+
+    public static async Task InstallModDependenciesAsync(string mod) {
+        var modDir = GetModDirectory(mod);
+        
+        if (!Directory.Exists(modDir))
+            return;
+
+        var metaFile = Path.Combine(modDir, "mod-meta.yaml");
+        
+        if (!File.Exists(metaFile))
+            return;
+
+        var meta = await YamlHelpers.DeserializeYamlFromPathAsync<ModMeta>(metaFile);
+        
+        if (string.IsNullOrEmpty(meta.Dependencies))
+            return;
+
+        foreach (var dep in meta.Dependencies.Split(';')) {
+            if (!DoesLibraryExist(dep)) {
+                await InstallLibraryAsync(dep);
+            }
+        }
     }
 }

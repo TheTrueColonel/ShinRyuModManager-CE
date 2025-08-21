@@ -41,10 +41,6 @@
         <HintPath>Miscellaneous\GibbedPar\Gibbed.Yakuza0.Pack.dll</HintPath>
       </Reference>
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="UserInterface\Models\" />
-    </ItemGroup>
     
     <ItemGroup>
       <AvaloniaResource Include="UserInterface\Assets\**" />

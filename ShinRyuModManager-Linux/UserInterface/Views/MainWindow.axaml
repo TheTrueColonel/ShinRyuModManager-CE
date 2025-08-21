@@ -67,7 +67,7 @@
             <MenuItem Header="Help">
                 <MenuItem Name="About" Header="About Shin Ryu Mod Manager" Click="About_OnClick" />
                 <MenuItem Name="ChangeLog" Header="Changelog" Click="ChangeLog_OnClick" />
-                <MenuItem Name="CheckUpdates" Header="Check for updates" />
+                <!--<MenuItem Name="CheckUpdates" Header="Check for updates" />-->
             </MenuItem>
         </Menu>
         
@@ -120,7 +120,7 @@
                         </Grid.ColumnDefinitions>
                         
                         <Button Name="ModInstall" Grid.Column="0" Margin="0" Content="Install Mod" FontSize="16" Click="ModInstall_OnClick" />
-                        <Button Name="ModListViewRefresh" Grid.Column="1" Margin="0" Content="Refresh List" FontSize="16" Click="ModListViewRefresh_OnClick" />
+                        <Button Name="ModListViewRefresh" Grid.Column="1" Margin="0" Content="Refresh List" FontSize="16" HorizontalAlignment="Right" Click="ModListViewRefresh_OnClick" />
                     </Grid>
                 </Grid>
                 

@@ -1,8 +1,10 @@
 using System.Text;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using ShinRyuModManager.Helpers;
 using ShinRyuModManager.ModLoadOrder.Mods;
 using ShinRyuModManager.UserInterface.ViewModels;
@@ -14,7 +16,11 @@ using Constants = Utils.Constants;
 namespace ShinRyuModManager.UserInterface.Views;
 
 // TODO: Add ability to edit ModMeta
+// TODO: Add ability to run game from application. Needs to handle Steam launching and maybe Wine for Linux users. Windows can just run the EXE. Mac.. Lol.
 public partial class MainWindow : Window {
+    private FileSystemWatcher _modsFolderWatcher;
+    private Window _childWindow;
+    
     public MainWindow() {
         InitializeComponent();
     }
@@ -24,8 +30,34 @@ public partial class MainWindow : Window {
         RunPreInitAsync().ConfigureAwait(false);
 
         Program.ReadCachedLocalLibraryData();
+
+        _modsFolderWatcher = new FileSystemWatcher(GamePath.ModsPath) {
+            EnableRaisingEvents = true
+        };
         
+        _modsFolderWatcher.Created += FileSystemWatcher_Created;
+        _modsFolderWatcher.Deleted += FileSystemWatcher_DeletedRenamed;
+        _modsFolderWatcher.Renamed += FileSystemWatcher_DeletedRenamed;
+
         RefreshModList();
+    }
+
+    private async void FileSystemWatcher_Created(object _, FileSystemEventArgs e) {
+        try {
+            await Dispatcher.UIThread.InvokeAsync(RefreshModList);
+            await Program.InstallAllModDependenciesAsync();
+        } catch {
+            // ignored
+            // Prevents application crashing
+        }
+    }
+
+    private async void FileSystemWatcher_DeletedRenamed(object _, FileSystemEventArgs e) {
+        try {
+            await Dispatcher.UIThread.InvokeAsync(RefreshModList);
+        } catch {
+            // ignored
+        }
     }
 
     private async Task RunPreInitAsync() {
@@ -53,11 +85,9 @@ public partial class MainWindow : Window {
     private async void ModList_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
         try {
             var grid = sender as DataGrid;
-            var selected = grid?.SelectedItem as ModInfo;
 
-            if (selected == null) {
+            if (grid?.SelectedItem is not ModInfo selected)
                 return;
-            }
 
             await UpdateModMetaAsync(DataContext as MainWindowViewModel, selected);
         } catch (Exception ex) {
@@ -121,9 +151,9 @@ public partial class MainWindow : Window {
                 
                 // Run generation only if it will not be run on game launch (i.e. if RebuildMlo is disabled or unsupported)
                 // TODO: Figure out how RebuildMLO is automatically running
-                if (Program.RebuildMlo && Program.IsRebuildMloSupported) {
-                    _ = await MessageBoxWindow.Show(this, "Information", "Mod list was saved. Mods will be applied next time the game is run.");
-                } else {
+                //if (Program.RebuildMlo && Program.IsRebuildMloSupported) {
+                //    _ = await MessageBoxWindow.Show(this, "Information", "Mod list was saved. Mods will be applied next time the game is run.");
+                //} else {
                     var progressWindow = new ProgressWindow("Applying mods. Please wait...", true);
                     
                     progressWindow.Show(this);
@@ -143,7 +173,7 @@ public partial class MainWindow : Window {
                         _ = await MessageBoxWindow.Show(this, "Error", "Mods could not be applied. Please make sure that the game directory has write access. " +
                             "\n\nRun Shin Ryu Mod Manager in command line mode (use --cli parameter) for more info.");
                     }
-                }
+                //}
             } else {
                 _ = await MessageBoxWindow.Show(this, "Error", "Mod list is empty and was not saved.");
             }
@@ -224,18 +254,20 @@ public partial class MainWindow : Window {
                 if (!File.Exists(file.TryGetLocalPath()))
                     return;
 
-                if (await Utils.TryInstallModZipAsync(file.TryGetLocalPath()))
-                    RefreshModList();
+                if (!await Utils.TryInstallModZipAsync(file.TryGetLocalPath()))
+                    continue;
+
+                RefreshModList();
             }
-                
+            
+            await Program.InstallAllModDependenciesAsync();
         } catch (Exception ex) {
             _ = await MessageBoxWindow.Show(this, "Fatal", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
         }
     }
 
     private void MenuItem_OnClick(object sender, RoutedEventArgs e) {
-        var window = new LibraryManagerWindow();
-        window.Show(this);
+        CreateOrActivateWindow<LibraryManagerWindow>();
     }
 
     private void ModListViewRefresh_OnClick(object sender, RoutedEventArgs e) => RefreshModList();
@@ -290,13 +322,11 @@ public partial class MainWindow : Window {
     }
 
     private void About_OnClick(object sender, RoutedEventArgs e) {
-        var window = new AboutWindow();
-        window.Show(this);
+        CreateOrActivateWindow<AboutWindow>();
     }
 
     private void ChangeLog_OnClick(object sender, RoutedEventArgs e) {
-        var window = new ChangeLogWindow();
-        window.Show(this);
+        CreateOrActivateWindow<ChangeLogWindow>();
     }
 
     // Private methods
@@ -344,6 +374,17 @@ public partial class MainWindow : Window {
         if (DataContext is not MainWindowViewModel viewModel) return;
         
         viewModel.LoadModList();
+    }
+
+    private void CreateOrActivateWindow<T>() where T : Window {
+        if (_childWindow is { IsVisible: true }) {
+            // Window visible
+            _childWindow.Activate();
+        } else {
+            _childWindow = Activator.CreateInstance<T>();
+            _childWindow.Closed += (_, _) => _childWindow = null;
+            _childWindow.Show(this);
+        }
     }
 }
 
