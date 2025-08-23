@@ -1,3 +1,4 @@
+using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 
 namespace ShinRyuModManager.Helpers;
@@ -33,5 +34,12 @@ public static class YamlHelpers {
         var yamlObject = deserializer.Deserialize<T>(yamlString);
 
         return yamlObject;
+    }
+
+    // TODO: Might want to update from Plain to DoubleQuote. More robust.
+    public static string SerializeObject(object obj, ScalarStyle style = ScalarStyle.Plain) {
+        var serializer = new SerializerBuilder().WithDefaultScalarStyle(style).Build();
+
+        return serializer.Serialize(obj);
     }
 }

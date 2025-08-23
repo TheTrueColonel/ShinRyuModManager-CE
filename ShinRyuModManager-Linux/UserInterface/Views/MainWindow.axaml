@@ -29,6 +29,20 @@
             <Setter Property="Foreground" Value="White"/>
         </Style>
         
+        <Style Selector="Button.MetaEdit">
+            <Setter Property="Background" Value="#FF252525" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Height" Value="24" />
+            <Setter Property="Width" Value="24" />
+        </Style>
+        
+        <Style Selector="Button.MetaEdit Image">
+            <Setter Property="Height" Value="16" />
+            <Setter Property="Width" Value="16" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        
         <Style Selector="StackPanel Button">
             <Setter Property="Background" Value="#FF4B4B4B" />
             <Setter Property="Foreground" Value="White" />
@@ -45,6 +59,12 @@
         
         <Style Selector="DataGridCell:current /template/ Rectangle#CurrencyVisual">
             <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        
+        <Style Selector="TextBox.Editable">
+            <Setter Property="Background" Value="DimGray" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Margin" Value="3" />
         </Style>
     </Window.Styles>
     
@@ -77,6 +97,7 @@
             <Grid.ColumnDefinitions>
                 0.45*
                 0.55*
+                Auto
             </Grid.ColumnDefinitions>
             
             <Label Grid.Column="0" x:Name="AppVersion" Content="{Binding AppVersionText}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Foreground="White" Opacity="0.4" />
@@ -168,16 +189,19 @@
                             0.25*
                         </Grid.RowDefinitions>
                         
-                        <TextBlock x:Name="ModName" Grid.Row="0" Text="{Binding ModName}" FontSize="26" Foreground="White" TextWrapping="WrapWithOverflow" />
+                        <TextBlock Name="ModName" Grid.Row="0" Text="{Binding ModName}" FontSize="26" Foreground="White" TextWrapping="WrapWithOverflow" />
+                        <TextBox Name="ModNameEditable" Grid.Row="0" Text="{Binding ModName}" Classes="Editable" FontSize="26" Width="298" IsVisible="False" />
                         
                         <StackPanel Grid.Row="1" Orientation="Horizontal">
                             <Label Content="Author: " FontSize="18" Foreground="LightGray" />
                             <Label Name="ModAuthor" Content="{Binding ModAuthor}" FontSize="18" Foreground="White" />
+                            <TextBox Name="ModAuthorEditable" Text="{Binding ModAuthor}" Classes="Editable" FontSize="18" Width="225" IsVisible="False" />
                         </StackPanel>
                         
                         <StackPanel Grid.Row="2" Orientation="Horizontal">
                             <Label Content="Version:" FontSize="18" Foreground="LightGray" />
                             <Label Name="ModVersion" Content="{Binding ModVersion}" FontSize="18" Foreground="White" />
+                            <TextBox Name="ModVersionEditable" Text="{Binding ModVersion}" Classes="Editable" FontSize="18" Width="225" IsVisible="False" />
                         </StackPanel>
                     </Grid>
                 </Grid>
@@ -185,12 +209,34 @@
                 <Grid Grid.Row="1" Margin="0, 20">
                     <Rectangle Fill="#32808080" Opacity="1"/>
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel x:Name="ModDescription" Margin="10">
-                            <TextBlock TextWrapping="Wrap" Foreground="White" Text="{Binding ModDescription}" />
+                        <StackPanel Margin="10">
+                            <TextBlock Name="ModDescription" TextWrapping="Wrap" Foreground="White" Text="{Binding ModDescription}" />
+                            <TextBox Name="ModDescriptionEditable" Classes="Editable" TextWrapping="Wrap" AcceptsReturn="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Height="300" 
+                                     Text="{Binding ModDescription}" IsVisible="False" />
                         </StackPanel>
                     </ScrollViewer>
                 </Grid>
             </Grid>
+            
+            <StackPanel Grid.Column="2">
+                <Button Name="MetaEditEnable" Classes="MetaEdit" ToolTip.Tip="Edit mod metadata" Click="MetaEditEnable_OnClick">
+                    <Button.Content>
+                        <Image Source="../Assets/Icons/PNG/Edit.png" />
+                    </Button.Content>
+                </Button>
+                
+                <Button Name="MetaEditCancel" Classes="MetaEdit" ToolTip.Tip="Cancel editing" IsVisible="False" Click="MetaEditCancel_OnClick" >
+                    <Button.Content>
+                        <Image Source="../Assets/Icons/PNG/Close.png" />
+                    </Button.Content>
+                </Button>
+                
+                <Button Name="MetaEditSave" Classes="MetaEdit" ToolTip.Tip="Save mod metadata" IsVisible="False" Click="MetaEditSave_OnClick" >
+                    <Button.Content>
+                        <Image Source="../Assets/Icons/PNG/Save.png" />
+                    </Button.Content>
+                </Button>
+            </StackPanel>
         </Grid>
     </Grid>
 

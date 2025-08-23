@@ -1,6 +1,5 @@
 using System.Text;
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
@@ -15,7 +14,6 @@ using Constants = Utils.Constants;
 
 namespace ShinRyuModManager.UserInterface.Views;
 
-// TODO: Add ability to edit ModMeta
 // TODO: Add ability to run game from application. Needs to handle Steam launching and maybe Wine for Linux users. Windows can just run the EXE. Mac.. Lol.
 public partial class MainWindow : Window {
     private FileSystemWatcher _modsFolderWatcher;
@@ -25,8 +23,14 @@ public partial class MainWindow : Window {
         InitializeComponent();
     }
 
-    // TODO: Add changelog auto popup
     private void Window_OnLoaded(object sender, RoutedEventArgs e) {
+        // Display change log if the recent update flag exists
+        if (Utils.CheckFlag(Settings.UPDATE_RECENT_FLAG_FILE_NAME)) {
+            CreateOrActivateWindow<ChangeLogWindow>();
+            
+            Utils.DeleteFlag(Settings.UPDATE_RECENT_FLAG_FILE_NAME);
+        }
+        
         RunPreInitAsync().ConfigureAwait(false);
 
         Program.ReadCachedLocalLibraryData();
@@ -329,12 +333,72 @@ public partial class MainWindow : Window {
         CreateOrActivateWindow<ChangeLogWindow>();
     }
 
+    private async void MetaEditEnable_OnClick(object sender, RoutedEventArgs e) {
+        try {
+            if (ModListView.SelectedItems.Count == 0) {
+                _ = await MessageBoxWindow.Show(this, "Error", $"No mod selected.");
+                
+                return;
+            }
+
+            ChangeUiState(UiState.Editable);
+        } catch (Exception ex) {
+            _ = await MessageBoxWindow.Show(this, "Fatal", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
+        }
+    }
+
+    private async void MetaEditCancel_OnClick(object sender, RoutedEventArgs e) {
+        try {
+            if (DataContext is not MainWindowViewModel viewModel) return;
+
+            ChangeUiState(UiState.Normal);
+
+            var selection = ModListView.SelectedItems.Cast<ModInfo>().First();
+            await UpdateModMetaAsync(viewModel, selection);
+        } catch (Exception ex) {
+            _ = await MessageBoxWindow.Show(this, "Fatal", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
+        }
+    }
+
+    private async void MetaEditSave_OnClick(object sender, RoutedEventArgs e) {
+        try {
+            if (DataContext is not MainWindowViewModel viewModel) return;
+            
+            var selection = ModListView.SelectedItems.Cast<ModInfo>().First();
+            var meta = await GetModMetaAsync(selection.Name);
+
+            meta.Name = ModNameEditable.Text?.Trim();
+            meta.Author = ModAuthorEditable.Text?.Trim();
+            meta.Version = ModVersionEditable.Text?.Trim();
+            meta.Description = ModDescriptionEditable.Text?.Trim();
+            
+            // TODO: Library dependencies
+            
+            // Save mod-meta.yaml
+            try {
+                var yaml = YamlHelpers.SerializeObject(meta);
+
+                var path = Path.Combine(GamePath.ModsPath, selection.Name, "mod-meta.yaml");
+                await File.WriteAllTextAsync(path, yaml, Encoding.UTF8);
+            } catch (Exception ex) {
+                _ = await MessageBoxWindow.Show(this, "Error", $"An error occurred when trying to save the mod-meta.\n\n{ex.Message}");
+
+                return;
+            }
+
+            ChangeUiState(UiState.Normal);
+
+            await UpdateModMetaAsync(viewModel, selection);
+        } catch (Exception ex) {
+            _ = await MessageBoxWindow.Show(this, "Fatal", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
+        }
+    }
+
     // Private methods
     private async Task UpdateModMetaAsync(MainWindowViewModel viewModel, ModInfo mod) {
         const string modImagePattern = "mod-image.*";
         
         var modPath = Path.Combine(GamePath.ModsPath, mod.Name);
-        var modMetaPath = Path.Combine(modPath, "mod-meta.yaml");
         //var libMetaPath = Path.Combine(modPath, "lib-meta.yaml");
 
         var matchingModImages = Directory.EnumerateFiles(modPath, modImagePattern);
@@ -342,11 +406,7 @@ public partial class MainWindow : Window {
         Bitmap modImage = null;
 
         try {
-            var meta = ModMeta.GetPlaceholder(mod.Name);
-
-            if (File.Exists(modMetaPath)) {
-                meta = await YamlHelpers.DeserializeYamlFromPathAsync<ModMeta>(modMetaPath);
-            }
+            var meta = await GetModMetaAsync(mod.Name);
 
             viewModel.SelectMod(meta);
         } catch (Exception ex) {
@@ -370,6 +430,19 @@ public partial class MainWindow : Window {
         ModImage.Source = modImage;
     }
 
+    private static async Task<ModMeta> GetModMetaAsync(string modName) {
+        var modPath = Path.Combine(GamePath.ModsPath, modName);
+        var modMetaPath = Path.Combine(modPath, "mod-meta.yaml");
+        
+        var meta = ModMeta.GetPlaceholder(modName);
+
+        if (File.Exists(modMetaPath)) {
+            meta = await YamlHelpers.DeserializeYamlFromPathAsync<ModMeta>(modMetaPath);
+        }
+
+        return meta;
+    }
+
     private void RefreshModList() {
         if (DataContext is not MainWindowViewModel viewModel) return;
         
@@ -384,6 +457,45 @@ public partial class MainWindow : Window {
             _childWindow = Activator.CreateInstance<T>();
             _childWindow.Closed += (_, _) => _childWindow = null;
             _childWindow.Show(this);
+        }
+    }
+
+    private void ChangeUiState(UiState state) {
+        switch (state) {
+            case UiState.Normal:
+                ModName.IsVisible = true;
+                ModAuthor.IsVisible = true;
+                ModVersion.IsVisible = true;
+                ModDescription.IsVisible = true;
+                ModNameEditable.IsVisible = false;
+                ModAuthorEditable.IsVisible = false;
+                ModVersionEditable.IsVisible = false;
+                ModDescriptionEditable.IsVisible = false;
+
+                MetaEditEnable.IsVisible = true;
+                MetaEditCancel.IsVisible = false;
+                MetaEditSave.IsVisible = false;
+
+                ModListView.IsEnabled = true;
+
+                break;
+            case UiState.Editable:
+                ModName.IsVisible = false;
+                ModAuthor.IsVisible = false;
+                ModVersion.IsVisible = false;
+                ModDescription.IsVisible = false;
+                ModNameEditable.IsVisible = true;
+                ModAuthorEditable.IsVisible = true;
+                ModVersionEditable.IsVisible = true;
+                ModDescriptionEditable.IsVisible = true;
+
+                MetaEditEnable.IsVisible = false;
+                MetaEditCancel.IsVisible = true;
+                MetaEditSave.IsVisible = true;
+
+                ModListView.IsEnabled = false;
+
+                break;
         }
     }
 }
