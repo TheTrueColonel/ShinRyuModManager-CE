@@ -8,6 +8,7 @@ namespace ShinRyuModManager.UserInterface.ViewModels;
 public partial class MainWindowViewModel : ViewModelBase {
     public string TitleText { get; private set; } = "Shin Ryu Mod Manager";
     public string AppVersionText { get; private set; } = "SRMM Version";
+    public string GameLaunchPath { get; private set; }
 
     [ObservableProperty] private string _modName = "Mod Name";
     [ObservableProperty] private string _modDescription = "Mod Description";
@@ -30,6 +31,13 @@ public partial class MainWindowViewModel : ViewModelBase {
     private void Initialize() {
         TitleText = $"Shin Ryu Mod Manager [{GamePath.GetGameFriendlyName(GamePath.CurrentGame)}]";
         AppVersionText = $"v{Utils.GetAppVersion()}";
+
+        // Prefer launching through Steam, but if Windows, allow launching via exe
+        if (GamePath.IsSteamInstalled()) {
+            GameLaunchPath = $"steam://launch/{GamePath.GetGameSteamId(GamePath.CurrentGame)}";
+        } else if (OperatingSystem.IsWindows()) {
+            GameLaunchPath = GamePath.GameExe;
+        }
 
         Directory.CreateDirectory(GamePath.MODS);
         Directory.CreateDirectory(GamePath.LIBRARIES);

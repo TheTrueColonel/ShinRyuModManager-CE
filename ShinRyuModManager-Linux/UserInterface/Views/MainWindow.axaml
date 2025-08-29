@@ -104,8 +104,8 @@
             
             <Grid Grid.Column="0">
                 <Grid.ColumnDefinitions>
-                    0.75*
-                    0.25*
+                    0.80*
+                    0.20*
                 </Grid.ColumnDefinitions>
                 
                 <Grid Grid.Column="0">
@@ -115,7 +115,7 @@
                         0.15*
                     </Grid.RowDefinitions>
                     
-                    <TextBlock Grid.Row="0" Margin="20" Text="MOD LOAD ORDER (Hover for more information)" 
+                    <TextBlock Grid.Row="0" Margin="20" Text="MOD LOAD ORDER (Hover for more information)"
                                ToolTip.Tip="Mods will get loaded in order (top to bottom). If a mod has a file conflict with another, the files of the latest mod to load will have priority." Foreground="LightGray" />
                     
                     <ThemeVariantScope Grid.Row="1" RequestedThemeVariant="Light">
@@ -136,12 +136,14 @@
                     
                     <Grid Grid.Row="2" Grid.Column="0" Margin="20, 0, 20, 40">
                         <Grid.ColumnDefinitions>
-                            0.5*
-                            0.5*
+                            *
+                            *
+                            *
                         </Grid.ColumnDefinitions>
                         
-                        <Button Name="ModInstall" Grid.Column="0" Margin="0" Content="Install Mod" FontSize="16" Click="ModInstall_OnClick" />
-                        <Button Name="ModListViewRefresh" Grid.Column="1" Margin="0" Content="Refresh List" FontSize="16" HorizontalAlignment="Right" Click="ModListViewRefresh_OnClick" />
+                        <Button Name="ModInstall" Grid.Column="0" Margin="0" Content="Install Mod" FontSize="14" HorizontalAlignment="Left" Click="ModInstall_OnClick" />
+                        <Button Name="ModListViewRefresh" Grid.Column="1" Margin="0" Content="Refresh List" FontSize="14" HorizontalAlignment="Right" HorizontalContentAlignment="Center" Click="ModListViewRefresh_OnClick" />
+                        <Button Name="LaunchGame" Grid.Column="2" Margin="0" Content="Run Game" FontSize="14" HorizontalAlignment="Right" Click="LaunchGame_OnClick" ToolTip.Tip="Launches the game, doesn't work on xbox versions" />
                     </Grid>
                 </Grid>
                 

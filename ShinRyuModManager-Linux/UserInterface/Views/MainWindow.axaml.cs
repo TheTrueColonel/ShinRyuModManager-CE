@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -154,10 +155,9 @@ public partial class MainWindow : Window {
                 await CheckModDependenciesAsync();
                 
                 // Run generation only if it will not be run on game launch (i.e. if RebuildMlo is disabled or unsupported)
-                // TODO: Figure out how RebuildMLO is automatically running
-                //if (Program.RebuildMlo && Program.IsRebuildMloSupported) {
-                //    _ = await MessageBoxWindow.Show(this, "Information", "Mod list was saved. Mods will be applied next time the game is run.");
-                //} else {
+                if (Program.RebuildMlo && Program.IsRebuildMloSupported) {
+                    _ = await MessageBoxWindow.Show(this, "Information", "Mod list was saved. Mods will be applied next time the game is run.");
+                } else {
                     var progressWindow = new ProgressWindow("Applying mods. Please wait...", true);
                     
                     progressWindow.Show(this);
@@ -177,7 +177,7 @@ public partial class MainWindow : Window {
                         _ = await MessageBoxWindow.Show(this, "Error", "Mods could not be applied. Please make sure that the game directory has write access. " +
                             "\n\nRun Shin Ryu Mod Manager in command line mode (use --cli parameter) for more info.");
                     }
-                //}
+                }
             } else {
                 _ = await MessageBoxWindow.Show(this, "Error", "Mod list is empty and was not saved.");
             }
@@ -389,6 +389,26 @@ public partial class MainWindow : Window {
             ChangeUiState(UiState.Normal);
 
             await UpdateModMetaAsync(viewModel, selection);
+        } catch (Exception ex) {
+            _ = await MessageBoxWindow.Show(this, "Fatal", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
+        }
+    }
+
+    private async void LaunchGame_OnClick(object sender, RoutedEventArgs e) {
+        try {
+            if (DataContext is not MainWindowViewModel viewModel) return;
+
+            if (!string.IsNullOrEmpty(viewModel.GameLaunchPath)) {
+                if (OperatingSystem.IsWindows()) {
+                    Process.Start(new ProcessStartInfo(viewModel.GameLaunchPath) {
+                        UseShellExecute = true
+                    });
+                } else if (OperatingSystem.IsLinux()) {
+                    Process.Start("xdg-open", viewModel.GameLaunchPath);
+                }
+            } else {
+                _ = await MessageBoxWindow.Show(this, "Error", "The game can't be launched. Please launch manually.");
+            }
         } catch (Exception ex) {
             _ = await MessageBoxWindow.Show(this, "Fatal", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
         }

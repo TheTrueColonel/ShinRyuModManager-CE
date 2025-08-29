@@ -49,6 +49,11 @@ public static class Program {
         }
 
         Log("Shin Ryu Mod Manager Start");
+
+        // TODO: Temporary, YakuzaParless.asi currently only supports the Windows binary. Currently disabling RebuildMLO on Linux
+        if (!OperatingSystem.IsWindows()) {
+            IsRebuildMloSupported = false;
+        }
         
         // Check if there are any args, if so, run in CLI mode
         // Unfortunately, no one way to detect left Ctrl while being cross-platform
