@@ -7,7 +7,7 @@ Repacking is needed only for some PAR archives in Old Engine games (Yakuza games
 
 > [!NOTE]
 >
-> This is a port of the regular [ShinRyuModManager](https://github.com/SRMM-Studio/ShinRyuModManager) project to .NET 8 and to ben cross-platform.
+> This is a port of the regular [ShinRyuModManager](https://github.com/SRMM-Studio/ShinRyuModManager) project to .NET 8 and to be cross-platform.
 
 # Installing
 Unpack the [latest release](../../releases/latest) into the game's directory, in the same folder as the game's executable.
