@@ -4,6 +4,8 @@
     <option name="locations">
       <list>
         <option value="$PROJECT_DIR$/ShinRyuModManager-Linux/bin/Release/net8.0/linux-x64/publish" />
+        <option value="$PROJECT_DIR$/ShinRyuModManager-CE/bin/Release/net8.0/linux-x64/publish" />
+        <option value="$PROJECT_DIR$/ShinRyuModManager-CE/bin/Release/net8.0/win-x64/publish" />
       </list>
     </option>
   </component>

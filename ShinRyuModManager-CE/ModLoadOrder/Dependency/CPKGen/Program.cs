@@ -5,7 +5,7 @@ namespace CriPakTools {
         /*private static void Main(string[] args) {
             Console.WriteLine("Yakuza CPK Repack - Based on CriPakTools\n");
             Modify(args[0], args[1], args[2]);
-        }*/
+        }
         
         public static byte[] FileToByteArray(string fileName) {
             using var fs = File.OpenRead(fileName);
@@ -14,7 +14,7 @@ namespace CriPakTools {
             var fileData = binaryReader.ReadBytes((int)fs.Length);
             
             return fileData;
-        }
+        }*/
         
         public static void Modify(string inputCpk, string replaceDir, string outputCpk) {
             GC.Collect();
@@ -24,8 +24,8 @@ namespace CriPakTools {
             cpk.ReadCPK(inputCpk);
             
             GC.Collect();
-            
-            var oldFile = new BinaryReader(File.OpenRead(inputCpk));
+
+            using var oldFile = new BinaryReader(new BufferedStream(File.OpenRead(inputCpk)));
             
             var files = Directory.GetFiles(replaceDir, "*.");
             var filesNames = new HashSet<string>();
@@ -34,59 +34,50 @@ namespace CriPakTools {
                 filesNames.Add(str);
             
             var fi = new FileInfo(inputCpk);
-            
-            var time = new Stopwatch();
-            time.Start();
-            
-            var newCpk = new BinaryWriter(new FileStream(outputCpk, FileMode.Create));
-            
+            var time = Stopwatch.StartNew();
+
+            using var newCpk = new BinaryWriter(new BufferedStream(File.OpenWrite(outputCpk)));
+
             var entries = cpk.FileTable.OrderBy(x => x.FileOffset).ToList();
-            
+
             foreach (var entry in entries) {
-                if (entry.FileType != "CONTENT") {
-                    if (entry.FileType == "FILE") {
-                        // I'm too lazy to figure out how to update the ContextOffset position so this works :)
-                        if ((ulong)newCpk.BaseStream.Position < cpk.ContentOffset) {
-                            var padLength = cpk.ContentOffset - (ulong)newCpk.BaseStream.Position;
-                            
-                            for (ulong z = 0; z < padLength; z++) {
-                                newCpk.Write((byte)0);
-                            }
-                        }
+                if (entry.FileType == "CONTENT") {
+                    cpk.UpdateFileEntry(entry);
+                } else {
+                    if (entry.FileType == "FILE" && (ulong)newCpk.BaseStream.Position < cpk.ContentOffset) {
+                        var padLength = cpk.ContentOffset - (ulong)newCpk.BaseStream.Position;
+                        
+                        newCpk.Write(new byte[padLength], 0, (int)padLength);
                     }
-                    
+
+                    if (entry.FileSize == null || entry.FileOffset == null || entry.FileName == null) {
+                        throw new NullReferenceException("Critical properties of the file entry are not initialized.");
+                    }
+
                     if (!filesNames.Contains(entry.FileName.ToString())) {
                         oldFile.BaseStream.Seek((long)entry.FileOffset, SeekOrigin.Begin);
                         
                         entry.FileOffset = (ulong)newCpk.BaseStream.Position;
                         cpk.UpdateFileEntry(entry);
-                        
-                        var chunk = oldFile.ReadBytes(int.Parse(entry.FileSize.ToString()!));
+
+                        var chunk = ReadBytes(newCpk.BaseStream, int.Parse(entry.FileSize.ToString()!));
                         newCpk.Write(chunk);
                     } else {
-                        var newbie = FileToByteArray((Path.Combine(replaceDir, entry.FileName.ToString()!)));
-                        // File.ReadAllBytes(Path.Combine(replaceDir, entries[i].FileName.ToString()));
-                        
+                        var newbie = File.ReadAllBytes(Path.Combine(replaceDir, entry.FileName.ToString()!));
+
                         entry.FileOffset = (ulong)newCpk.BaseStream.Position;
                         entry.FileSize = Convert.ChangeType(newbie.Length, entry.FileSizeType);
                         entry.ExtractSize = Convert.ChangeType(newbie.Length, entry.FileSizeType);
                         cpk.UpdateFileEntry(entry);
+                        
                         newCpk.Write(newbie);
                     }
-                    
-                    GC.Collect();
-                    
-                    if ((newCpk.BaseStream.Position % 0x800) <= 0)
-                        continue;
-                    
-                    var curPos = newCpk.BaseStream.Position;
-                    
-                    for (var j = 0; j < (0x800 - (curPos % 0x800)); j++) {
-                        newCpk.Write((byte)0);
+
+                    if ((newCpk.BaseStream.Position % 0x800) > 0) {
+                        var padding = (int)(0x800 - (newCpk.BaseStream.Position % 0x800));
+                        
+                        newCpk.Write(new byte[padding], 0, padding);
                     }
-                } else {
-                    // Content is special.... just update the position
-                    cpk.UpdateFileEntry(entry);
                 }
             }
             
@@ -96,10 +87,18 @@ namespace CriPakTools {
             cpk.WriteETOC(newCpk);
             cpk.WriteGTOC(newCpk);
             
-            newCpk.Close();
-            oldFile.Close();
+            ShinRyuModManager.Program.Log("Writing " + new FileInfo(inputCpk).Name + " took " + time.Elapsed.TotalSeconds);
+        }
+
+        private static byte[] ReadBytes(Stream stream, int count) {
+            var buffer = new byte[count];
+            var bytesRead = stream.Read(buffer, 0, count);
             
-            Console.WriteLine("Done in " + time.Elapsed.TotalSeconds);
+            if (bytesRead != count) {
+                throw new EndOfStreamException();
+            }
+            
+            return buffer;
         }
     }
 }
