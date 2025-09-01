@@ -86,7 +86,7 @@ public static class ParRepacker {
         // Check if actual repackable par is nested
         if (parPath + ".par" != parPathReal) {
             // -4 to skip ".par", +1 to skip the directory separator
-            parPathReal = parPath[parPathReal.Length - 4 + 1] + ".par";
+            parPathReal = parPath[(parPathReal.Length - 4 + 1)..] + ".par";
         } else {
             // Add the directory separators to properly search for the nodes
             parPathReal = Path.DirectorySeparatorChar + parPathReal;

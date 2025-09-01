@@ -1,4 +1,6 @@
-﻿namespace Utils;
+﻿using Microsoft.Win32;
+
+namespace Utils;
 
 public static class GamePath {
     public const string DATA = "data";
@@ -114,6 +116,36 @@ public static class GamePath {
             path.Contains(Path.DirectorySeparatorChar + "Content" + Path.DirectorySeparatorChar) ||
             File.Exists(Path.Combine(path, "MicrosoftGame.config"));
     }
+
+    public static bool IsSteamInstalled() {
+        if (OperatingSystem.IsWindows()) {
+            return IsSteamInstalledWindows();
+        }
+
+        if (OperatingSystem.IsLinux()) {
+            return IsSteamInstalledLinux();
+        }
+
+        return false;
+    }
+
+    private static bool IsSteamInstalledWindows() {
+        using var key = Registry.CurrentUser.OpenSubKey(@"Software\Valve\Steam");
+
+        return string.IsNullOrEmpty(key?.GetValue("SteamPath") as string);
+    }
+    
+    private static bool IsSteamInstalledLinux() {
+        var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
+        var potentialLocations = new List<string> {
+            Path.Combine(home, ".steam/steam"),
+            Path.Combine(home, ".local/share/Steam"),
+            "/user/lib/steam"
+        };
+
+        return potentialLocations.Any(Directory.Exists);
+    }
     
     public static string GetGameFriendlyName(Game g) {
         return g switch {
@@ -133,6 +165,27 @@ public static class GamePath {
             Game.VFREVOBETA => "Virtua Fighter 5 R.E.V.O. Beta",
             Game.VFREVO => "Virtua Fighter 5 R.E.V.O.",
             _ => "<unknown>"
+        };
+    }
+
+    public static int? GetGameSteamId(Game game) {
+        return game switch {
+            Game.Yakuza0 => 638970,
+            Game.YakuzaKiwami => 834530,
+            Game.YakuzaKiwami2 => 927380,
+            Game.Yakuza3 => 1088710,
+            Game.Yakuza4 => 1105500,
+            Game.Yakuza5 => 1105510,
+            Game.Yakuza6 => 1388590,
+            Game.YakuzaLikeADragon => 1235140,
+            Game.Judgment => 2058180,
+            Game.LostJudgment => 2058190,
+            Game.LikeADragonGaiden => 2375550,
+            Game.LikeADragon8 => 2072450,
+            Game.LikeADragonPirates => 3061810,
+            Game.VFREVOBETA => 3283250,
+            Game.VFREVO => 3112260,
+            _ => null
         };
     }
 }

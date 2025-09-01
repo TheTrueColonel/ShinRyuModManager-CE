@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShinRyuModManager-Linux", "ShinRyuModManager-Linux\ShinRyuModManager-Linux.csproj", "{6D3C8A4B-5CA2-4929-B575-18E7AE18FA99}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShinRyuModManager-CE", "ShinRyuModManager-CE\ShinRyuModManager-CE.csproj", "{6D3C8A4B-5CA2-4929-B575-18E7AE18FA99}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParLibrary", "ParLibrary\ParLibrary.csproj", "{B8691802-6EBC-4C1B-A2A3-87C8F2973F6B}"
 EndProject
