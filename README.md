@@ -24,7 +24,7 @@ All the mod manager [releases](../../releases) include Parless and all necessary
 
 #### Windows
 ```powershell
-> .\ShinRyuModManager-CE.exe --cli
+> .\ShinRyuModManager.exe --cli
 ```
 
 #### Linux
