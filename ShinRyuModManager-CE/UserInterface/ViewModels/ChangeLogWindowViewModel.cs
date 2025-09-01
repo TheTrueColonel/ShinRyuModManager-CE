@@ -10,7 +10,7 @@ public partial class ChangeLogWindowViewModel : ViewModelBase {
     }
 
     private void Initialize() {
-        using var credits = UIHelpers.LoadResourceAsStream("changelog.md");
+        using var credits = UiHelpers.LoadResourceAsStream("changelog.md");
         using var sr = new StreamReader(credits);
 
         ChangeLogText = sr.ReadToEnd();

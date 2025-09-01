@@ -1,5 +1,7 @@
 > ### **%{color:orange} Version 1.1.0 %** ###
 * Ported UI from SRMM
+* Renamed to ShinRyuModManager-CE
+* Fixed small logic bug in par repacking
 ---
 > 
 > ### **%{color:orange} Version 1.0.1 %** ###

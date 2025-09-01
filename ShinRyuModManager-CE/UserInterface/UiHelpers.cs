@@ -1,11 +1,10 @@
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using YamlDotNet.Serialization;
 
 namespace ShinRyuModManager.UserInterface;
 
-public static class UIHelpers {
-    private const string USER_INTERFACE_PATH = "avares://ShinRyuModManager-Linux/UserInterface/Assets/";
+public static class UiHelpers {
+    private const string USER_INTERFACE_PATH = "avares://ShinRyuModManager-CE/UserInterface/Assets/";
     
     /// <summary>
     /// <para>Loads the given resource as a <see cref="Bitmap"/>.</para>

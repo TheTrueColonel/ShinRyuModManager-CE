@@ -15,7 +15,6 @@ using Constants = Utils.Constants;
 
 namespace ShinRyuModManager.UserInterface.Views;
 
-// TODO: Add ability to run game from application. Needs to handle Steam launching and maybe Wine for Linux users. Windows can just run the EXE. Mac.. Lol.
 public partial class MainWindow : Window {
     private FileSystemWatcher _modsFolderWatcher;
     private Window _childWindow;
@@ -318,7 +317,7 @@ public partial class MainWindow : Window {
             if (saveDialog?.TryGetLocalPath() == null)
                 return;
 
-            var sampleImage = await UIHelpers.LoadResourceAsBitmapAsync("NoImage.png");
+            var sampleImage = await UiHelpers.LoadResourceAsBitmapAsync("NoImage.png");
             sampleImage.Save(saveDialog.TryGetLocalPath()!);
         } catch (Exception ex) {
             _ = await MessageBoxWindow.Show(this, "Fatal", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
@@ -445,7 +444,7 @@ public partial class MainWindow : Window {
             }
         }
 
-        modImage ??= await UIHelpers.LoadResourceAsBitmapAsync("NoImage.png");
+        modImage ??= await UiHelpers.LoadResourceAsBitmapAsync("NoImage.png");
 
         ModImage.Source = modImage;
     }

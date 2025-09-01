@@ -82,7 +82,7 @@ public static class Program {
     }
     
     private static async Task MainCLI(string[] args) {
-        Console.WriteLine($"Shin Ryu Mod Manager-Linux v{AssemblyVersion.GetVersion()}");
+        Console.WriteLine($"Shin Ryu Mod Manager-CE v{AssemblyVersion.GetVersion()}");
         Console.WriteLine("By TheTrueColonel (a port of SRMM Studio's work)\n");
         
         // Parse arguments
@@ -93,7 +93,7 @@ public static class Program {
             
             Console.WriteLine("       run with \"-s\" or \"--silent\" flag to prevent checking for updates and remove prompts.");
             
-            Console.WriteLine("       run with \"-r\" or \"--run\" flag to run the game after the program finishes.");
+            //Console.WriteLine("       run with \"-r\" or \"--run\" flag to run the game after the program finishes.");
             Console.WriteLine("       run with \"-h\" or \"--help\" flag to show this message and exit.");
             
             return;
@@ -106,6 +106,8 @@ public static class Program {
         await RunGeneration(ConvertNewToOldModList(PreRun()));
         PostRun();
 
+        return;
+        // TODO: Update with logic from the UI
         if (list.Contains("-r") || list.Contains("--run")) {
             if (File.Exists(GamePath.GameExe)) {
                 Console.WriteLine($"Launching \"{GamePath.GameExe}\"...");

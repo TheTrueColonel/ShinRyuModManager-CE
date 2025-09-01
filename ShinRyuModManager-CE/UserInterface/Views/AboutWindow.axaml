@@ -30,9 +30,9 @@
         
         <TextBlock Margin="20, 0" FontSize="20" TextAlignment="Center">
             <LineBreak />
-            <HyperlinkButton NavigateUri="https://github.com/TheTrueColonel/ShinRyuModManager-Linux"
+            <HyperlinkButton NavigateUri="https://github.com/TheTrueColonel/ShinRyuModManager-CE"
                 Foreground="Gold">
-                Shin Ryu Mod Manager - Linux
+                Shin Ryu Mod Manager - CE
             </HyperlinkButton>
         </TextBlock>
         <TextBlock Margin="20, 0" HorizontalAlignment="Center" Text="{Binding Version}" />

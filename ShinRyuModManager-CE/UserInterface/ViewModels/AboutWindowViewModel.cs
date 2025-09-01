@@ -11,7 +11,7 @@ public class AboutWindowViewModel : ViewModelBase {
     private void Initialize() {
         Version = $"v{Utils.GetAppVersion()}";
 
-        using var credits = UIHelpers.LoadResourceAsStream("credits.txt");
+        using var credits = UiHelpers.LoadResourceAsStream("credits.txt");
         using var sr = new StreamReader(credits);
 
         CreditsText = sr.ReadToEnd();
