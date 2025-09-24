@@ -27,7 +27,7 @@ public static class GameModel {
                 continue;
 
             var mod = mlo.Mods[file.Index];
-            var filePath = Path.Combine("mods", mod, file.Name);
+            var filePath = Path.Combine("mods", mod, file.Name.Trim('/'));
             var fileInfo = new FileInfo(filePath);
             // Get the folder from a path like so -> data/hact/h5000_some_hact/cmn/cmn.bin
             var hactDir = fileInfo.Directory.Parent.Name;
@@ -89,7 +89,7 @@ public static class GameModel {
                 continue;
 
             var mod = mlo.Mods[file.Index];
-            var filePath = Path.Combine("mods", mod, file.Name);
+            var filePath = Path.Combine("mods", mod, file.Name.Trim('/'));
             var fileInfo = new FileInfo(filePath);
 
             //get the folder from a path like this -> data/hact/h5000_some_hact/cmn/cmn.bin
@@ -161,7 +161,7 @@ public static class GameModel {
                 continue;
 
             var mod = mlo.Mods[file.Index];
-            var filePath = Path.Combine("mods", mod, file.Name);
+            var filePath = Path.Combine("mods", mod, file.Name.Trim('/'));
             var fileInfo = new FileInfo(filePath);
 
             //get the folder from a path like this -> data/hact_yazawa/h5000_some_hact/cmn/cmn.bin
