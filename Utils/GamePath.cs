@@ -164,6 +164,8 @@ public static class GamePath {
             Game.LikeADragonPirates => "Like a Dragon: Pirate Yakuza In Hawaii",
             Game.VFREVOBETA => "Virtua Fighter 5 R.E.V.O. Beta",
             Game.VFREVO => "Virtua Fighter 5 R.E.V.O.",
+            Game.StrangerThanHeaven => "Stranger Than Heaven",
+            Game.YakuzaKiwami3 => "Yakuza Kiwami 3",
             _ => "<unknown>"
         };
     }
@@ -185,6 +187,8 @@ public static class GamePath {
             Game.LikeADragonPirates => 3061810,
             Game.VFREVOBETA => 3283250,
             Game.VFREVO => 3112260,
+            Game.StrangerThanHeaven => null,
+            Game.YakuzaKiwami3 => null,
             _ => null
         };
     }

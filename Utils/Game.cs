@@ -23,6 +23,8 @@
         LikeADragonPirates,
         VFREVOBETA,
         VFREVO,
-        Century
+        Century,
+        YakuzaKiwami3,
+        StrangerThanHeaven
     }
 }

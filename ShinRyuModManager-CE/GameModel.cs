@@ -59,6 +59,8 @@ public static class GameModel {
             
         if (!hasHacts)
             return;
+        
+        Program.Log("Repacking hacts for Yakuza 5..");
 
         foreach (var hactDirPath in hactDirs) {
             var hactDir = new DirectoryInfo(hactDirPath);
@@ -72,8 +74,21 @@ public static class GameModel {
                 if (dir.Name == "ptc" && File.Exists(Path.Combine(hactDir.FullName, "ptc.par")))
                     continue;
 
-                var outputPath = Path.Combine(parlessDir.FullName, $"{dir.Name}.par");
-                Gibbed.Yakuza0.Pack.Program.Main([dir.FullName], outputPath);
+                if (dir.Name != "ptc") {
+                    var outputFakeDir = Path.Combine(parlessDir.FullName, dir.Name);
+
+                    Directory.CreateDirectory(outputFakeDir);
+                    
+                    var outputPath = Path.Combine(parlessDir.FullName, $"{dir.Name}.par");
+                    Gibbed.Yakuza0.Pack.Program.Main([outputFakeDir], outputPath);
+
+                    try {
+                        new DirectoryInfo(outputFakeDir).Delete(true);
+                    } catch { }
+                } else {
+                    var outputPath = Path.Combine(parlessDir.FullName, dir.Name + ".par");
+                    Gibbed.Yakuza0.Pack.Program.Main([dir.FullName], outputPath);
+                }
             }
             
             Gibbed.Yakuza0.Pack.Program.Main([parlessDir.FullName], Path.Combine(parlessDir.Parent.FullName, $"{hactDir.Name}.par"));
@@ -120,6 +135,8 @@ public static class GameModel {
         if (!hasHacts)
             return;
 
+        Program.Log("Repacking hacts for Yakuza 0/Kiwami 1...");
+        
         foreach (var hactDirPath in hactDirs) {
             var hactDir = new DirectoryInfo(hactDirPath);
             var parlessDir = new DirectoryInfo(Path.Combine(GamePath.ModsPath, "Parless", "hact", hactDir.Name));

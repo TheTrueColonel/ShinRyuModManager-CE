@@ -344,12 +344,36 @@ public static class Program {
                         GameModel.DoOEHActProcedure(result);
                         break;
                     
+                    case Game.YakuzaKiwami2:
+                        GameModel.DoDEHActProcedure(result, "lexus2");
+                        break;
+                    
+                    case Game.Judgment:
+                        GameModel.DoDEHActProcedure(result, "judge");
+                        break;
+                    
                     case Game.YakuzaLikeADragon:
                         GameModel.DoDEHActProcedure(result, "yazawa");
                         break;
                     
                     case Game.LikeADragonGaiden:
                         GameModel.DoDEHActProcedure(result, "aston");
+                        break;
+                    
+                    case Game.LostJudgment:
+                        GameModel.DoDEHActProcedure(result, "coyote");
+                        break;
+                    
+                    case Game.LikeADragon8:
+                        GameModel.DoDEHActProcedure(result, "elvis");
+                        break;
+                    
+                    case Game.LikeADragonPirates:
+                        GameModel.DoDEHActProcedure(result, "spr");
+                        break;
+                    
+                    case Game.YakuzaKiwami3:
+                        GameModel.DoDEHActProcedure(result, "lexus3");
                         break;
                 }
                 
