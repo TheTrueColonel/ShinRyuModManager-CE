@@ -166,8 +166,10 @@ public partial class MainWindow : Window {
                     try {
                         await Program.RunGeneration(Program.ConvertNewToOldModList(viewModel.ModList.ToList()));
                         success = true;
-                    } catch {
+                    } catch (Exception ex) {
                         success = false;
+
+                        Program.Log(ex);
                     }
                     
                     progressWindow.Close();
