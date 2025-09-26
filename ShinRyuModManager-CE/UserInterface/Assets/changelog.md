@@ -1,3 +1,9 @@
+> ### **%{color:orange} Version 1.1.5 %** ###
+* Ported over changes from SRMM 4.6.4
+* Fixed issue with archive concurrency
+
+---
+
 > ### **%{color:orange} Version 1.1.4 %** ###
 * Ported over changes from SRMM 4.6.3
 

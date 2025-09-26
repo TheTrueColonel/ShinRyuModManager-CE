@@ -29,6 +29,7 @@ public static class Program {
 
     public static List<LibMeta> LibraryMetaCache = new List<LibMeta>();
 
+    // TODO: Replace with better logging framework. Not thread safe.
     public static void Log(object message) {
         var messageStr = message.ToString();
 

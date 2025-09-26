@@ -1,6 +1,7 @@
 using ParLibrary.Converter;
 using Utils;
 using Yarhl.FileSystem;
+using Yarhl.IO;
 
 namespace ShinRyuModManager;
 
@@ -51,7 +52,7 @@ public static class ParRepacker {
         
         Program.Log("Repacking pars...\n");
         
-        /*foreach (var parModPair in parDictionary) {
+        foreach (var parModPair in parDictionary) {
             var consoleOutput = new ConsoleOutput(2);
             
             parTasks.Add(Task.Run(() => RepackPar(parModPair.Key, parModPair.Value, consoleOutput)));
@@ -63,20 +64,19 @@ public static class ParRepacker {
             console.Result?.Flush();
             
             parTasks.Remove(console);
-        }*/
+        }
 
-        foreach (var parModPair in parDictionary) {
+        /*foreach (var parModPair in parDictionary) {
             var consoleOutput = new ConsoleOutput(2);
 
             RepackPar(parModPair.Key, parModPair.Value, consoleOutput);
             
             consoleOutput.Flush();
-        }
+        }*/
         
         Program.Log($"Repacked {parDictionary.Count} par(s)!\n");
     }
     
-    // TODO: Implement proper checking for a file being in use before repacking. Breaks parallelism
     private static ConsoleOutput RepackPar(string parPath, List<string> mods, ConsoleOutput console) {
         parPath = parPath.TrimStart(Path.DirectorySeparatorChar);
         
@@ -155,7 +155,7 @@ public static class ParRepacker {
         
         // Store a reference to the nodes in the container to dispose of them later, as they are not disposed properly
         var containerNode = node.GetFormatAs<NodeContainerFormat>();
-        var par = NodeFactory.FromFile(pathToPar);
+        var par = NodeFactory.FromFile(pathToPar, FileOpenMode.Read);
         
         par.TransformWith(typeof(ParArchiveReader), readerParams);
         
