@@ -107,16 +107,15 @@ public static class Program {
         await RunGeneration(ConvertNewToOldModList(PreRun()));
         PostRun();
 
-        return;
         // TODO: Update with logic from the UI
-        if (list.Contains("-r") || list.Contains("--run")) {
+        /*if (list.Contains("-r") || list.Contains("--run")) {
             if (File.Exists(GamePath.GameExe)) {
                 Console.WriteLine($"Launching \"{GamePath.GameExe}\"...");
                 Process.Start(GamePath.GameExe);
             } else {
                 Console.WriteLine($"Warning: Could not run game because \"{GamePath.GameExe}\" does not exist.");
             }
-        }
+        }*/
     }
 
     internal static List<ModInfo> PreRun() {

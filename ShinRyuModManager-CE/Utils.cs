@@ -23,7 +23,7 @@ public static class Utils {
     }
 
     internal static bool CheckFlag(string flagName) {
-        var currentPath = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location);
+        var currentPath = Path.GetDirectoryName(Environment.CurrentDirectory);
         var flagFilePath = Path.Combine(currentPath, flagName);
 
         return File.Exists(flagFilePath);
@@ -33,7 +33,7 @@ public static class Utils {
         if (CheckFlag(flagName))
             return;
 
-        var currentPath = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location);
+        var currentPath = Path.GetDirectoryName(Environment.CurrentDirectory);
         var flagFilePath = Path.Combine(currentPath, flagName);
             
         File.Create(flagFilePath);
@@ -44,7 +44,7 @@ public static class Utils {
         if (!CheckFlag(flagName))
             return;
         
-        var currentPath = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location);
+        var currentPath = Path.GetDirectoryName(Environment.CurrentDirectory);
         var flagFilePath = Path.Combine(currentPath, flagName);
         
         File.Delete(flagFilePath);
