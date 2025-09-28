@@ -1,3 +1,8 @@
+> ### **%{color:orange} Version 1.1.6 %** ###
+* Fixed more issues with par repacking
+
+---
+
 > ### **%{color:orange} Version 1.1.5 %** ###
 * Ported over changes from SRMM 4.6.4
 * Fixed issue with archive concurrency

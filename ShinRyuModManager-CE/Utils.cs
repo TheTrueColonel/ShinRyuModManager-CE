@@ -3,6 +3,7 @@ using System.Text;
 using SharpCompress.Common;
 using SharpCompress.Readers;
 using Utils;
+using Yarhl.FileSystem;
 
 namespace ShinRyuModManager;
 
@@ -15,7 +16,7 @@ public static class Utils {
     }
 
     public static string NormalizeToNodePath(string path) {
-        return NormalizeSeparator(path, '/');
+        return NormalizeSeparator(path, NodeSystem.PathSeparator.ToCharArray()[0]);
     }
 
     public static string GetAppVersion() {
