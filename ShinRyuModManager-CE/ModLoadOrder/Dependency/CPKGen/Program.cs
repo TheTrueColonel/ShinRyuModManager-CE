@@ -50,7 +50,7 @@ namespace CriPakTools {
                         newCpk.Write(new byte[padLength], 0, (int)padLength);
                     }
 
-                    if (entry.FileSize == null || entry.FileOffset == null || entry.FileName == null) {
+                    if (entry.FileSize == null || entry.FileName == null) {
                         throw new NullReferenceException("Critical properties of the file entry are not initialized.");
                     }
 
