@@ -262,7 +262,7 @@ public static class ParRepacker {
     }
     
     private static Node SearchParNode(Node node, string path) {
-        var paths = path.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
+        var paths = path.Split(NodeSystem.PathSeparator, StringSplitOptions.RemoveEmptyEntries);
         
         return paths.Length == 0 
             ? null 
