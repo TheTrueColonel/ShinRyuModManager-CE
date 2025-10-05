@@ -8,7 +8,7 @@ using Yarhl.FileSystem;
 namespace ShinRyuModManager;
 
 public static class Utils {
-    // Statically instantiated to be used through project
+    // Static to be used through project
     public static readonly HttpClient Client = new HttpClient();
     
     public static string NormalizeNameLower(string path) {

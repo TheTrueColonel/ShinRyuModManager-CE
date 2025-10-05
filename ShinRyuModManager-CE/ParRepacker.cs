@@ -1,4 +1,5 @@
 using ParLibrary.Converter;
+using Serilog;
 using Utils;
 using Yarhl.FileSystem;
 using Yarhl.IO;
@@ -45,12 +46,12 @@ public static class ParRepacker {
         var parTasks = new List<Task<ConsoleOutput>>();
         
         if (parDictionary.Count == 0) {
-            Program.Log("No pars to repack.\n");
+            Log.Information("No pars to repack.");
             
             return;
         }
         
-        Program.Log("Repacking pars...\n");
+        Log.Information("Repacking pars...");
         
         foreach (var parModPair in parDictionary) {
             var consoleOutput = new ConsoleOutput(2);
@@ -74,7 +75,7 @@ public static class ParRepacker {
             consoleOutput.Flush();
         }*/
         
-        Program.Log($"Repacked {parDictionary.Count} par(s)!\n");
+        Log.Information("Repacked {ParDictionaryCount} par(s)!", parDictionary.Count);
     }
     
     private static ConsoleOutput RepackPar(string parPath, List<string> mods, ConsoleOutput console) {
@@ -99,7 +100,7 @@ public static class ParRepacker {
         // Dictionary of fileInPar, ModName
         var fileDict = new Dictionary<string, string>();
         
-        Program.Log($"Repacking {parPath}.par...");
+        Log.Information("Repacking {ParPath}.par...", parPath);
         
         // Populate fileDict with the files inside each mod
         foreach (var mod in mods) {

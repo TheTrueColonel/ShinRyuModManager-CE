@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
+using Serilog;
 using ShinRyuModManager.UserInterface.ViewModels;
 using ShinRyuModManager.UserInterface.Views;
 
@@ -21,12 +22,19 @@ public partial class App : Application {
             desktop.MainWindow = new MainWindow {
                 DataContext = new MainWindowViewModel(),
             };
+            
+            desktop.Exit += DesktopOnExit;
         }
 
         base.OnFrameworkInitializationCompleted();
     }
 
-    private void DisableAvaloniaDataAnnotationValidation() {
+    // Handle properly disposing logs for UI
+    private static void DesktopOnExit(object sender, ControlledApplicationLifetimeExitEventArgs e) {
+        Log.CloseAndFlush();
+    }
+
+    private static void DisableAvaloniaDataAnnotationValidation() {
         // Get an array of plugins to remove
         var dataValidationPluginsToRemove =
             BindingPlugins.DataValidators.OfType<DataAnnotationsValidationPlugin>().ToArray();

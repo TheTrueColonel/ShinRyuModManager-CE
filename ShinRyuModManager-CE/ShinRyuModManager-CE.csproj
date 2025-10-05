@@ -10,7 +10,7 @@
         <Configurations>Debug;Release</Configurations>
         <Platforms>x64</Platforms>
         <IsPackable>false</IsPackable>
-        <AssemblyVersion>1.1.6</AssemblyVersion>
+        <AssemblyVersion>1.1.7</AssemblyVersion>
         <ApplicationIcon>UserInterface\Assets\Icons\SRMM_icon.ico</ApplicationIcon>
     </PropertyGroup>
 
@@ -30,6 +30,11 @@
       <PackageReference Include="ini-parser" Version="2.5.2" />
       <PackageReference Include="Markdown.Avalonia" Version="11.0.2" />
       <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
+      <PackageReference Include="Serilog" Version="4.3.0" />
+      <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
+      <PackageReference Include="Serilog.Expressions" Version="5.0.0" />
+      <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
+      <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
       <PackageReference Include="SharpCompress" Version="0.40.0" />
       <PackageReference Include="Skia.Controls.Avalonia" Version="11.3.0.3" />
       <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="11.3.0.3" />

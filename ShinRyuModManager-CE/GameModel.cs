@@ -1,5 +1,6 @@
 using ParLibrary;
 using ParLibrary.Converter;
+using Serilog;
 using ShinRyuModManager.ModLoadOrder;
 using Utils;
 using Yarhl.FileSystem;
@@ -60,7 +61,7 @@ public static class GameModel {
         if (!hasHacts)
             return;
         
-        Program.Log("Repacking hacts for Yakuza 5..");
+        Log.Information("Repacking hacts for Yakuza 5..");
 
         foreach (var hactDirPath in hactDirs) {
             var hactDir = new DirectoryInfo(hactDirPath);
@@ -135,7 +136,7 @@ public static class GameModel {
         if (!hasHacts)
             return;
 
-        Program.Log("Repacking hacts for Yakuza 0/Kiwami 1...");
+        Log.Information("Repacking hacts for Yakuza 0/Kiwami 1...");
         
         foreach (var hactDirPath in hactDirs) {
             var hactDir = new DirectoryInfo(hactDirPath);

@@ -5,13 +5,17 @@ using Avalonia;
 using Avalonia.Svg.Skia;
 using IniParser;
 using IniParser.Model;
+using Serilog;
+using Serilog.Core;
+using Serilog.Exceptions;
+using Serilog.Formatting.Json;
 using ShinRyuModManager.Helpers;
 using ShinRyuModManager.ModLoadOrder;
 using ShinRyuModManager.ModLoadOrder.Mods;
 using ShinRyuModManager.Templates;
 using ShinRyuModManager.UserInterface;
 using Utils;
-using YamlDotNet.Serialization;
+using Constants = Utils.Constants;
 
 namespace ShinRyuModManager;
 
@@ -22,34 +26,29 @@ public static class Program {
     private static bool _checkForUpdates = true;
     private static bool _isSilent = false;
     private static bool _migrated = false;
-    private static StreamWriter _logger;
     
     public static bool RebuildMlo = true;
     public static bool IsRebuildMloSupported = true;
 
     public static List<LibMeta> LibraryMetaCache = new List<LibMeta>();
-
-    // TODO: Replace with better logging framework. Not thread safe.
-    public static void Log(object message) {
-        var messageStr = message.ToString();
-
-        Console.WriteLine(messageStr);
-
-        _logger?.WriteLine(messageStr);
-        
-        Debug.WriteLine(messageStr);
-    }
     
     [STAThread]
     private static void Main(string[] args) {
-        try {
-            _logger = new StreamWriter("srmm_log.txt");
-            _logger.AutoFlush = true;
-        } catch {
-            _logger = null;
-        }
+        // Create global logger
+        Log.Logger = new LoggerConfiguration()
+                     .MinimumLevel.ControlledBy(new LoggingLevelSwitch())
+                     .Enrich.WithExceptionDetails()
+                     // Log to SRMM logs file
+                     .WriteTo.Logger(l => l
+                                          .Filter.ByIncludingOnly(e => e.Exception == null)
+                                          .WriteTo.Async(a => a.File("srmm_logs.txt", shared: false)))
+                     // Logs exceptions separately
+                     .WriteTo.Logger(l => l
+                                          .Filter.ByIncludingOnly(e => e.Exception != null)
+                                          .WriteTo.Async(a => a.File(new JsonFormatter(renderMessage: true), "srmm_errors.txt")))
+                     .CreateLogger();
 
-        Log("Shin Ryu Mod Manager Start");
+        Log.Information("Shin Ryu Mod Manager Start");
 
         // TODO: Temporary, YakuzaParless.asi currently only supports the Windows binary. Currently disabling RebuildMLO on Linux
         if (!OperatingSystem.IsWindows()) {
@@ -60,14 +59,14 @@ public static class Program {
         // Unfortunately, no one way to detect left Ctrl while being cross-platform
         if (args.Length == 0) {
             if (_checkForUpdates) {
-                // TODO
+                // TODO: Implemente updates
             }
             
-            Log("Shin Ryu Mod Manager GUI Application Start");
+            Log.Information("Shin Ryu Mod Manager GUI Application Start");
             
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         } else {
-            Log("Shin Ryu Mod Manager CLI Mode Start");
+            Log.Information("Shin Ryu Mod Manager CLI Mode Start");
             
             MainCLI(args).GetAwaiter().GetResult();
         }
@@ -106,6 +105,8 @@ public static class Program {
         
         await RunGeneration(ConvertNewToOldModList(PreRun()));
         PostRun();
+
+        await Log.CloseAndFlushAsync();
 
         // TODO: Update with logic from the UI
         /*if (list.Contains("-r") || list.Contains("--run")) {
@@ -324,7 +325,7 @@ public static class Program {
 
                 Directory.CreateDirectory(Constants.PARLESS_MODS_PATH);
 
-                Log("Generating MLO...");
+                Log.Information("Generating MLO...");
 
                 var sw = Stopwatch.StartNew();
                 
@@ -378,7 +379,7 @@ public static class Program {
                 }
                 
                 sw.Stop();
-                Log($"MLO Generation took: {sw.Elapsed.TotalSeconds} seconds");
+                Log.Information("MLO Generation took: {ElapsedTotalSeconds} seconds", sw.Elapsed.TotalSeconds);
 
                 return;
             }
@@ -668,6 +669,7 @@ public static class Program {
             return path;
         } catch (Exception ex) {
             Debug.WriteLine(ex);
+            Log.Error(ex, "Failed to download library!");
 
             return string.Empty;
         }

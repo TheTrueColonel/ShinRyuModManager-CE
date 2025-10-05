@@ -5,6 +5,7 @@ using ShinRyuModManager.UserInterface.ViewModels;
 namespace ShinRyuModManager.UserInterface.Views;
 
 public partial class ProgressWindow : Window {
+    // ReSharper disable once MemberCanBePrivate.Global
     public ProgressWindow() { 
         InitializeComponent();
     }
