@@ -1,3 +1,4 @@
+using Serilog;
 using ShinRyuModManager.ModLoadOrder.Mods;
 using Utils;
 
@@ -27,14 +28,14 @@ public static class Generator {
                 }
             }
             
-            Program.Log($"Done reading {Constants.PARLESS_NAME}\n");
+            Log.Information($"Done reading {Constants.PARLESS_NAME}\n");
         }
         
         var modsObjects = new Mod[mods.Count];
         
         var cpkDictionary = new Dictionary<string, List<int>>();
         
-        Program.Log("Reading mods...\n");
+        Log.Information("Reading mods...\n");
         
         // TODO: Make mod reading async
         
@@ -91,7 +92,7 @@ public static class Generator {
             modsObjects[i] = mod;
         }
         
-        Program.Log($"Added {mods.Count} mod(s) and {files.Count} file(s)!\n");
+        Log.Information("Added {ModCount} mod(s) and {FilesCount} file(s)!\n", mods.Count, files.Count);
         
         // Reverse the list because the last mod in the list should have the highest priority
         mods.Reverse();

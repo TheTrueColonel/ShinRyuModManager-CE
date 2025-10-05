@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using Avalonia.Controls;
+using Serilog;
 using ShinRyuModManager.Helpers;
 using ShinRyuModManager.UserInterface.UserControls;
 using ShinRyuModManager.UserInterface.ViewModels;
@@ -34,9 +35,11 @@ public partial class LibraryManagerWindow : Window {
                     viewModel.Library.Add(new LibraryDisplayControl(meta));
                 }
             }
-        } catch (Exception) {
+        } catch (Exception ex) {
             // Fetching library data from github failed. Connection issues or server down?
             // Populate the list with data from the already installed libraries in case the user wants to uninstall or disable any
+            
+            Log.Fatal(ex, "Failed to fetch library data!");
 
             var metaList = new List<LibMeta>();
 

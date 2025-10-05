@@ -1,3 +1,8 @@
+> ### **%{color:orange} Version 1.1.7 %** ###
+* Overhauled application logging
+
+---
+
 > ### **%{color:orange} Version 1.1.6 %** ###
 * Fixed more issues with par repacking
 

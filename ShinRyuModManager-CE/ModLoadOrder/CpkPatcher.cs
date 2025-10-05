@@ -1,3 +1,4 @@
+using Serilog;
 using Utils;
 
 namespace ShinRyuModManager.ModLoadOrder;
@@ -9,7 +10,7 @@ internal static class CpkPatcher {
             return;
         }
         
-        Program.Log("Repacking CPKs...");
+        Log.Information("Repacking CPKs...");
         
         var cpkPath = Path.Combine(GamePath.ModsPath, "Parless");
         

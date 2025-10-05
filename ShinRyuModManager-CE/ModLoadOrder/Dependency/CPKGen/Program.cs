@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Serilog;
 
 namespace CriPakTools {
     public static class Program {
@@ -33,7 +34,7 @@ namespace CriPakTools {
             foreach (var str in files.Select(Path.GetFileNameWithoutExtension))
                 filesNames.Add(str);
             
-            var fi = new FileInfo(inputCpk);
+            var fileInfo = new FileInfo(inputCpk);
             var time = Stopwatch.StartNew();
 
             using var newCpk = new BinaryWriter(new BufferedStream(File.OpenWrite(outputCpk)));
@@ -60,6 +61,7 @@ namespace CriPakTools {
                         entry.FileOffset = (ulong)newCpk.BaseStream.Position;
                         cpk.UpdateFileEntry(entry);
 
+                        
                         var chunk = ReadBytes(newCpk.BaseStream, int.Parse(entry.FileSize.ToString()!));
                         newCpk.Write(chunk);
                     } else {
@@ -87,7 +89,7 @@ namespace CriPakTools {
             cpk.WriteETOC(newCpk);
             cpk.WriteGTOC(newCpk);
             
-            ShinRyuModManager.Program.Log("Writing " + new FileInfo(inputCpk).Name + " took " + time.Elapsed.TotalSeconds);
+            Log.Information("Writing {FileName} took {TotalElapsedTime}", fileInfo.Name, time.Elapsed.TotalSeconds);
         }
 
         private static byte[] ReadBytes(Stream stream, int count) {

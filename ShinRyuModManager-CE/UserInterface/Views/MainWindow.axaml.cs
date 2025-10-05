@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using Serilog;
 using ShinRyuModManager.Helpers;
 using ShinRyuModManager.ModLoadOrder.Mods;
 using ShinRyuModManager.UserInterface.ViewModels;
@@ -80,7 +81,7 @@ public partial class MainWindow : Window {
             }
 
             if (Program.InvalidGameExe()) {
-                _ = await MessageBoxWindow.Show(this, "Error", $"Game version is unrecognized. Please use the latest Steam version of the game. The mod list will still be saved.\nMods may still work depending on the version.");
+                _ = await MessageBoxWindow.Show(this, "Error", "Game version is unrecognized. Please use the latest Steam version of the game. The mod list will still be saved.\nMods may still work depending on the version.");
             }
         }
     }
@@ -95,7 +96,9 @@ public partial class MainWindow : Window {
 
             await UpdateModMetaAsync(DataContext as MainWindowViewModel, selected);
         } catch (Exception ex) {
-            _ = await MessageBoxWindow.Show(this, "Error", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
+            Log.Fatal(ex, "Failed to select mod!");
+            
+            _ = await MessageBoxWindow.Show(this, "Error", "An error has occurred. \nPlease check\"srmm_errors.txt\" for more info.");
         }
     }
 
@@ -106,11 +109,11 @@ public partial class MainWindow : Window {
     }
 
     private void ModUp_OnClick(object sender, RoutedEventArgs e) {
-        var viewModel = DataContext as MainWindowViewModel;
+        if (DataContext is not MainWindowViewModel viewModel) 
+            return;
+        
         var selection = ModListView.SelectedItems.Cast<ModInfo>().OrderBy(m => viewModel!.ModList.IndexOf(m)).ToList();
-
-        if (viewModel == null) return;
-
+        
         var limit = 0;
         foreach (var i in selection.Select(m => viewModel.ModList.IndexOf(m)).OrderBy(x => x)) {
             if (i > limit) {
@@ -127,7 +130,8 @@ public partial class MainWindow : Window {
     }
 
     private void ModDown_OnClick(object sender, RoutedEventArgs e) {
-        if (DataContext is not MainWindowViewModel viewModel) return;
+        if (DataContext is not MainWindowViewModel viewModel) 
+            return;
         
         var selection = ModListView.SelectedItems.Cast<ModInfo>().OrderBy(m => viewModel.ModList.IndexOf(m)).ToList();
 
@@ -148,7 +152,8 @@ public partial class MainWindow : Window {
 
     private async void ModSave_OnClick(object sender, RoutedEventArgs e) {
         try {
-            if (DataContext is not MainWindowViewModel viewModel) return;
+            if (DataContext is not MainWindowViewModel viewModel) 
+                return;
 
             if (await Program.SaveModListAsync(viewModel.ModList.ToList())) {
                 await CheckModDependenciesAsync();
@@ -156,34 +161,31 @@ public partial class MainWindow : Window {
                 // Run generation only if it will not be run on game launch (i.e. if RebuildMlo is disabled or unsupported)
                 if (Program.RebuildMlo && Program.IsRebuildMloSupported) {
                     _ = await MessageBoxWindow.Show(this, "Information", "Mod list was saved. Mods will be applied next time the game is run.");
-                } else {
-                    var progressWindow = new ProgressWindow("Applying mods. Please wait...", true);
-                    
-                    progressWindow.Show(this);
 
-                    bool success;
-
-                    try {
-                        await Program.RunGeneration(Program.ConvertNewToOldModList(viewModel.ModList.ToList()));
-                        success = true;
-                    } catch (Exception ex) {
-                        success = false;
-
-                        Program.Log(ex);
-                    }
-                    
-                    progressWindow.Close();
-
-                    if (!success) {
-                        _ = await MessageBoxWindow.Show(this, "Error", "Mods could not be applied. Please make sure that the game directory has write access. " +
-                            "\n\nRun Shin Ryu Mod Manager in command line mode (use --cli parameter) for more info.");
-                    }
+                    return;
                 }
+                
+                var progressWindow = new ProgressWindow("Applying mods. Please wait...", true);
+                
+                progressWindow.Show(this);
+
+                try {
+                    await Program.RunGeneration(Program.ConvertNewToOldModList(viewModel.ModList.ToList()));
+                } catch (Exception ex) {
+                    Log.Error(ex, "Could not generate MLO!");
+                    
+                    _ = await MessageBoxWindow.Show(this, "Error", "Mods could not be applied. Please make sure that the game directory has write access." +
+                        "\n\nPlease check\"srmm_errors.txt\" for more info.");
+                }
+                    
+                progressWindow.Close();
             } else {
                 _ = await MessageBoxWindow.Show(this, "Error", "Mod list is empty and was not saved.");
             }
         } catch (Exception ex) {
-            _ = await MessageBoxWindow.Show(this, "Fatal", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
+            Log.Fatal(ex, "ModSave failed!");
+            
+            _ = await MessageBoxWindow.Show(this, "Fatal", $"An error has occurred.\nPlease check\"srmm_errors.txt\" for more info.");
         }
     }
 
@@ -267,7 +269,9 @@ public partial class MainWindow : Window {
             
             await Program.InstallAllModDependenciesAsync();
         } catch (Exception ex) {
-            _ = await MessageBoxWindow.Show(this, "Fatal", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
+            Log.Fatal(ex, "ModInstalled failed!");
+            
+            _ = await MessageBoxWindow.Show(this, "Fatal", "An error has occurred.\nPlease check\"srmm_errors.txt\" for more info.");
         }
     }
 
@@ -302,7 +306,9 @@ public partial class MainWindow : Window {
 
             await File.WriteAllTextAsync(saveDialog.TryGetLocalPath()!, yaml, Encoding.UTF8);
         } catch (Exception ex) {
-            _ = await MessageBoxWindow.Show(this, "Fatal", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
+            Log.Fatal(ex, "ModMetaSampleYaml failed!");
+            
+            _ = await MessageBoxWindow.Show(this, "Fatal", "An error has occurred.\nPlease check\"srmm_errors.txt\" for more info.");
         }
     }
 
@@ -322,7 +328,9 @@ public partial class MainWindow : Window {
             var sampleImage = await UiHelpers.LoadResourceAsBitmapAsync("NoImage.png");
             sampleImage.Save(saveDialog.TryGetLocalPath()!);
         } catch (Exception ex) {
-            _ = await MessageBoxWindow.Show(this, "Fatal", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
+            Log.Fatal(ex, "ModMetaSampleImage failed!");
+            
+            _ = await MessageBoxWindow.Show(this, "Fatal", "An error has occurred.\nPlease check\"srmm_errors.txt\" for more info.");
         }
     }
 
@@ -337,33 +345,39 @@ public partial class MainWindow : Window {
     private async void MetaEditEnable_OnClick(object sender, RoutedEventArgs e) {
         try {
             if (ModListView.SelectedItems.Count == 0) {
-                _ = await MessageBoxWindow.Show(this, "Error", $"No mod selected.");
+                _ = await MessageBoxWindow.Show(this, "Error", "No mod selected.");
                 
                 return;
             }
 
             ChangeUiState(UiState.Editable);
         } catch (Exception ex) {
-            _ = await MessageBoxWindow.Show(this, "Fatal", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
+            Log.Fatal(ex, "MetaEditEnable failed!");
+            
+            _ = await MessageBoxWindow.Show(this, "Fatal", "An error has occurred.\nPlease check\"srmm_errors.txt\" for more info.");
         }
     }
 
     private async void MetaEditCancel_OnClick(object sender, RoutedEventArgs e) {
         try {
-            if (DataContext is not MainWindowViewModel viewModel) return;
+            if (DataContext is not MainWindowViewModel viewModel) 
+                return;
 
             ChangeUiState(UiState.Normal);
 
             var selection = ModListView.SelectedItems.Cast<ModInfo>().First();
             await UpdateModMetaAsync(viewModel, selection);
         } catch (Exception ex) {
-            _ = await MessageBoxWindow.Show(this, "Fatal", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
+            Log.Fatal(ex, "MetaEditCancel failed!");
+            
+            _ = await MessageBoxWindow.Show(this, "Fatal", "An error has occurred.\nPlease check\"srmm_errors.txt\" for more info.");
         }
     }
 
     private async void MetaEditSave_OnClick(object sender, RoutedEventArgs e) {
         try {
-            if (DataContext is not MainWindowViewModel viewModel) return;
+            if (DataContext is not MainWindowViewModel viewModel) 
+                return;
             
             var selection = ModListView.SelectedItems.Cast<ModInfo>().First();
             var meta = await GetModMetaAsync(selection.Name);
@@ -382,7 +396,9 @@ public partial class MainWindow : Window {
                 var path = Path.Combine(GamePath.ModsPath, selection.Name, "mod-meta.yaml");
                 await File.WriteAllTextAsync(path, yaml, Encoding.UTF8);
             } catch (Exception ex) {
-                _ = await MessageBoxWindow.Show(this, "Error", $"An error occurred when trying to save the mod-meta.\n\n{ex.Message}");
+                Log.Warning(ex, "MetaEditSave failed!");
+            
+                _ = await MessageBoxWindow.Show(this, "Fatal", "An error has occurred.\nPlease check\"srmm_errors.txt\" for more info.");
 
                 return;
             }
@@ -391,13 +407,16 @@ public partial class MainWindow : Window {
 
             await UpdateModMetaAsync(viewModel, selection);
         } catch (Exception ex) {
-            _ = await MessageBoxWindow.Show(this, "Fatal", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
+            Log.Fatal(ex, "MetaEditSave failed!");
+            
+            _ = await MessageBoxWindow.Show(this, "Fatal", "An error has occurred.\nPlease check\"srmm_errors.txt\" for more info.");
         }
     }
 
     private async void LaunchGame_OnClick(object sender, RoutedEventArgs e) {
         try {
-            if (DataContext is not MainWindowViewModel viewModel) return;
+            if (DataContext is not MainWindowViewModel viewModel) 
+                return;
 
             if (!string.IsNullOrEmpty(viewModel.GameLaunchPath)) {
                 if (OperatingSystem.IsWindows()) {
@@ -411,7 +430,9 @@ public partial class MainWindow : Window {
                 _ = await MessageBoxWindow.Show(this, "Error", "The game can't be launched. Please launch manually.");
             }
         } catch (Exception ex) {
-            _ = await MessageBoxWindow.Show(this, "Fatal", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
+            Log.Fatal(ex, "LaunchGame failed!");
+            
+            _ = await MessageBoxWindow.Show(this, "Fatal", "An error has occurred.\nPlease check\"srmm_errors.txt\" for more info.");
         }
     }
 
@@ -431,7 +452,9 @@ public partial class MainWindow : Window {
 
             viewModel.SelectMod(meta);
         } catch (Exception ex) {
-            _ = await MessageBoxWindow.Show(this, "Error", $"An error has occurred while trying to load mod-meta. \nThe exception message is:\n\n{ex.Message}");
+            Log.Error(ex, "Failed to load mod meta!");
+            
+            _ = await MessageBoxWindow.Show(this, "Error", $"An error has occurred while trying to load mod-meta.\nPlease check\"srmm_errors.txt\" for more info.");
         }
 
         foreach (var filePath in matchingModImages) {
@@ -442,7 +465,9 @@ public partial class MainWindow : Window {
                 
                 break;
             } catch (Exception ex) {
-                _ = await MessageBoxWindow.Show(this, "Error", $"An error has occurred while trying to load {Path.GetFileName(filePath)}. \nThe exception message is:\n\n{ex.Message}");
+                Log.Error(ex, "Failed to load mod image!");
+                
+                _ = await MessageBoxWindow.Show(this, "Error", $"An error has occurred while trying to load {Path.GetFileName(filePath)}.\nPlease check\"srmm_errors.txt\" for more info.");
             }
         }
 
@@ -465,7 +490,8 @@ public partial class MainWindow : Window {
     }
 
     private void RefreshModList() {
-        if (DataContext is not MainWindowViewModel viewModel) return;
+        if (DataContext is not MainWindowViewModel viewModel) 
+            return;
         
         viewModel.LoadModList();
     }

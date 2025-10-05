@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.IO.Compression;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Serilog;
 using ShinRyuModManager.UserInterface.ViewModels;
 using ShinRyuModManager.UserInterface.Views;
 using Utils;
@@ -94,8 +95,10 @@ public partial class LibraryDisplayControl : UserControl {
             
             RefreshComponent();
         } catch (Exception ex) {
+            Log.Fatal(ex, "Failed to install library!");
+            
             var window = TopLevel.GetTopLevel(this) as Window;
-            _ = await MessageBoxWindow.Show(window, "Fatal", $"An error has occurred. \nThe exception message is:\n\n{ex.Message}");
+            _ = await MessageBoxWindow.Show(window, "Fatal", "An error has occurred.\nPlease check\"srmm_errors.txt\" for more info.");
         }
     }
 
