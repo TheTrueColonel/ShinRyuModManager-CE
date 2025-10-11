@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using System.IO.Compression;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Serilog;

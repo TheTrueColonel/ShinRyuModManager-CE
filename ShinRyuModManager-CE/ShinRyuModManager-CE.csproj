@@ -51,5 +51,20 @@
     <ItemGroup>
         <AvaloniaResource Include="UserInterface\Assets\**" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <EmbeddedResource Update="Language\Resources.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Compile Update="Language\Resources.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Resources.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
 
 </Project>

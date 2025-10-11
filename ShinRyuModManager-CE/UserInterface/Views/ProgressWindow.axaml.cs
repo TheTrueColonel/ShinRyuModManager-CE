@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using Avalonia.Layout;
 using ShinRyuModManager.UserInterface.ViewModels;
 
 namespace ShinRyuModManager.UserInterface.Views;
