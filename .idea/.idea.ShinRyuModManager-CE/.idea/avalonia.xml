@@ -3,7 +3,10 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="ShinRyuModManager-CE/UserInterface/App.axaml" value="ShinRyuModManager-CE/ShinRyuModManager-CE.csproj" />
+        <entry key="ShinRyuModManager-CE/UserInterface/UserControls/LibraryDisplayControl.axaml" value="ShinRyuModManager-CE/ShinRyuModManager-CE.csproj" />
         <entry key="ShinRyuModManager-CE/UserInterface/Views/AboutWindow.axaml" value="ShinRyuModManager-CE/ShinRyuModManager-CE.csproj" />
+        <entry key="ShinRyuModManager-CE/UserInterface/Views/ChangeLogWindow.axaml" value="ShinRyuModManager-CE/ShinRyuModManager-CE.csproj" />
         <entry key="ShinRyuModManager-CE/UserInterface/Views/MainWindow.axaml" value="ShinRyuModManager-CE/ShinRyuModManager-CE.csproj" />
         <entry key="ShinRyuModManager-Linux/UserInterface/App.axaml" value="ShinRyuModManager-Linux/ShinRyuModManager-Linux.csproj" />
         <entry key="ShinRyuModManager-Linux/UserInterface/UserControls/LibraryDisplayControl.axaml" value="ShinRyuModManager-Linux/ShinRyuModManager-Linux.csproj" />

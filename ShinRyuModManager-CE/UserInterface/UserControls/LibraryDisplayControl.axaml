@@ -2,6 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:ShinRyuModManager.UserInterface.ViewModels"
+             x:DataType="vm:LibraryDisplayControlViewModel"
              xmlns:viewModels="clr-namespace:ShinRyuModManager.UserInterface.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="200"
              Background="#FF373535"
@@ -61,7 +63,7 @@
                         <Image Source="../Assets/Icons/PNG/Github_Light.png" Width="24" Height="24" RenderOptions.BitmapInterpolationMode="HighQuality" />
                     </HyperlinkButton>
                     
-                    <Label Name="LibName" Content="{Binding Name}" FontSize="24" Foreground="White" VerticalAlignment="Center" />
+                    <Label Name="LibName" Content="{Binding LibName}" FontSize="24" Foreground="White" VerticalAlignment="Center" />
                 </StackPanel>
                 
                 <Label Grid.Row="0" Name="Author" Content="{Binding Author}" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" VerticalAlignment="Center" />
