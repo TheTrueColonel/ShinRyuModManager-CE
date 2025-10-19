@@ -1,3 +1,9 @@
+> ### **%{color:orange} Version 1.1.8 %** ###
+* Initial pass for allowing internationalization
+* Fixed minor style issues
+
+---
+
 > ### **%{color:orange} Version 1.1.7 %** ###
 * Overhauled application logging
 
