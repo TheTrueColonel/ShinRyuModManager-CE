@@ -13,7 +13,7 @@
         Title="{Binding TitleText}" 
         Height="600" 
         Width="950" 
-        Background="#FF373535" 
+        Background="#373535" 
         Foreground="White"
         CanResize="False"
         Loaded="Window_OnLoaded">
@@ -26,12 +26,12 @@
     
     <Window.Styles>
         <Style Selector="Button">
-            <Setter Property="Background" Value="#FF4B4B4B"/>
+            <Setter Property="Background" Value="#4B4B4B"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
         
         <Style Selector="Button.MetaEdit">
-            <Setter Property="Background" Value="#FF252525" />
+            <Setter Property="Background" Value="#252525" />
             <Setter Property="Foreground" Value="White" />
             <Setter Property="Height" Value="24" />
             <Setter Property="Width" Value="24" />
@@ -44,8 +44,27 @@
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
         
+        <Style Selector="Grid.Controls">
+            <Setter Property="Margin" Value="20, 0, 20, 40" />
+        </Style>
+        
+        <Style Selector="Grid.Controls Button">
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="MinWidth" Value="95" />
+            <Setter Property="MaxWidth" Value="105" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+        
+        <Style Selector="Label.AppVersion">
+            <Setter Property="Opacity" Value="0.4" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+        </Style>
+        
         <Style Selector="StackPanel Button">
-            <Setter Property="Background" Value="#FF4B4B4B" />
+            <Setter Property="Background" Value="#4B4B4B" />
             <Setter Property="Foreground" Value="White" />
             <Setter Property="Opacity" Value="0.8" />
             <Setter Property="Margin" Value="5" />
@@ -69,12 +88,14 @@
         </Style>
     </Window.Styles>
     
+    <!-- App -->
     <Grid>
         <Grid.RowDefinitions>
             Auto
             1*
         </Grid.RowDefinitions>
         
+        <!-- Header -->
         <Menu Grid.Row="0">
             <MenuItem Header="{x:Static lang:MainWindow.Menu_Manage}">
                 <MenuItem Name="ModInstallMenuItem" Header="{x:Static lang:MainWindow.Menu_InstallMod}" 
@@ -97,8 +118,10 @@
             </MenuItem>
         </Menu>
         
-        <Image Grid.Row="1" Source="../Assets/SRMMLogo1BG.png" Opacity="0.05" />
+        <!-- Background Image -->
+        <Image Grid.Row="1" Source="../Assets/SRMMLogo1BG.png" Opacity="0.05" Stretch="Uniform" />
         
+        <!-- Content -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 0.45*
@@ -106,15 +129,17 @@
                 Auto
             </Grid.ColumnDefinitions>
             
-            <Label Grid.Column="0" x:Name="AppVersion" Content="{Binding AppVersionText}" 
-                   HorizontalAlignment="Left" VerticalAlignment="Bottom" Foreground="White" Opacity="0.4" />
+            <!-- App Version -->
+            <Label Grid.Column="0" Classes="AppVersion" Content="{Binding AppVersionText}" />
             
+            <!-- Mod List and Controls -->
             <Grid Grid.Column="0">
                 <Grid.ColumnDefinitions>
                     0.80*
                     0.20*
                 </Grid.ColumnDefinitions>
                 
+                <!-- Mod List -->
                 <Grid Grid.Column="0">
                     <Grid.RowDefinitions>
                         0.10*
@@ -122,9 +147,11 @@
                         0.15*
                     </Grid.RowDefinitions>
                     
+                    <!-- MLO Text -->
                     <TextBlock Grid.Row="0" Margin="20" Text="{x:Static lang:MainWindow.ModList_Title}"
                                ToolTip.Tip="{x:Static lang:MainWindow.ModList_Tooltip}" Foreground="LightGray" />
                     
+                    <!-- Mod List DataGrid -->
                     <ThemeVariantScope Grid.Row="1" RequestedThemeVariant="Light">
                         <DataGrid Name="ModListView" Margin="20, 0, 20, 20" Background="#FF4B4B4B" 
                                   Width="318" ItemsSource="{Binding ModList}" 
@@ -147,27 +174,25 @@
                         </DataGrid>
                     </ThemeVariantScope>
                     
-                    <Grid Grid.Row="2" Grid.Column="0" Margin="20, 0, 20, 40">
+                    <!-- General Application Controls -->
+                    <Grid Grid.Row="2" Grid.Column="0" Classes="Controls">
                         <Grid.ColumnDefinitions>
                             *
                             *
                             *
                         </Grid.ColumnDefinitions>
                         
-                        <Button Name="ModInstall" Grid.Column="0" Margin="0" 
-                                Content="{x:Static lang:MainWindow.Btn_Install}" FontSize="14" 
+                        <Button Name="ModInstall" Grid.Column="0" Content="{x:Static lang:MainWindow.Btn_Install}"
                                 HorizontalAlignment="Left" Click="ModInstall_OnClick" />
-                        <Button Name="ModListViewRefresh" Grid.Column="1" Margin="0" 
-                                Content="{x:Static lang:MainWindow.Btn_Refresh}" FontSize="14" 
-                                HorizontalAlignment="Right" HorizontalContentAlignment="Center" 
-                                Click="ModListViewRefresh_OnClick" />
-                        <Button Name="LaunchGame" Grid.Column="2" Margin="0" 
-                                Content="{x:Static lang:MainWindow.Btn_Run}" FontSize="14" 
+                        <Button Name="ModListViewRefresh" Grid.Column="1" Content="{x:Static lang:MainWindow.Btn_Refresh}" 
+                                HorizontalAlignment="Center" Click="ModListViewRefresh_OnClick" />
+                        <Button Name="LaunchGame" Grid.Column="2" Content="{x:Static lang:MainWindow.Btn_Run}" 
                                 HorizontalAlignment="Right" Click="LaunchGame_OnClick" 
                                 ToolTip.Tip="{x:Static lang:MainWindow.Btn_Run_Tooltip}" />
                     </Grid>
                 </Grid>
                 
+                <!-- Mod List Controls -->
                 <Grid Grid.Column="1">
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0, -70, 0, 0">
                         <Button Name="ModToggle" Click="ModToggle_OnClick" 
@@ -182,11 +207,11 @@
                                 ToolTip.Tip="{x:Static lang:MainWindow.ModDown_Tooltip}">
                             <Image Source="{svg:SvgImage ../Assets/Icons/SVG/ArrowDown.svg}" />
                         </Button>
-                        <Button Name="ModSave" Margin="5, 55, 5, 5" BorderThickness="3" Click="ModSave_OnClick"
+                        <Button Name="ModSave" Margin="5, 55, 5, 5" Click="ModSave_OnClick"
                                 ToolTip.Tip="{x:Static lang:MainWindow.ModSave_Tooltip}">
                             <Image Source="{svg:SvgImage ../Assets/Icons/SVG/Check.svg}" />
                         </Button>
-                        <Button Name="ModClose" BorderThickness="3" Click="ModClose_OnClick"
+                        <Button Name="ModClose" Click="ModClose_OnClick"
                                 ToolTip.Tip="{x:Static lang:MainWindow.ModClose_Tooltip}">
                             <Image Source="{svg:SvgImage ../Assets/Icons/SVG/X.svg}" />
                         </Button>
@@ -194,12 +219,14 @@
                 </Grid>
             </Grid>
             
+            <!-- Mod Details -->
             <Grid Grid.Column="1" Margin="20">
                 <Grid.RowDefinitions>
                     0.30*
                     0.70*
                 </Grid.RowDefinitions>
                 
+                <!-- Mod Image/Name/Author/Version -->
                 <Grid Grid.Column="0">
                     <Grid.ColumnDefinitions>
                         0.35*
@@ -242,8 +269,9 @@
                     </Grid>
                 </Grid>
                 
+                <!-- Mod Description -->
                 <Grid Grid.Row="1" Margin="0, 20">
-                    <Rectangle Fill="#32808080" Opacity="1"/>
+                    <Rectangle Fill="#808080" Opacity="0.2"/>
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel Margin="10">
                             <TextBlock Name="ModDescription" TextWrapping="Wrap" Foreground="White" 
@@ -256,6 +284,7 @@
                 </Grid>
             </Grid>
             
+            <!-- Meta Edit Controls -->
             <StackPanel Grid.Column="2">
                 <Button Name="MetaEditEnable" Classes="MetaEdit" 
                         ToolTip.Tip="{x:Static lang:MainWindow.MetaEditEnable_Tooltip}" Click="MetaEditEnable_OnClick">

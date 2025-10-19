@@ -1,8 +1,10 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace ShinRyuModManager.UserInterface.ViewModels;
 
-public class AboutWindowViewModel : ViewModelBase {
-    public string Version { get; private set; }
-    public string CreditsText { get; private set; }
+public partial class AboutWindowViewModel : ViewModelBase {
+    [ObservableProperty] private string _version;
+    [ObservableProperty] private string _creditsText;
 
     public AboutWindowViewModel() {
         Initialize();
