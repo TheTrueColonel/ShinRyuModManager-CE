@@ -7,6 +7,7 @@
         <entry key="ShinRyuModManager-CE/UserInterface/UserControls/LibraryDisplayControl.axaml" value="ShinRyuModManager-CE/ShinRyuModManager-CE.csproj" />
         <entry key="ShinRyuModManager-CE/UserInterface/Views/AboutWindow.axaml" value="ShinRyuModManager-CE/ShinRyuModManager-CE.csproj" />
         <entry key="ShinRyuModManager-CE/UserInterface/Views/ChangeLogWindow.axaml" value="ShinRyuModManager-CE/ShinRyuModManager-CE.csproj" />
+        <entry key="ShinRyuModManager-CE/UserInterface/Views/LibraryManagerWindow.axaml" value="ShinRyuModManager-CE/ShinRyuModManager-CE.csproj" />
         <entry key="ShinRyuModManager-CE/UserInterface/Views/MainWindow.axaml" value="ShinRyuModManager-CE/ShinRyuModManager-CE.csproj" />
         <entry key="ShinRyuModManager-CE/UserInterface/Views/MessageBoxWindow.axaml" value="ShinRyuModManager-CE/ShinRyuModManager-CE.csproj" />
         <entry key="ShinRyuModManager-CE/UserInterface/Views/ProgressWindow.axaml" value="ShinRyuModManager-CE/ShinRyuModManager-CE.csproj" />

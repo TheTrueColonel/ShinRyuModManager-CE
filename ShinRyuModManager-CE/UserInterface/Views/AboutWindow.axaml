@@ -1,11 +1,13 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:ShinRyuModManager.UserInterface.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:ShinRyuModManager.UserInterface.ViewModels"
+        xmlns:lang="using:ShinRyuModManager.Language.Views"
         mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
         x:Class="ShinRyuModManager.UserInterface.Views.AboutWindow"
         x:DataType="vm:AboutWindowViewModel"
+        Icon="/UserInterface/Assets/Icons/SRMM_icon.ico"
         Title="About" 
         Height="600" 
         Width="500"
@@ -36,7 +38,7 @@
             </HyperlinkButton>
         </TextBlock>
         <TextBlock Margin="20, 0" HorizontalAlignment="Center" Text="{Binding Version}" />
-        <TextBlock Margin="0, 40, 0, 0" HorizontalAlignment="Center" FontSize="16" Foreground="#FFf59b42" Text="Credits" />
+        <TextBlock Margin="0, 40, 0, 0" HorizontalAlignment="Center" FontSize="16" Foreground="#FFf59b42" Text="{x:Static lang:About.Text_Credits}" />
         <TextBlock Margin="15" HorizontalAlignment="Center" TextAlignment="Center" Text="{Binding CreditsText}" />
     </StackPanel>
         

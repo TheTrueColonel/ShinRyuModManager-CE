@@ -1,11 +1,11 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:ShinRyuModManager.UserInterface.ViewModels"
-        xmlns:svg="using:Avalonia.Svg.Skia"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:mods="clr-namespace:ShinRyuModManager.ModLoadOrder.Mods"
-        xmlns:lang="clr-namespace:ShinRyuModManager.Language"
+        xmlns:vm="using:ShinRyuModManager.UserInterface.ViewModels"
+        xmlns:svg="using:Avalonia.Svg.Skia"
+        xmlns:mods="using:ShinRyuModManager.ModLoadOrder.Mods"
+        xmlns:lang="using:ShinRyuModManager.Language.Views"
         mc:Ignorable="d" d:DesignWidth="950" d:DesignHeight="600"
         x:Class="ShinRyuModManager.UserInterface.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -76,24 +76,24 @@
         </Grid.RowDefinitions>
         
         <Menu Grid.Row="0">
-            <MenuItem Header="{x:Static lang:Resources.Menu_Manage}">
-                <MenuItem Name="ModInstallMenuItem" Header="{x:Static lang:Resources.Menu_InstallMod}" 
+            <MenuItem Header="{x:Static lang:MainWindow.Menu_Manage}">
+                <MenuItem Name="ModInstallMenuItem" Header="{x:Static lang:MainWindow.Menu_InstallMod}" 
                           Click="ModInstall_OnClick" />
-                <!--<MenuItem Header="{x:Static lang:Resources.Menu_UninstallMod}" />-->
+                <!--<MenuItem Header="{x:Static lang:MainWindow.Menu_UninstallMod}" />-->
             </MenuItem>
-            <MenuItem Header="{x:Static lang:Resources.Menu_Libraries}" Click="MenuItem_OnClick" />
-            <MenuItem Header="{x:Static lang:Resources.Menu_ModMeta}">
-                <MenuItem Name="ModMetaSampleYaml" Header="{x:Static lang:Resources.Menu_ModMetaSampleYaml}" 
+            <MenuItem Header="{x:Static lang:MainWindow.Menu_Libraries}" Click="MenuItem_OnClick" />
+            <MenuItem Header="{x:Static lang:MainWindow.Menu_ModMeta}">
+                <MenuItem Name="ModMetaSampleYaml" Header="{x:Static lang:MainWindow.Menu_ModMetaSampleYaml}" 
                           Click="ModMetaSampleYaml_OnClick" />
-                <MenuItem Name="ModMetaSampleImage" Header="{x:Static lang:Resources.Menu_ModMetaSampleImage}" 
+                <MenuItem Name="ModMetaSampleImage" Header="{x:Static lang:MainWindow.Menu_ModMetaSampleImage}" 
                           Click="ModMetaSampleImage_OnClick" />
             </MenuItem>
-            <MenuItem Header="{x:Static lang:Resources.Menu_Help}">
-                <MenuItem Name="About" Header="{x:Static lang:Resources.Menu_About}" 
+            <MenuItem Header="{x:Static lang:MainWindow.Menu_Help}">
+                <MenuItem Name="About" Header="{x:Static lang:MainWindow.Menu_About}" 
                           Click="About_OnClick" />
-                <MenuItem Name="ChangeLog" Header="{x:Static lang:Resources.Menu_Changelog}" 
+                <MenuItem Name="ChangeLog" Header="{x:Static lang:MainWindow.Menu_Changelog}" 
                           Click="ChangeLog_OnClick" />
-                <!--<MenuItem Name="CheckUpdates" Header="{x:Static lang:Resources.Menu_CheckUpdates}" />-->
+                <!--<MenuItem Name="CheckUpdates" Header="{x:Static lang:MainWindow.Menu_CheckUpdates}" />-->
             </MenuItem>
         </Menu>
         
@@ -122,15 +122,15 @@
                         0.15*
                     </Grid.RowDefinitions>
                     
-                    <TextBlock Grid.Row="0" Margin="20" Text="{x:Static lang:Resources.ModList_Title}"
-                               ToolTip.Tip="{x:Static lang:Resources.ModList_Tooltip}" Foreground="LightGray" />
+                    <TextBlock Grid.Row="0" Margin="20" Text="{x:Static lang:MainWindow.ModList_Title}"
+                               ToolTip.Tip="{x:Static lang:MainWindow.ModList_Tooltip}" Foreground="LightGray" />
                     
                     <ThemeVariantScope Grid.Row="1" RequestedThemeVariant="Light">
                         <DataGrid Name="ModListView" Margin="20, 0, 20, 20" Background="#FF4B4B4B" 
                                   Width="318" ItemsSource="{Binding ModList}" 
                                   SelectionChanged="ModList_OnSelectionChanged">
                             <DataGrid.Columns>
-                                <DataGridTemplateColumn Header="{x:Static lang:Resources.ModList_Enabled}" 
+                                <DataGridTemplateColumn Header="{x:Static lang:MainWindow.ModList_Enabled}" 
                                                         CanUserSort="False">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate DataType="mods:ModInfo">
@@ -140,7 +140,7 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 
-                                <DataGridTextColumn Header="{x:Static lang:Resources.ModList_ModName}" Width="*" 
+                                <DataGridTextColumn Header="{x:Static lang:MainWindow.ModList_ModName}" Width="*" 
                                                     Binding="{Binding Name}" CanUserSort="False" 
                                                     IsReadOnly="True" Foreground="White" />
                             </DataGrid.Columns>
@@ -155,39 +155,39 @@
                         </Grid.ColumnDefinitions>
                         
                         <Button Name="ModInstall" Grid.Column="0" Margin="0" 
-                                Content="{x:Static lang:Resources.Btn_Install}" FontSize="14" 
+                                Content="{x:Static lang:MainWindow.Btn_Install}" FontSize="14" 
                                 HorizontalAlignment="Left" Click="ModInstall_OnClick" />
                         <Button Name="ModListViewRefresh" Grid.Column="1" Margin="0" 
-                                Content="{x:Static lang:Resources.Btn_Refresh}" FontSize="14" 
+                                Content="{x:Static lang:MainWindow.Btn_Refresh}" FontSize="14" 
                                 HorizontalAlignment="Right" HorizontalContentAlignment="Center" 
                                 Click="ModListViewRefresh_OnClick" />
                         <Button Name="LaunchGame" Grid.Column="2" Margin="0" 
-                                Content="{x:Static lang:Resources.Btn_Run}" FontSize="14" 
+                                Content="{x:Static lang:MainWindow.Btn_Run}" FontSize="14" 
                                 HorizontalAlignment="Right" Click="LaunchGame_OnClick" 
-                                ToolTip.Tip="{x:Static lang:Resources.Btn_Run_Tooltip}" />
+                                ToolTip.Tip="{x:Static lang:MainWindow.Btn_Run_Tooltip}" />
                     </Grid>
                 </Grid>
                 
                 <Grid Grid.Column="1">
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0, -70, 0, 0">
                         <Button Name="ModToggle" Click="ModToggle_OnClick" 
-                                ToolTip.Tip="{x:Static lang:Resources.ModToggle_Tooltip}">
+                                ToolTip.Tip="{x:Static lang:MainWindow.ModToggle_Tooltip}">
                             <Image Source="{svg:SvgImage ../Assets/Icons/SVG/Toggle.svg}" />
                         </Button>
                         <Button Name="ModUp" Click="ModUp_OnClick" 
-                                ToolTip.Tip="{x:Static lang:Resources.ModUp_Tooltip}">
+                                ToolTip.Tip="{x:Static lang:MainWindow.ModUp_Tooltip}">
                             <Image Source="{svg:SvgImage ../Assets/Icons/SVG/ArrowUp.svg}" />
                         </Button>
                         <Button Name="ModDown" Click="ModDown_OnClick" 
-                                ToolTip.Tip="{x:Static lang:Resources.ModDown_Tooltip}">
+                                ToolTip.Tip="{x:Static lang:MainWindow.ModDown_Tooltip}">
                             <Image Source="{svg:SvgImage ../Assets/Icons/SVG/ArrowDown.svg}" />
                         </Button>
                         <Button Name="ModSave" Margin="5, 55, 5, 5" BorderThickness="3" Click="ModSave_OnClick"
-                                ToolTip.Tip="{x:Static lang:Resources.ModSave_Tooltip}">
+                                ToolTip.Tip="{x:Static lang:MainWindow.ModSave_Tooltip}">
                             <Image Source="{svg:SvgImage ../Assets/Icons/SVG/Check.svg}" />
                         </Button>
                         <Button Name="ModClose" BorderThickness="3" Click="ModClose_OnClick"
-                                ToolTip.Tip="{x:Static lang:Resources.ModClose_Tooltip}">
+                                ToolTip.Tip="{x:Static lang:MainWindow.ModClose_Tooltip}">
                             <Image Source="{svg:SvgImage ../Assets/Icons/SVG/X.svg}" />
                         </Button>
                     </StackPanel>
@@ -206,8 +206,10 @@
                         0.65*
                     </Grid.ColumnDefinitions>
                     
-                    <Border Grid.Column="0" BorderThickness="2" BorderBrush="#32808080" Background="#32808080" Height="155" Width="155" HorizontalAlignment="Left">
-                        <Image Name="ModImage" RenderOptions.BitmapInterpolationMode="HighQuality" Source="../Assets/NoImage.png" Height="151" Width="151" HorizontalAlignment="Center" />
+                    <Border Grid.Column="0" BorderThickness="2" BorderBrush="#32808080" Background="#32808080" 
+                            Height="155" Width="155" HorizontalAlignment="Left">
+                        <Image Name="ModImage" RenderOptions.BitmapInterpolationMode="HighQuality" 
+                               Source="../Assets/NoImage.png" Height="151" Width="151" HorizontalAlignment="Center" />
                     </Border>
                     
                     <Grid Grid.Column="1">
@@ -256,21 +258,21 @@
             
             <StackPanel Grid.Column="2">
                 <Button Name="MetaEditEnable" Classes="MetaEdit" 
-                        ToolTip.Tip="{x:Static lang:Resources.MetaEditEnable_Tooltip}" Click="MetaEditEnable_OnClick">
+                        ToolTip.Tip="{x:Static lang:MainWindow.MetaEditEnable_Tooltip}" Click="MetaEditEnable_OnClick">
                     <Button.Content>
                         <Image Source="../Assets/Icons/PNG/Edit.png" />
                     </Button.Content>
                 </Button>
                 
                 <Button Name="MetaEditCancel" Classes="MetaEdit" 
-                        ToolTip.Tip="{x:Static lang:Resources.MetaEditCancel_Tooltip}" IsVisible="False" Click="MetaEditCancel_OnClick" >
+                        ToolTip.Tip="{x:Static lang:MainWindow.MetaEditCancel_Tooltip}" IsVisible="False" Click="MetaEditCancel_OnClick" >
                     <Button.Content>
                         <Image Source="../Assets/Icons/PNG/Close.png" />
                     </Button.Content>
                 </Button>
                 
                 <Button Name="MetaEditSave" Classes="MetaEdit" 
-                        ToolTip.Tip="{x:Static lang:Resources.MetaEditSave_Tooltip}" IsVisible="False" Click="MetaEditSave_OnClick" >
+                        ToolTip.Tip="{x:Static lang:MainWindow.MetaEditSave_Tooltip}" IsVisible="False" Click="MetaEditSave_OnClick" >
                     <Button.Content>
                         <Image Source="../Assets/Icons/PNG/Save.png" />
                     </Button.Content>

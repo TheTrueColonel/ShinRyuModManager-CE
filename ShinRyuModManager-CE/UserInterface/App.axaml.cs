@@ -20,7 +20,12 @@ public partial class App : Application {
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
 
-            Language.Resources.Culture = CultureInfo.DefaultThreadCurrentCulture;
+            var culture = new CultureInfo("en");
+            
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+            Thread.CurrentThread.CurrentCulture = culture;
+            Thread.CurrentThread.CurrentUICulture = culture;
             
             desktop.MainWindow = new MainWindow {
                 DataContext = new MainWindowViewModel(),
