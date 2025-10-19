@@ -1,11 +1,12 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:ShinRyuModManager.UserInterface.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:ShinRyuModManager.UserInterface.ViewModels"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="175"
         x:Class="ShinRyuModManager.UserInterface.Views.ProgressWindow"
         x:DataType="vm:ProgressWindowViewModel"
+        Icon="/UserInterface/Assets/Icons/SRMM_icon.ico"
         Title="ProgressWindow"
         Height="175"
         Width="400"
@@ -25,7 +26,7 @@
             *
         </Grid.RowDefinitions>
         
-        <TextBlock Grid.Row="0" Padding="20" TextWrapping="Wrap" TextAlignment="Center"  Text="{Binding MessageText}" />
+        <TextBlock Grid.Row="0" Padding="20" TextWrapping="Wrap" TextAlignment="Center" Text="{Binding MessageText}" />
         <ProgressBar Grid.Row="1" Margin="10" Height="25" IsIndeterminate="{Binding IsIndeterminate}" />
     </Grid>
 </Window>

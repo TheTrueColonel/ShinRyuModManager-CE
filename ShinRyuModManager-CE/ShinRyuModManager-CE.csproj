@@ -10,7 +10,7 @@
         <Configurations>Debug;Release</Configurations>
         <Platforms>x64</Platforms>
         <IsPackable>false</IsPackable>
-        <AssemblyVersion>1.1.7</AssemblyVersion>
+        <AssemblyVersion>1.1.8</AssemblyVersion>
         <ApplicationIcon>UserInterface\Assets\Icons\SRMM_icon.ico</ApplicationIcon>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     </PropertyGroup>
@@ -50,6 +50,19 @@
     
     <ItemGroup>
         <AvaloniaResource Include="UserInterface\Assets\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Update="Language\**\*.resx">
+            <Generator>PublicResXFileCodeGenerator</Generator>
+            <LastGenOutput>%(Filename).Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+
+        <Compile Update="Language\**\*.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>%(Filename).resx</DependentUpon>
+        </Compile>
     </ItemGroup>
 
 </Project>

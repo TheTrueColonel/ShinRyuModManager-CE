@@ -6,10 +6,10 @@ using Utils;
 namespace ShinRyuModManager.UserInterface.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase {
-    public string TitleText { get; private set; } = "Shin Ryu Mod Manager";
-    public string AppVersionText { get; private set; } = "SRMM Version";
-    public string GameLaunchPath { get; private set; }
-
+    [ObservableProperty] private string _titleText = "Shin Ryu Mod Manager";
+    [ObservableProperty] private string _appVersionText = "SRMM Version";
+    [ObservableProperty] private string _gameLaunchPath;
+    
     [ObservableProperty] private string _modName = "Mod Name";
     [ObservableProperty] private string _modDescription = "Mod Description";
     [ObservableProperty] private string _modAuthor = "Author";

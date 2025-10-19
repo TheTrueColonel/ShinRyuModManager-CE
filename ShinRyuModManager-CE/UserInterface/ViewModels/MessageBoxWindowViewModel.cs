@@ -1,8 +1,10 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace ShinRyuModManager.UserInterface.ViewModels;
 
-public class MessageBoxWindowViewModel : ViewModelBase {
-    public string MessageText { get; private set; }
-    public bool IsVisible { get; private set; }
+public partial class MessageBoxWindowViewModel : ViewModelBase {
+    [ObservableProperty] private string _messageText;
+    [ObservableProperty] private bool _isVisible;
 
     public MessageBoxWindowViewModel() { }
 

@@ -1,8 +1,10 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace ShinRyuModManager.UserInterface.ViewModels;
 
-public class ProgressWindowViewModel : ViewModelBase {
-    public string MessageText { get; private set; }
-    public bool IsIndeterminate { get; private set; }
+public partial class ProgressWindowViewModel : ViewModelBase {
+    [ObservableProperty] private string _messageText;
+    [ObservableProperty] private bool _isIndeterminate;
 
     public ProgressWindowViewModel() { }
 
