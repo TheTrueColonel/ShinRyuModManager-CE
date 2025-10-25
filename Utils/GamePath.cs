@@ -151,7 +151,7 @@ public static class GamePath {
 
             // Local Machine
             using var hklm = Registry.LocalMachine.OpenSubKey(@"Software\Valve\Steam");
-            var hklmPath = hkcu?.GetValue("InstallPath") as string;
+            var hklmPath = hklm?.GetValue("InstallPath") as string;
 
             hklm?.Close();
 
