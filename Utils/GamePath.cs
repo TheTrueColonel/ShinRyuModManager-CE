@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using System.Security;
+using Microsoft.Win32;
 
 namespace Utils;
 
@@ -130,18 +131,72 @@ public static class GamePath {
     }
 
     private static bool IsSteamInstalledWindows() {
-        using var key = Registry.CurrentUser.OpenSubKey(@"Software\Valve\Steam");
+        if (!OperatingSystem.IsWindows()) {
+            return false;
+        }
+        
+        // Query registry
+        try {
+            // Current User
+            using var hkcu = Registry.CurrentUser.OpenSubKey(@"Software\Valve\Steam");
+            var hkcuPath = hkcu?.GetValue("SteamPath") as string;
 
-        return string.IsNullOrEmpty(key?.GetValue("SteamPath") as string);
+            hkcu?.Close();
+
+            if (!string.IsNullOrEmpty(hkcuPath)) {
+                var exePath = Path.Combine(hkcuPath, "steam.exe");
+
+                return File.Exists(exePath);
+            }
+
+            // Local Machine
+            using var hklm = Registry.LocalMachine.OpenSubKey(@"Software\Valve\Steam");
+            var hklmPath = hkcu?.GetValue("InstallPath") as string;
+
+            hklm?.Close();
+
+            if (!string.IsNullOrEmpty(hklmPath)) {
+                var exePath = Path.Combine(hklmPath, "steam.exe");
+
+                return File.Exists(exePath);
+            }
+        } 
+        catch (SecurityException) { /* ignore */ }
+        catch (UnauthorizedAccessException) { /* ignore */ }
+
+        var potentialLocations = new List<string> {
+            @"C:\Program Files (x86)\Steam",
+            @"C:\Program Files\Steam",
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Steam"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Steam"),
+        };
+
+        return potentialLocations.Any(Directory.Exists);
     }
     
     private static bool IsSteamInstalledLinux() {
+        if (!OperatingSystem.IsLinux()) {
+            return false;
+        }
+        
         var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        var snapEnv = Environment.GetEnvironmentVariable("SNAP_USER_DATA");
+        var snapDir = !string.IsNullOrEmpty(snapEnv) 
+            ? snapEnv 
+            : Path.Combine(home, "snap");
 
         var potentialLocations = new List<string> {
-            Path.Combine(home, ".steam/steam"),
             Path.Combine(home, ".local/share/Steam"),
-            "/user/lib/steam"
+            Path.Combine(home, ".steam/steam"),
+            Path.Combine(home, ".steam/root"),
+            Path.Combine(home, ".steam/debian-installation"),
+            Path.Combine(home, ".var/app/com.valvesoftware.Steam/.local/share/Steam"),
+            Path.Combine(home, ".var/app/com.valvesoftware.Steam/.steam/steam"),
+            Path.Combine(home, ".var/app/com.valvesoftware.Steam/.steam/root"),
+            Path.Combine(snapDir, "steam/common/.local/share/Steam"),
+            Path.Combine(snapDir, "steam/common/.steam/steam"),
+            Path.Combine(snapDir, "steam/common/.steam/root"),
+            "/usr/lib/steam"
         };
 
         return potentialLocations.Any(Directory.Exists);
