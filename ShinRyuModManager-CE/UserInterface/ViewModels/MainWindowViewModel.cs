@@ -18,7 +18,6 @@ public partial class MainWindowViewModel : ViewModelBase {
 
     public MainWindowViewModel() {
         Initialize();
-        LoadModList();
     }
 
     public void SelectMod(ModMeta mod) {

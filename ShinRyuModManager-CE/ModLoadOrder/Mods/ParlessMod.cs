@@ -1,15 +1,14 @@
+using Serilog;
 using Utils;
 
 namespace ShinRyuModManager.ModLoadOrder.Mods;
 
-public class ParlessMod() : Mod(Constants.PARLESS_NAME, 0) {
+public class ParlessMod() : Mod(Constants.PARLESS_NAME) {
     public List<ParlessFolder> ParlessFolders { get; } = [];
     
     public new void PrintInfo() {
-        ConsoleOutput.WriteLineIfVerbose();
-        
         if (ParlessFolders.Count > 0) {
-            ConsoleOutput.WriteLine($"Added {ParlessFolders.Count} .parless path(s)");
+            Log.Information("Added {ParlessFoldersCount} .parless path(s)", ParlessFolders.Count);
         }
         
         base.PrintInfo();
@@ -35,7 +34,7 @@ public class ParlessMod() : Mod(Constants.PARLESS_NAME, 0) {
             
             ParlessFolders.Add(folder);
             
-            ConsoleOutput.WriteLineIfVerbose($"Adding .parless path: {loosePath}");
+            Log.Verbose("Adding .parless path: {LoosePath}", loosePath);
         } else {
             // Continue recursing until we find the next ".parless"
             foreach (var folder in Directory.GetDirectories(path)) {

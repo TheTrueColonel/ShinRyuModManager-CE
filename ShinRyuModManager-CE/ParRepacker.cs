@@ -31,19 +31,19 @@ public static class ParRepacker {
         if (!Directory.Exists(pathToParlessMods))
             return;
         
-        Console.Write("Removing old pars...");
+        Log.Information("Removing old pars...");
         
         try {
             DeleteDirectory(pathToParlessMods);
         } catch {
-            Console.WriteLine($" FAIL! {pathToParlessMods}\n");
+            Log.Warning("Failed to remove old pars! {PathToParlessMods}", pathToParlessMods);
         }
         
-        Console.WriteLine(" DONE!\n");
+        Log.Information("Removed old pars.");
     }
     
     public static async Task RepackDictionary(Dictionary<string, List<string>> parDictionary) {
-        var parTasks = new List<Task<ConsoleOutput>>();
+        var parTasks = new List<Task>();
         
         if (parDictionary.Count == 0) {
             Log.Information("No pars to repack.");
@@ -54,31 +54,19 @@ public static class ParRepacker {
         Log.Information("Repacking pars...");
         
         foreach (var parModPair in parDictionary) {
-            var consoleOutput = new ConsoleOutput(2);
-            
-            parTasks.Add(Task.Run(() => RepackPar(parModPair.Key, parModPair.Value, consoleOutput)));
+            parTasks.Add(Task.Run(() => RepackPar(parModPair.Key, parModPair.Value)));
         }
         
-        while (parTasks.Count > 0) {
-            var console = await Task.WhenAny(parTasks);
-            
-            console.Result?.Flush();
-            
-            parTasks.Remove(console);
-        }
+        await Task.WhenAll(parTasks);
 
         /*foreach (var parModPair in parDictionary) {
-            var consoleOutput = new ConsoleOutput(2);
-
-            RepackPar(parModPair.Key, parModPair.Value, consoleOutput);
-            
-            consoleOutput.Flush();
+            RepackPar(parModPair.Key, parModPair.Value);
         }*/
         
         Log.Information("Repacked {ParDictionaryCount} par(s)!", parDictionary.Count);
     }
     
-    private static ConsoleOutput RepackPar(string parPath, List<string> mods, ConsoleOutput console) {
+    private static void RepackPar(string parPath, List<string> mods) {
         parPath = parPath.TrimStart(Path.DirectorySeparatorChar);
         
         var parPathReal = GamePath.GetRootParPath(parPath + ".par");
@@ -104,7 +92,7 @@ public static class ParRepacker {
         
         // Populate fileDict with the files inside each mod
         foreach (var mod in mods) {
-            foreach (var modFile in GetModFiles(parPath, mod, console)) {
+            foreach (var modFile in GetModFiles(parPath, mod)) {
                 fileDict.TryAdd(modFile, mod);
             }
         }
@@ -195,39 +183,36 @@ public static class ParRepacker {
         // Remove the .partemp directory
         DeleteDirectory(pathToTempPar);
         
-        console.WriteLineIfVerbose();
-        console.WriteLine($"Repacked {fileDict.Count} file(s) in {parPath + ".par"}!");
-        
-        return console;
+        Log.Information("Repacked {FileDictCount} file(s) in {ParPath}!", fileDict.Count, parPath + ".par");
     }
     
-    private static List<string> GetModFiles(string par, string mod, ConsoleOutput console) {
+    private static List<string> GetModFiles(string par, string mod) {
         List<string> result;
         
         if (mod.StartsWith(Constants.PARLESS_NAME)) {
             // Get index of ".parless" in par path
             // 15 = ParlessMod.NAME.Length + 1
-            result = GetModFiles(Path.Combine(GamePath.DataPath, par.Insert(int.Parse(mod[15..]) - 1, ".parless")), console);
+            result = GetModFiles(Path.Combine(GamePath.DataPath, par.Insert(int.Parse(mod[15..]) - 1, ".parless")));
         } else {
-            result = GetModFiles(GamePath.GetModPathFromDataPath(mod, par), console);
+            result = GetModFiles(GamePath.GetModPathFromDataPath(mod, par));
         }
         
         // Get file path relative to par
         return result.Select(f => f.Replace(".parless", "")[(f.Replace(".parless", "").IndexOf(par, StringComparison.Ordinal) + par.Length + 1)..]).ToList();
     }
     
-    private static List<string> GetModFiles(string path, ConsoleOutput console) {
+    private static List<string> GetModFiles(string path) {
         List<string> files = [];
         
         // Add files in current directory
         foreach (var p in Directory.GetFiles(path).Where(f => !f.EndsWith(Constants.VORTEX_MANAGED_FILE)).Select(GamePath.GetDataPathFrom)) {
             files.Add(p);
-            console.WriteLineIfVerbose($"Adding file: {p}");
+            Log.Verbose("Adding file: {file}", p);
         }
         
         // Get files for all subdirectories
         foreach (var folder in Directory.GetDirectories(path)) {
-            files.AddRange(GetModFiles(folder, console));
+            files.AddRange(GetModFiles(folder));
         }
         
         return files;

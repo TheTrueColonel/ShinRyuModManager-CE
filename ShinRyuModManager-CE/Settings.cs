@@ -20,4 +20,7 @@ public static class Settings {
     public const string LIBRARIES_INFO_REPO = "srmm-lib-info";
     public const string LIBRARIES_INFO_REPO_FILE_PATH = "libraries.yaml";
     public const string LIBRARIES_LIBMETA_FILE_NAME = "lib-meta.yaml";
+    
+    //LOGGING
+    public const string LOGS_BASE_PATH = "srmm-logs";
 }

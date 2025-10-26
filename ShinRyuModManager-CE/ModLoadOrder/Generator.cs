@@ -1,4 +1,5 @@
 using Serilog;
+using Serilog.Events;
 using ShinRyuModManager.ModLoadOrder.Mods;
 using Utils;
 
@@ -92,19 +93,19 @@ public static class Generator {
             modsObjects[i] = mod;
         }
         
-        Log.Information("Added {ModCount} mod(s) and {FilesCount} file(s)!\n", mods.Count, files.Count);
+        Log.Information("Added {ModCount} mod(s) and {FilesCount} file(s)!", mods.Count, files.Count);
         
         // Reverse the list because the last mod in the list should have the highest priority
         mods.Reverse();
         
-        Console.Write($"Generating {Constants.MLO} file...");
+        Log.Information($"Generating {Constants.MLO} file...");
         
         // Generate MLO
         var mlo = new MLO(modIndices, mods, files, loose.ParlessFolders, cpkDictionary);
         
         mlo.WriteMLO(Path.Combine(GamePath.FullGamePath, Constants.MLO));
         
-        Console.WriteLine(" DONE!\n");
+        Log.Information("Finished generating MLO.");
         
         // Check if a mod has a par that will override the repacked par, and skip repacking it in that case
         foreach (var key in parDictionary.Keys.ToList()) {
@@ -140,21 +141,21 @@ public static class Generator {
         if (cpkRepackingEnabled) {
             await CpkPatcher.RepackDictionary(cpkRepackDict);
         }
-        
-        if (ConsoleOutput.ShowWarnings) {
-            foreach (var key in modsWithFoldersNotFound.Keys.ToList()) {
-                Console.WriteLine($"Warning: Some folders in the root of \"{key}\" do not exist in the game's data. Check if the mod was extracted correctly.");
-                
-                if (ConsoleOutput.Verbose) {
-                    foreach (var folder in modsWithFoldersNotFound[key]) {
-                        Console.WriteLine($"Folder not found: {folder}");
-                    }
-                }
-                
-                Console.WriteLine();
+
+        if (Program.LogLevel > LogEventLevel.Warning)
+            return mlo;
+
+        foreach (var key in modsWithFoldersNotFound.Keys.ToList()) {
+            Log.Warning("Warning: Some folders in the root of \"{Key}\" do not exist in the game's data. Check if the mod was extracted correctly.", key);
+
+            if (Program.LogLevel != LogEventLevel.Verbose)
+                continue;
+
+            foreach (var folder in modsWithFoldersNotFound[key]) {
+                Log.Warning("Folder not found: {Folder}", folder);
             }
         }
-        
+
         return mlo;
     }
 }

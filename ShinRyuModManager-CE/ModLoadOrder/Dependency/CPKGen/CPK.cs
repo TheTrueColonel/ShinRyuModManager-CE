@@ -1,4 +1,5 @@
 using System.Text;
+using Serilog;
 
 namespace CriPakTools {
     public class CPK(Tools tool) {
@@ -61,7 +62,7 @@ namespace CriPakTools {
                 }
             } catch (Exception ex) {
                 //MessageBox.Show(ex.ToString());
-                Console.WriteLine(ex.ToString());
+                Log.Error(ex, "");
             }
             
             TocOffset = (ulong)GetColumnsData2(Utf, 0, "TocOffset", 3);
@@ -660,8 +661,7 @@ namespace CriPakTools {
                     break;
                 }
             } catch (Exception ex) {
-                //MessageBox.Show(ex.ToString());
-                Console.WriteLine(ex.ToString());
+                Log.Error(ex, "");
                 
                 return null;
             }
@@ -682,8 +682,7 @@ namespace CriPakTools {
                     break;
                 }
             } catch (Exception ex) {
-                //MessageBox.Show(ex.ToString());
-                Console.WriteLine(ex.ToString());
+                Log.Error(ex, "");
                 
                 return -1;
             }
@@ -704,8 +703,7 @@ namespace CriPakTools {
                     break;
                 }
             } catch (Exception ex) {
-                //MessageBox.Show(ex.ToString());
-                Console.WriteLine(ex.ToString());
+                Log.Error(ex, "");
                 
                 return null;
             }

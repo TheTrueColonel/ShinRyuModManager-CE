@@ -7,6 +7,7 @@ using IniParser;
 using IniParser.Model;
 using Serilog;
 using Serilog.Core;
+using Serilog.Events;
 using Serilog.Exceptions;
 using Serilog.Formatting.Json;
 using ShinRyuModManager.Helpers;
@@ -21,34 +22,53 @@ namespace ShinRyuModManager;
 
 public static class Program {
     private static bool _externalModsOnly = true;
-    private static bool _looseFilesEnabled = false;
+    private static bool _looseFilesEnabled;
     private static bool _cpkRepackingEnabled = true;
     private static bool _checkForUpdates = true;
-    private static bool _isSilent = false;
-    private static bool _migrated = false;
+    private static bool _isSilent;
+    private static bool _migrated;
+    private static IniData _iniData;
     
-    public static bool RebuildMlo = true;
-    public static bool IsRebuildMloSupported = true;
+    private static readonly FileIniDataParser IniParser;
 
-    public static List<LibMeta> LibraryMetaCache = new List<LibMeta>();
+    public static bool RebuildMlo { get; private set; } = true;
+    public static bool IsRebuildMloSupported { get; private set; } = true;
+    public static LogEventLevel LogLevel { get; private set; } = LogEventLevel.Information;
+    public static List<LibMeta> LibraryMetaCache { get; set; } = [];
+
+    static Program() {
+        IniParser = new FileIniDataParser {
+            Parser = {
+                Configuration = {
+                    AssigmentSpacer = string.Empty
+                }
+            }
+        };
+    }
     
     [STAThread]
     private static void Main(string[] args) {
+        Directory.CreateDirectory(Settings.LOGS_BASE_PATH);
+        
+        var defaultLogsPath = Path.Combine(Settings.LOGS_BASE_PATH, "srmm_logs.log");
+        var errorLogsPath = Path.Combine(Settings.LOGS_BASE_PATH, "srmm_errors.log");
+        
+        LoadConfig();
+        
         // Create global logger
         Log.Logger = new LoggerConfiguration()
-                     .MinimumLevel.ControlledBy(new LoggingLevelSwitch())
+                     .MinimumLevel.ControlledBy(new LoggingLevelSwitch(LogLevel))
                      .Enrich.WithExceptionDetails()
                      // Log to SRMM logs file
                      .WriteTo.Logger(l => l
                                           .Filter.ByIncludingOnly(e => e.Exception == null)
-                                          .WriteTo.Async(a => a.File("srmm_logs.txt", shared: false)))
+                                          .WriteTo.Async(a => a.File(defaultLogsPath, rollingInterval: RollingInterval.Day))
+                                          .WriteTo.Async(a => a.Console()))
                      // Logs exceptions separately
                      .WriteTo.Logger(l => l
                                           .Filter.ByIncludingOnly(e => e.Exception != null)
-                                          .WriteTo.Async(a => a.File(new JsonFormatter(renderMessage: true), "srmm_errors.txt")))
+                                          .WriteTo.Async(a => a.File(new JsonFormatter(renderMessage: true), errorLogsPath, rollingInterval: RollingInterval.Day)))
                      .CreateLogger();
-
-        Log.Information("Shin Ryu Mod Manager Start");
 
         // TODO: Temporary, YakuzaParless.asi currently only supports the Windows binary. Currently disabling RebuildMLO on Linux
         if (!OperatingSystem.IsWindows()) {
@@ -59,7 +79,7 @@ public static class Program {
         // Unfortunately, no one way to detect left Ctrl while being cross-platform
         if (args.Length == 0) {
             if (_checkForUpdates) {
-                // TODO: Implemente updates
+                // TODO: Implement updates
             }
             
             Log.Information("Shin Ryu Mod Manager GUI Application Start");
@@ -75,6 +95,7 @@ public static class Program {
     private static AppBuilder BuildAvaloniaApp() {
         GC.KeepAlive(typeof(SvgImageExtension).Assembly);
         GC.KeepAlive(typeof(Svg.Skia.SKSvg).Assembly);
+        
         return AppBuilder.Configure<App>()
                          .UsePlatformDetect()
                          .WithInterFont()
@@ -82,19 +103,19 @@ public static class Program {
     }
     
     private static async Task MainCLI(string[] args) {
-        Console.WriteLine($"Shin Ryu Mod Manager-CE v{AssemblyVersion.GetVersion()}");
-        Console.WriteLine("By TheTrueColonel (a port of SRMM Studio's work)\n");
+        Log.Information("Shin Ryu Mod Manager-CE v{Version}", AssemblyVersion.GetVersion());
+        Log.Information("By TheTrueColonel (a port of SRMM Studio's work)");
         
         // Parse arguments
         var list = new List<string>(args);
         
         if (list.Contains("-h") || list.Contains("--help")) {
-            Console.WriteLine("Usage: run without arguments to generate mod load order.");
+            Log.Information("Usage: run without arguments to generate mod load order.");
             
-            Console.WriteLine("       run with \"-s\" or \"--silent\" flag to prevent checking for updates and remove prompts.");
+            Log.Information("       run with \"-s\" or \"--silent\" flag to prevent checking for updates and remove prompts.");
             
-            //Console.WriteLine("       run with \"-r\" or \"--run\" flag to run the game after the program finishes.");
-            Console.WriteLine("       run with \"-h\" or \"--help\" flag to show this message and exit.");
+            //Log.Information("       run with \"-r\" or \"--run\" flag to run the game after the program finishes.");
+            Log.Information("       run with \"-h\" or \"--help\" flag to show this message and exit.");
             
             return;
         }
@@ -119,73 +140,69 @@ public static class Program {
         }*/
     }
 
-    internal static List<ModInfo> PreRun() {
-        var iniParser = new FileIniDataParser();
-        iniParser.Parser.Configuration.AssigmentSpacer = string.Empty;
-        
-        IniData ini;
-
+    private static void LoadConfig() {
         if (File.Exists(Constants.INI)) {
-            ini = iniParser.ReadFile(Constants.INI);
+            _iniData = IniParser.ReadFile(Constants.INI);
             
-            if (ini.TryGetKey("Overrides.LooseFilesEnabled", out var looseFiles)) {
+            if (_iniData.TryGetKey("Overrides.LooseFilesEnabled", out var looseFiles)) {
                 _looseFilesEnabled = int.Parse(looseFiles) == 1;
             }
             
-            if (ini.TryGetKey("RyuModManager.Verbose", out var verbose)) {
-                ConsoleOutput.Verbose = int.Parse(verbose) == 1;
+            if (_iniData.TryGetKey("RyuModManager.Verbose", out var verbose)) {
+                if (int.Parse(verbose) == 1) {
+                    LogLevel = LogEventLevel.Verbose;
+                }
             }
             
-            if (ini.TryGetKey("RyuModManager.CheckForUpdates", out var check)) {
+            if (_iniData.TryGetKey("RyuModManager.CheckForUpdates", out var check)) {
                 _checkForUpdates = int.Parse(check) == 1;
             }
             
-            if (ini.TryGetKey("RyuModManager.ShowWarnings", out var showWarnings)) {
-                ConsoleOutput.ShowWarnings = int.Parse(showWarnings) == 1;
+            if (_iniData.TryGetKey("RyuModManager.ShowWarnings", out var showWarnings)) {
+                //ConsoleOutput.ShowWarnings = int.Parse(showWarnings) == 1;
             }
             
-            if (ini.TryGetKey("RyuModManager.LoadExternalModsOnly", out var extMods)) {
+            if (_iniData.TryGetKey("RyuModManager.LoadExternalModsOnly", out var extMods)) {
                 _externalModsOnly = int.Parse(extMods) == 1;
             }
             
-            if (ini.TryGetKey("Overrides.RebuildMLO", out var rebuildMlo)) {
+            if (_iniData.TryGetKey("Overrides.RebuildMLO", out var rebuildMlo)) {
                 RebuildMlo = int.Parse(rebuildMlo) == 1;
             }
             
-            if (!ini.TryGetKey("Parless.IniVersion", out var iniVersion) ||
+            if (!_iniData.TryGetKey("Parless.IniVersion", out var iniVersion) ||
                 int.Parse(iniVersion) < ParlessIni.CURRENT_VERSION) {
                 // Update if ini version is old (or does not exist)
-                Console.Write(Constants.INI + " is outdated. Updating ini to the latest version... ");
+                Log.Information($"{Constants.INI} is outdated. Updating ini to the latest version... ");
                 
                 if (int.Parse(iniVersion) <= 3) {
                     // Force enable RebuildMLO option
-                    ini.Sections["Overrides"]["RebuildMLO"] = "1";
+                    _iniData.Sections["Overrides"]["RebuildMLO"] = "1";
                     RebuildMlo = true;
                 }
                 
-                iniParser.WriteFile(Constants.INI, IniTemplate.UpdateIni(ini));
-                Console.WriteLine("DONE!\n");
+                IniParser.WriteFile(Constants.INI, IniTemplate.UpdateIni(_iniData));
+                Log.Information($"Updated {Constants.INI}");
             }
         } else {
             // Create ini if it does not exist
-            Console.Write(Constants.INI + " was not found. Creating default ini... ");
-            iniParser.WriteFile(Constants.INI, IniTemplate.NewIni());
-            Console.WriteLine("DONE!\n");
+            Log.Information($"{Constants.INI} was not found. Creating default ini...");
+            IniParser.WriteFile(Constants.INI, IniTemplate.NewIni());
         }
-        
+    }
+
+    internal static List<ModInfo> PreRun() {
         if (GamePath.CurrentGame != Game.Unsupported && !Directory.Exists(GamePath.MODS)) {
             if (!Directory.Exists(GamePath.MODS)) {
                 // Create mods folder if it does not exist
-                Console.Write($"\"{GamePath.MODS}\" folder was not found. Creating empty folder... ");
+                Log.Information($"\"{GamePath.MODS}\" folder was not found. Creating empty folder... ");
                 Directory.CreateDirectory(GamePath.MODS);
-                Console.WriteLine("DONE!\n");
             }
             
             if (!Directory.Exists(GamePath.LIBRARIES)) {
                 // Create libraries folder if it does not exist
-                Console.Write($"\"{GamePath.LIBRARIES}\" folder was not found. Creating empty folder... ");
+                Log.Information($"\"{GamePath.LIBRARIES}\" folder was not found. Creating empty folder... ");
                 Directory.CreateDirectory(GamePath.LIBRARIES);
-                Console.WriteLine("DONE!\n");
             }
         }
         
@@ -193,59 +210,47 @@ public static class Program {
         // Virtua Fighter eSports crashes when used with dinput8.dll as the ASI loader
         if (GamePath.CurrentGame == Game.Eve && File.Exists(Constants.DINPUT8DLL)) {
             if (File.Exists(Constants.VERSIONDLL)) {
-                Console.Write($"Game specific patch: Deleting {Constants.DINPUT8DLL} because {Constants.VERSIONDLL} exists...");
+                Log.Warning($"Game specific patch: Deleting {Constants.DINPUT8DLL} because {Constants.VERSIONDLL} exists...");
                 
                 // Remove dinput8.dll
                 File.Delete(Constants.DINPUT8DLL);
             } else {
-                Console.Write($"Game specific patch: Renaming {Constants.DINPUT8DLL} to {Constants.VERSIONDLL}...");
+                Log.Warning($"Game specific patch: Renaming {Constants.DINPUT8DLL} to {Constants.VERSIONDLL}...");
                 
                 // Rename dinput8.dll to version.dll to prevent the game from crashing
                 File.Move(Constants.DINPUT8DLL, Constants.VERSIONDLL);
             }
-            
-            Console.WriteLine(" DONE!\n");
         } else if (GamePath.CurrentGame is Game.Judgment or Game.LostJudgment) {
             // Lost Judgment (and Judgment post update 1) does not like Ultimate ASI Loader, so instead we use a custom build of DllSpoofer (https://github.com/Kazurin-775/DllSpoofer)
             if (File.Exists(Constants.DINPUT8DLL)) {
-                Console.Write($"Game specific patch: Deleting {Constants.DINPUT8DLL} because it causes crashes with Judgment games...");
+                Log.Warning($"Game specific patch: Deleting {Constants.DINPUT8DLL} because it causes crashes with Judgment games...");
                 
                 // Remove dinput8.dll
                 File.Delete(Constants.DINPUT8DLL);
-                
-                Console.WriteLine(" DONE!\n");
             }
             
             if (!File.Exists(Constants.WINMMDLL)) {
                 if (File.Exists(Constants.WINMMLJ)) {
-                    Console.Write($"Game specific patch: Enabling {Constants.WINMMDLL} by renaming {Constants.WINMMLJ} to fix Judgment games crashes...");
+                    Log.Warning($"Game specific patch: Enabling {Constants.WINMMDLL} by renaming {Constants.WINMMLJ} to fix Judgment games crashes...");
                     
                     // Rename dinput8.dll to version.dll to prevent the game from crashing
                     File.Move(Constants.WINMMLJ, Constants.WINMMDLL);
-                    
-                    Console.WriteLine(" DONE!\n");
                 } else {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    
-                    Console.WriteLine($"WARNING: {Constants.WINMMLJ} was not found. Judgment games will NOT load mods without this file. Please redownload Shin Ryu Mod Manager.\n");
-                    
-                    Console.ResetColor();
+                    Log.Error($"WARNING: {Constants.WINMMLJ} was not found. Judgment games will NOT load mods without this file. Please redownload Shin Ryu Mod Manager.");
                 }
             }
         }
         
         // Read ini (again) to check if we should try importing the old load order file
-        ini = iniParser.ReadFile(Constants.INI);
+        _iniData = IniParser.ReadFile(Constants.INI);
             
         if (GamePath.CurrentGame is Game.Judgment or Game.LostJudgment or Game.LikeADragonPirates) {
             // Disable RebuildMLO when using an external mod manager
-            if (ini.TryGetKey("Overrides.RebuildMLO", out _)) {
-                Console.Write("Game specific patch: Disabling RebuildMLO for some games when using an external mod manager...");
+            if (_iniData.TryGetKey("Overrides.RebuildMLO", out _)) {
+                Log.Warning("Game specific patch: Disabling RebuildMLO for some games when using an external mod manager...");
                     
-                ini.Sections["Overrides"]["RebuildMLO"] = "0";
-                iniParser.WriteFile(Constants.INI, ini);
-                    
-                Console.WriteLine(" DONE!\n");
+                _iniData.Sections["Overrides"]["RebuildMLO"] = "0";
+                IniParser.WriteFile(Constants.INI, _iniData);
             }
         }
         
@@ -257,7 +262,7 @@ public static class Program {
         } else {
             var defaultEnabled = true;
             
-            if (File.Exists(Constants.TXT_OLD) && ini.GetKey("SavedSettings.ModListImported") == null) {
+            if (File.Exists(Constants.TXT_OLD) && _iniData.GetKey("SavedSettings.ModListImported") == null) {
                 // Scanned mods should be disabled, because that's how they were with the old txt format
                 defaultEnabled = false;
                 
@@ -265,53 +270,47 @@ public static class Program {
                 _migrated = true;
                 
                 // Migrate old format to new
-                Console.Write("Old format load order file (" + Constants.TXT_OLD + ") was found. Importing to the new format...");
+                Log.Information("Old format load order file (" + Constants.TXT_OLD + ") was found. Importing to the new format...");
                 
                 mods.AddRange(ConvertOldToNewModList(ReadModLoadOrderTxt(Constants.TXT_OLD))
                     .Where(n => !mods.Any(m => EqualModNames(m.Name, n.Name))));
-                
-                Console.WriteLine(" DONE!\n");
             } else if (File.Exists(Constants.TXT)) {
                 mods.AddRange(ReadModListTxt(Constants.TXT).Where(n => !mods.Any(m => EqualModNames(m.Name, n.Name))));
             } else {
-                Console.WriteLine(Constants.TXT + " was not found. Will load all existing mods.\n");
+                Log.Information($"{Constants.TXT} was not found. Will load all existing mods.\n");
             }
             
             if (Directory.Exists(GamePath.MODS)) {
                 // Add all scanned mods that have not been added to the load order yet
-                Console.Write("Scanning for mods...");
+                Log.Information("Scanning for mods...");
                 
                 mods.AddRange(ScanMods().Where(n => !mods.Any(m => EqualModNames(m.Name, n)))
                                         .Select(m => new ModInfo(m, defaultEnabled)));
                 
-                Console.WriteLine(" DONE!\n");
+                Log.Information("Found {ModsCount} mods.", mods.Count);
             }
         }
         
         if (!GamePath.IsXbox(Path.Combine(GamePath.FullGamePath)))
             return mods;
         
-        if (!ini.TryGetKey("Overrides.RebuildMLO", out _))
+        if (!_iniData.TryGetKey("Overrides.RebuildMLO", out _))
             return mods;
         
-        Console.Write($"Game specific patch: Disabling RebuildMLO for Xbox games...");
+        Log.Warning("Game specific patch: Disabling RebuildMLO for Xbox games...");
         
-        ini.Sections["Overrides"]["RebuildMLO"] = "0";
-        iniParser.WriteFile(Constants.INI, ini);
-        
-        Console.WriteLine(" DONE!\n");
+        _iniData.Sections["Overrides"]["RebuildMLO"] = "0";
+        IniParser.WriteFile(Constants.INI, _iniData);
         
         return mods;
     }
     
     internal static async Task RunGeneration(List<string> mods) {
         if (File.Exists(Constants.MLO)) {
-            Console.Write("Removing old MLO...");
+            Log.Information("Removing old MLO...");
             
             // Remove existing MLO file to avoid it being used if a new MLO won't be generated
             File.Delete(Constants.MLO);
-            
-            Console.WriteLine(" DONE!");
         }
         
         // Remove previously repacked pars, to avoid unwanted side effects
@@ -384,33 +383,31 @@ public static class Program {
                 return;
             }
             
-            Console.WriteLine("Aborting: No mods were found, and .parless paths are disabled\n");
+            Log.Warning("Aborting: No mods were found, and .parless paths are disabled");
         }
         
-        Console.WriteLine("Aborting: No supported game was found in this directory\n");
+        Log.Warning("Aborting: No supported game was found in this directory");
     }
 
     private static void PostRun() {
         // Check if the ASI loader is not in the directory (possibly due to incorrect zip extraction)
         if (MissingDll()) {
-            Console.WriteLine($"Warning: \"{Constants.DINPUT8DLL}\" is missing from this directory. Shin Ryu Mod Manager will NOT function properly without this file\n");
+            Log.Warning($"Warning: \"{Constants.DINPUT8DLL}\" is missing from this directory. Shin Ryu Mod Manager will NOT function properly without this file");
         }
 
         // Check if the ASI is not in the directory
         if (MissingAsi()) {
-            Console.WriteLine($"Warning: \"{Constants.ASI}\" is missing from this directory. Shin Ryu Mod Manager will NOT function properly without this file\n");
+            Log.Warning($"Warning: \"{Constants.ASI}\" is missing from this directory. Shin Ryu Mod Manager will NOT function properly without this file");
         }
 
         // Calculate the checksum for the game's exe to inform the user if their version might be unsupported
-        if (ConsoleOutput.ShowWarnings && InvalidGameExe()) {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Warning: Game version is unrecognized. Please use the latest Steam version of the game.");
-            Console.WriteLine($"Shin Ryu Mod Manager will still generate the load order, but the game might CRASH or not function properly\n");
-            Console.ResetColor();
+        if (LogLevel <= LogEventLevel.Warning && InvalidGameExe()) {
+            Log.Error("Warning: Game version is unrecognized. Please use the latest Steam version of the game.");
+            Log.Error("Shin Ryu Mod Manager will still generate the load order, but the game might CRASH or not function properly");
         }
 
         if (!_isSilent) {
-            Console.WriteLine("Program finished. Press any key to exit...");
+            Log.Information("Program finished. Press any key to exit...");
             Console.ReadKey();
         }
     }
@@ -523,7 +520,7 @@ public static class Program {
             ini["SavedSettings"].AddKey("ModListImported", "true");
             iniParser.WriteFile(Constants.INI, ini);
         } catch {
-            Console.WriteLine($"Could not delete {Constants.TXT_OLD}. This file should be deleted manually.");
+            Log.Warning($"Could not delete {Constants.TXT_OLD}. This file should be deleted manually.");
         }
 
         return result;
@@ -668,7 +665,6 @@ public static class Program {
 
             return path;
         } catch (Exception ex) {
-            Debug.WriteLine(ex);
             Log.Error(ex, "Failed to download library!");
 
             return string.Empty;
