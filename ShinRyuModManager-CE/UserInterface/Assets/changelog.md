@@ -1,3 +1,16 @@
+> ### **%{color:orange} Version 1.1.10 %** ###
+* Finished overhaul of logging
+* Moved SRMM logs to their own folder
+* Allow logs to rotate
+* Removed legacy logging system
+
+---
+
+> ### **%{color:orange} Version 1.1.9 %** ###
+* Made stream install search more robust
+
+---
+
 > ### **%{color:orange} Version 1.1.8 %** ###
 * Initial pass for allowing internationalization
 * Fixed minor style issues

@@ -10,7 +10,7 @@
         <Configurations>Debug;Release</Configurations>
         <Platforms>x64</Platforms>
         <IsPackable>false</IsPackable>
-        <AssemblyVersion>1.1.9</AssemblyVersion>
+        <AssemblyVersion>1.1.10</AssemblyVersion>
         <ApplicationIcon>UserInterface\Assets\Icons\SRMM_icon.ico</ApplicationIcon>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     </PropertyGroup>
