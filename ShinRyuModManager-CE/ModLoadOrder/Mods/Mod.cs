@@ -1,4 +1,5 @@
 using System.Text;
+using Serilog;
 using Utils;
 
 namespace ShinRyuModManager.ModLoadOrder.Mods;
@@ -26,45 +27,38 @@ public class Mod {
     /// </summary>
     public List<string> RepackCpKs { get; }
     
-    protected readonly ConsoleOutput ConsoleOutput;
-    
-    public Mod(string name, int indent = 2) {
+    public Mod(string name) {
         Name = name;
         Files = [];
         ParFolders = [];
         CpkFolders = [];
         RepackCpKs = [];
         
-        ConsoleOutput = new ConsoleOutput(indent);
-        ConsoleOutput.WriteLine($"Reading directory: {name} ...");
+        Log.Information("Reading directory: {Name} ...", name);
     }
     
     public void PrintInfo() {
-        ConsoleOutput.WriteLineIfVerbose();
-        
         if (Files.Count > 0 || ParFolders.Count > 0) {
             if (Files.Count > 0) {
-                ConsoleOutput.WriteLine($"Added {Files.Count} file(s)");
+                Log.Information("Added {FilesCount} file(s)", Files.Count);
             }
             
             if (ParFolders.Count > 0) {
-                ConsoleOutput.WriteLine($"Added {ParFolders.Count} folder(s) to be repacked");
+                Log.Information("Added {ParFoldersCount} folder(s) to be repacked", ParFolders.Count);
             }
             
             if (CpkFolders.Count > 0) {
-                ConsoleOutput.WriteLine($"Added {CpkFolders.Count} CPK folder(s) to be bound");
+                Log.Information("Added {CpkFoldersCount} CPK folder(s) to be bound", CpkFolders.Count);
             }
         } else {
-            ConsoleOutput.WriteLine($"Nothing found for {Name}, skipping");
+            Log.Information("Nothing found for {Name}, skipping", Name);
         }
-        
-        ConsoleOutput.Flush();
     }
     
     public void AddFiles(string path, string check) {
         var needsRepack = false;
         var basename = GamePath.GetBasename(path);
-        var parentDir = new DirectoryInfo(path).Parent.Name;
+        var parentDir = new DirectoryInfo(path).Parent!.Name;
         
         // Check if this path does not need repacking
         if (Name != "Parless") {
@@ -144,7 +138,7 @@ public class Mod {
                 
                     if (GamePath.CurrentGame == Game.Yakuza5) {
                         CpkFolders.Add(cpkDataPath + ".cpk");
-                        ConsoleOutput.WriteLineIfVerbose($"Adding CPK folder: {cpkDataPath}");
+                        Log.Verbose("Adding CPK folder: {CpkDataPath}", cpkDataPath);
                     } else {
                         if (GamePath.CurrentGame <= Game.YakuzaKiwami) {
                             RepackCpKs.Add(cpkDataPath + ".cpk");
@@ -163,7 +157,7 @@ public class Mod {
                 
                     if (GamePath.CurrentGame is Game.Judgment or Game.LostJudgment) {
                         CpkFolders.Add(cpkDataPath + ".par");
-                        ConsoleOutput.WriteLineIfVerbose($"Adding CPK folder: {cpkDataPath}");
+                        Log.Verbose("Adding CPK folder: {CpkDataPath}", cpkDataPath);
                     }
                 
                     break;
@@ -171,7 +165,7 @@ public class Mod {
                     cpkDataPath = GamePath.RemoveModPath(path);
                 
                     CpkFolders.Add($"{cpkDataPath}.cpk");
-                    ConsoleOutput.WriteLineIfVerbose($"Adding CPK folder: {cpkDataPath}");
+                    Log.Verbose("Adding CPK folder: {CpkDataPath}", cpkDataPath);
 
                     break;
             }
@@ -241,14 +235,14 @@ public class Mod {
             
             // Add this folder to the list of folders to be repacked and stop recursing
             ParFolders.Add(dataPath);
-            ConsoleOutput.WriteLineIfVerbose($"Adding repackable folder: {dataPath}");
+            Log.Verbose("Adding repackable folder: {DataPath}", dataPath);
         } else {
             // Add files in current directory
             var files = Directory.GetFiles(path).Where(f => !f.EndsWith(Constants.VORTEX_MANAGED_FILE)).Select(GamePath.GetDataPathFrom);
             
             foreach (var p in files) {
                 Files.Add(p);
-                ConsoleOutput.WriteLineIfVerbose($"Adding file: {p}");
+                Log.Verbose("Adding file: {file}", p);
             }
 
             var isParlessMod = GetType() == typeof(ParlessMod);

@@ -6,6 +6,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Serilog;
+using Serilog.Events;
 using ShinRyuModManager.Helpers;
 using ShinRyuModManager.ModLoadOrder.Mods;
 using ShinRyuModManager.UserInterface.ViewModels;
@@ -71,7 +72,7 @@ public partial class MainWindow : Window {
             _ = await MessageBoxWindow.Show(this, "Warning", "External mods folder detected. Please run Shin Ryu Mod Manager in CLI mode (use --cli parameter) and use the external mod manager instead.");
         }
 
-        if (ConsoleOutput.ShowWarnings) {
+        if (Program.LogLevel <= LogEventLevel.Warning) {
             if (Program.MissingDll()) {
                 _ = await MessageBoxWindow.Show(this, "Warning", $"{Constants.DINPUT8DLL} is missing from this directory. Mods will NOT be applied without this file.");
             }
