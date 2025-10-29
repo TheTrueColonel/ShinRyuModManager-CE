@@ -1,3 +1,8 @@
+> ### **%{color:orange} Version 1.1.11 %** ###
+* Implemented changed from SRMM 4.6.5
+
+---
+
 > ### **%{color:orange} Version 1.1.10 %** ###
 * Finished overhaul of logging
 * Moved SRMM logs to their own folder

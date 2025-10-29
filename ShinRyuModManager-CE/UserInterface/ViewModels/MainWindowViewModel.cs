@@ -29,7 +29,7 @@ public partial class MainWindowViewModel : ViewModelBase {
 
     private void Initialize() {
         TitleText = $"Shin Ryu Mod Manager [{GamePath.GetGameFriendlyName(GamePath.CurrentGame)}]";
-        AppVersionText = $"v{Utils.GetAppVersion()}";
+        AppVersionText = $"v{AssemblyVersion.GetVersion()}";
 
         // Prefer launching through Steam, but if Windows, allow launching via exe
         if (GamePath.IsSteamInstalled()) {

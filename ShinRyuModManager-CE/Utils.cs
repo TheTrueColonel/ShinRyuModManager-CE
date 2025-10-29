@@ -19,10 +19,6 @@ public static class Utils {
         return NormalizeSeparator(path, NodeSystem.PathSeparator.ToCharArray()[0]);
     }
 
-    public static string GetAppVersion() {
-        return Assembly.GetExecutingAssembly().GetName().Version!.ToString();
-    }
-
     internal static bool CheckFlag(string flagName) {
         var currentPath = Path.GetDirectoryName(Environment.CurrentDirectory);
         var flagFilePath = Path.Combine(currentPath, flagName);

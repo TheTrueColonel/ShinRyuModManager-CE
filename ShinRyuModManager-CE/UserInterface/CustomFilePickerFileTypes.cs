@@ -5,9 +5,9 @@ namespace ShinRyuModManager.UserInterface;
 public static class CustomFilePickerFileTypes {
     public static FilePickerFileType CompressedZip { get; } = new("Zip Archive")
     {
-        Patterns = ["*.zip"],
-        AppleUniformTypeIdentifiers = ["public.zip-archive"],
-        MimeTypes = ["application/zip"]
+        Patterns = ["*.zip", "*.7z"],
+        AppleUniformTypeIdentifiers = ["public.zip-archive", "org.7-zip.7-zip-archive"],
+        MimeTypes = ["application/zip", "application/x-7z-compressed"]
     };
     
     public static FilePickerFileType CompressedRar { get; } = new("Rar Archive")

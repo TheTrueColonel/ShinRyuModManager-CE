@@ -10,9 +10,21 @@
         <Configurations>Debug;Release</Configurations>
         <Platforms>x64</Platforms>
         <IsPackable>false</IsPackable>
-        <AssemblyVersion>1.1.10</AssemblyVersion>
         <ApplicationIcon>UserInterface\Assets\Icons\SRMM_icon.ico</ApplicationIcon>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        
+        <!-- Versioning -->
+        <AssemblyVersion>1.1.11</AssemblyVersion>
+        <VersionPrefix>$(AssemblyVersion)</VersionPrefix>
+        <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    </PropertyGroup>
+    
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <VersionSuffix>debug</VersionSuffix>
+    </PropertyGroup>
+    
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <VersionSuffix>$(BuildSuffix)</VersionSuffix>
     </PropertyGroup>
 
     <ItemGroup>
@@ -37,7 +49,7 @@
         <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-        <PackageReference Include="SharpCompress" Version="0.40.0" />
+        <PackageReference Include="SharpCompress" Version="0.41.0" />
         <PackageReference Include="Skia.Controls.Avalonia" Version="11.3.0.3" />
         <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="11.3.0.3" />
         <PackageReference Include="YamlDotNet" Version="16.3.0" />

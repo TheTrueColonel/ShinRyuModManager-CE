@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using Utils;
 
 namespace ShinRyuModManager.UserInterface.ViewModels;
 
@@ -11,7 +12,7 @@ public partial class AboutWindowViewModel : ViewModelBase {
     }
 
     private void Initialize() {
-        Version = $"v{Utils.GetAppVersion()}";
+        Version = $"v{AssemblyVersion.GetVersion()}";
 
         using var credits = UiHelpers.LoadResourceAsStream("credits.txt");
         using var sr = new StreamReader(credits);
