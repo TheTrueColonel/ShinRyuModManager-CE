@@ -137,8 +137,8 @@ public class Mod {
                     cpkDataPath = GamePath.RemoveModPath(path);
                 
                     if (GamePath.CurrentGame == Game.Yakuza5) {
-                        CpkFolders.Add(cpkDataPath + ".cpk");
-                        Log.Verbose("Adding CPK folder: {CpkDataPath}", cpkDataPath);
+                        RepackCpKs.Add(cpkDataPath + ".cpk");
+                        //Log.Verbose("Adding CPK folder: {CpkDataPath}", cpkDataPath);
                     } else {
                         if (GamePath.CurrentGame <= Game.YakuzaKiwami) {
                             RepackCpKs.Add(cpkDataPath + ".cpk");

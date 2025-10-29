@@ -19,13 +19,20 @@ internal static class CpkPatcher {
         
         foreach (var kvp in cpkDict) {
             var cpkDir = cpkPath + kvp.Key;
-            var origCpk = GamePath.DataPath + kvp.Key + ".cpk";
+
+            string origCpk;
+
+            if (!kvp.Key.Contains(".cpk")) {
+                origCpk = GamePath.DataPath + kvp.Key + ".cpk";
+            } else {
+                origCpk = GamePath.DataPath + kvp.Key;
+            }
             
             if (!Directory.Exists(cpkDir))
                 Directory.CreateDirectory(cpkDir);
             
             foreach (var mod in kvp.Value) {
-                var modCpkDir = Path.Combine(GamePath.ModsPath, mod);
+                var modCpkDir = Path.Combine(GamePath.ModsPath, mod).Replace(".cpk", "");
                 var cpkFiles = Directory.GetFiles(modCpkDir, "*.");
                 
                 foreach (var file in cpkFiles) {
