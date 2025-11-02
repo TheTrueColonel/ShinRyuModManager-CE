@@ -7,7 +7,7 @@ namespace ShinRyuModManager.ModLoadOrder;
 
 public static class Generator {
     public static async Task<MLO> GenerateModeLoadOrder(List<string> mods, bool looseFilesEnabled, bool cpkRepackingEnabled) {
-        var modIndices = new List<int> { 0 };
+        List<int> modIndices = [0];
         var files = new OrderedSet<string>();
         var modsWithFoldersNotFound = new Dictionary<string, List<string>>(); // Dict of Mod, ListOfFolders
         var parDictionary = new Dictionary<string, List<string>>(); // Dict of PathToPar, ListOfMods
@@ -82,6 +82,10 @@ public static class Generator {
                 var subPathName = new DirectoryInfo(subPath).Name;
                 
                 if (!(GamePath.DirectoryExistsInData(subPathName) || GamePath.FileExistsInData($"{subPathName}.par"))) {
+                    // While "stream" isn't a folder in Y0 or Kiwami, it shouldn't warn the user as it's used in place of bgm.cpk
+                    if (GamePath.CurrentGame is Game.Yakuza0 or Game.YakuzaKiwami && subPathName == "stream")
+                        continue;
+                    
                     foldersNotFound.Add(subPathName);
                 }
             }

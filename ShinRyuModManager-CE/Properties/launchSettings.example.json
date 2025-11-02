@@ -4,7 +4,7 @@
     "ShinRyuModManager-CE": {
       "commandName": "Project",
       "commandLineArgs": "",
-      "workingDirectory": "/mnt/nvme-storage/SteamLibrary/steamapps/common/Yakuza 5/main/"
+      "workingDirectory": "" // Path to folder containing exe
     }
   }
 }

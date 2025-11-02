@@ -240,9 +240,13 @@ public class Mod {
             // Add files in current directory
             var files = Directory.GetFiles(path).Where(f => !f.EndsWith(Constants.VORTEX_MANAGED_FILE)).Select(GamePath.GetDataPathFrom);
             
-            foreach (var p in files) {
-                Files.Add(p);
-                Log.Verbose("Adding file: {file}", p);
+            foreach (var file in files) {
+                // No need to add the meta file
+                if (file.EndsWith("mod-meta.yaml"))
+                    continue;
+                
+                Files.Add(file);
+                Log.Verbose("Adding file: {file}", file);
             }
 
             var isParlessMod = GetType() == typeof(ParlessMod);
