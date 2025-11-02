@@ -15,7 +15,7 @@
         <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
         
         <!-- Versioning -->
-        <AssemblyVersion>1.1.11</AssemblyVersion>
+        <AssemblyVersion>1.1.12</AssemblyVersion>
         <VersionPrefix>$(AssemblyVersion)</VersionPrefix>
         <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     </PropertyGroup>
@@ -35,12 +35,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.3.3" />
-        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.3" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.3.3" />
-        <PackageReference Include="Avalonia.Diagnostics" Version="11.3.3" />
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.3" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.3" />
+        <PackageReference Include="Avalonia" Version="11.3.8" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.8" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.3.8" />
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.3.8" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.8" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.8" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
         <PackageReference Include="ini-parser" Version="2.5.2" />
         <PackageReference Include="Markdown.Avalonia" Version="11.0.2" />
@@ -49,11 +49,11 @@
         <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
         <PackageReference Include="Serilog.Expressions" Version="5.0.0" />
         <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.1.0" />
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
         <PackageReference Include="SharpCompress" Version="0.41.0" />
-        <PackageReference Include="Skia.Controls.Avalonia" Version="11.3.0.3" />
-        <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="11.3.0.3" />
+        <PackageReference Include="Skia.Controls.Avalonia" Version="11.3.6.2" />
+        <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="11.3.6.2" />
         <PackageReference Include="YamlDotNet" Version="16.3.0" />
     </ItemGroup>
 
