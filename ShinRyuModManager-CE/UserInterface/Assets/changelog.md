@@ -1,3 +1,10 @@
+> ### **%{color:orange} Version 1.1.12 %** ###
+* Minor Cleanup
+* EXPERIMENTAL: Trimming support on non \*-slim builds
+* Updated libraries
+
+---
+
 > ### **%{color:orange} Version 1.1.11 %** ###
 * Implemented changed from SRMM 4.6.5
 
