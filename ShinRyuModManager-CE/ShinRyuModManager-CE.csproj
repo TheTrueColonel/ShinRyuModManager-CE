@@ -12,6 +12,7 @@
         <IsPackable>false</IsPackable>
         <ApplicationIcon>UserInterface\Assets\Icons\SRMM_icon.ico</ApplicationIcon>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
         
         <!-- Versioning -->
         <AssemblyVersion>1.1.11</AssemblyVersion>
@@ -25,6 +26,7 @@
     
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <VersionSuffix>$(BuildSuffix)</VersionSuffix>
+        <PublishTrimmed Condition="'$(SelfContained)' == 'true'">true</PublishTrimmed>
     </PropertyGroup>
 
     <ItemGroup>

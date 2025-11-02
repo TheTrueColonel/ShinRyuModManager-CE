@@ -497,12 +497,12 @@ public partial class MainWindow : Window {
         viewModel.LoadModList();
     }
 
-    private void CreateOrActivateWindow<T>() where T : Window {
+    private void CreateOrActivateWindow<T>() where T : Window, new() {
         if (_childWindow is { IsVisible: true }) {
             // Window visible
             _childWindow.Activate();
         } else {
-            _childWindow = Activator.CreateInstance<T>();
+            _childWindow = new T();
             _childWindow.Closed += (_, _) => _childWindow = null;
             _childWindow.Show(this);
         }

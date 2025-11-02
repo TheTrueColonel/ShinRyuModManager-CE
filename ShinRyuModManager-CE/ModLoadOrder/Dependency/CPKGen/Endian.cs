@@ -114,8 +114,21 @@ namespace CriPakTools {
         public bool IsLittleEndian { get; set; } = isLittleEndian;
         
         public void Write<T>(T value) {
-            dynamic input = value;
-            byte[] someBytes = BitConverter.GetBytes(input);
+            // A bit gross, but AOT and Trimming compatible
+            var someBytes = value switch {
+                bool b => BitConverter.GetBytes(b),
+                char c => BitConverter.GetBytes(c),
+                double d => BitConverter.GetBytes(d),
+                Half h => BitConverter.GetBytes(h),
+                short s => BitConverter.GetBytes(s),
+                int i => BitConverter.GetBytes(i),
+                long l => BitConverter.GetBytes(l),
+                float f => BitConverter.GetBytes(f),
+                ushort us => BitConverter.GetBytes(us),
+                uint ui => BitConverter.GetBytes(ui),
+                ulong ul => BitConverter.GetBytes(ul),
+                _ => throw new NotSupportedException($"Type {typeof(T)} is not supported.")
+            };
             
             if (!IsLittleEndian)
                 someBytes = someBytes.Reverse().ToArray();

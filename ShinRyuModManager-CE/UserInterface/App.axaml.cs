@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -42,6 +43,7 @@ public partial class App : Application {
         Log.CloseAndFlush();
     }
 
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Only removing validation plugins; no reflection or property access used.")]
     private static void DisableAvaloniaDataAnnotationValidation() {
         // Get an array of plugins to remove
         var dataValidationPluginsToRemove =
