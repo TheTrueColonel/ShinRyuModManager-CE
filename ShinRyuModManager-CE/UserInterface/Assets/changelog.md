@@ -1,6 +1,5 @@
 > ### **%{color:orange} Version 1.1.12 %** ###
 * Minor Cleanup
-* EXPERIMENTAL: Trimming support on non \*-slim builds
 * Updated libraries
 
 ---
