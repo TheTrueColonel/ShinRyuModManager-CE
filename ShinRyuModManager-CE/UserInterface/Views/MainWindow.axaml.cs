@@ -9,6 +9,7 @@ using Serilog;
 using Serilog.Events;
 using ShinRyuModManager.Helpers;
 using ShinRyuModManager.ModLoadOrder.Mods;
+using ShinRyuModManager.UserInterface.Updater;
 using ShinRyuModManager.UserInterface.ViewModels;
 using Utils;
 using YamlDotNet.Core;
@@ -23,6 +24,8 @@ public partial class MainWindow : Window {
     
     public MainWindow() {
         InitializeComponent();
+        
+        AutoUpdating.Init();
     }
 
     private void Window_OnLoaded(object sender, RoutedEventArgs e) {

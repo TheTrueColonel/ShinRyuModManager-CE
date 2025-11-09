@@ -493,4 +493,4 @@ fabric.properties
 # *.ipr
 
 ### Custom ###
-ShinRyuModManager-CE/Properties/launchSettings.json
+launchSettings.json

@@ -1,3 +1,8 @@
+> ### **%{color:orange} Version 1.2.0 %** ###
+* Added auto updater
+
+---
+
 > ### **%{color:orange} Version 1.1.12 %** ###
 * Minor Cleanup
 * Updated libraries

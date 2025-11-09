@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
+        <LangVersion>12</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>x64</Platforms>
+        <IsPackable>false</IsPackable>
+        <ApplicationIcon>..\ShinRyuModManager-CE\UserInterface\Assets\Icons\SRMM_icon.ico</ApplicationIcon>
+        <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+        <TrimmerSingleWarn>false</TrimmerSingleWarn>
+        <AssemblyVersion>1.0.0</AssemblyVersion>
+        <VersionPrefix>$(AssemblyVersion)</VersionPrefix>
+        <Version>$(AssemblyVersion)</Version>
+        <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    </PropertyGroup>
+
+</Project>
