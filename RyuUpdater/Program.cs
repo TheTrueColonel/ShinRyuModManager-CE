@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO.Compression;
+using Utils;
 
 namespace RyuUpdater;
 
@@ -31,6 +32,8 @@ public static class Program {
 
         ZipFile.ExtractToDirectory(updateFile, targetDir, overwriteFiles: true);
         Directory.Delete(tempDir, recursive: true);
+        
+        Flags.CreateFlag(Constants.UPDATE_RECENT_FLAG_FILE_NAME);
 
         var srmmPath = Path.Combine(targetDir, srmmFileName);
 
