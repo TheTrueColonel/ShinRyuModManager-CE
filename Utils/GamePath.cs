@@ -17,7 +17,7 @@ public static class GamePath {
     public static string GameExe { get; }
     
     static GamePath() {
-        FullGamePath = Directory.GetCurrentDirectory();
+        FullGamePath = Environment.CurrentDirectory;
         DataPath = Path.Combine(FullGamePath, DATA);
         ModsPath = Path.Combine(FullGamePath, MODS);
         ExternalModsPath = Path.Combine(ModsPath, Constants.EXTERNAL_MODS);

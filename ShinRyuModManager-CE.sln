@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParLibrary.Tests", "ParLibr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "Utils\Utils.csproj", "{7F2462E1-FB0A-4BFA-BBF9-91CD9DB1FC56}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RyuUpdater", "RyuUpdater\RyuUpdater.csproj", "{FDE3D69A-37FA-4187-9CAE-07EA4382D8A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -30,5 +32,9 @@ Global
 		{7F2462E1-FB0A-4BFA-BBF9-91CD9DB1FC56}.Debug|x64.Build.0 = Debug|x64
 		{7F2462E1-FB0A-4BFA-BBF9-91CD9DB1FC56}.Release|x64.ActiveCfg = Release|x64
 		{7F2462E1-FB0A-4BFA-BBF9-91CD9DB1FC56}.Release|x64.Build.0 = Release|x64
+		{FDE3D69A-37FA-4187-9CAE-07EA4382D8A6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FDE3D69A-37FA-4187-9CAE-07EA4382D8A6}.Debug|x64.Build.0 = Debug|Any CPU
+		{FDE3D69A-37FA-4187-9CAE-07EA4382D8A6}.Release|x64.ActiveCfg = Release|Any CPU
+		{FDE3D69A-37FA-4187-9CAE-07EA4382D8A6}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

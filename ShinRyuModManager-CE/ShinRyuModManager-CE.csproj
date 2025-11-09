@@ -15,7 +15,7 @@
         <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
         
         <!-- Versioning -->
-        <AssemblyVersion>1.1.12</AssemblyVersion>
+        <AssemblyVersion>1.2.0</AssemblyVersion>
         <VersionPrefix>$(AssemblyVersion)</VersionPrefix>
         <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     </PropertyGroup>
@@ -45,6 +45,7 @@
         <PackageReference Include="ini-parser" Version="2.5.2" />
         <PackageReference Include="Markdown.Avalonia" Version="11.0.2" />
         <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
+        <PackageReference Include="NetSparkleUpdater.UI.Avalonia" Version="3.0.4" />
         <PackageReference Include="Serilog" Version="4.3.0" />
         <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
         <PackageReference Include="Serilog.Expressions" Version="5.0.0" />
