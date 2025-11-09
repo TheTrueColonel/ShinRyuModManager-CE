@@ -1,3 +1,8 @@
+> ### **%{color:orange} Version 1.2.1 %** ###
+* Fixed linux bug with auto updater failing to check version
+
+---
+
 > ### **%{color:orange} Version 1.2.0 %** ###
 * Added auto updater
 
