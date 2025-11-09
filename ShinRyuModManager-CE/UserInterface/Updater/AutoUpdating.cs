@@ -2,6 +2,8 @@ using System.IO.Compression;
 using Avalonia.Media;
 using Avalonia.Media.Immutable;
 using NetSparkleUpdater;
+using NetSparkleUpdater.AssemblyAccessors;
+using NetSparkleUpdater.Configurations;
 using NetSparkleUpdater.Enums;
 using NetSparkleUpdater.SignatureVerifiers;
 using NetSparkleUpdater.UI.Avalonia;
@@ -45,10 +47,13 @@ public static class AutoUpdating {
             TmpDownloadFilePath = _tempDir,
             TmpDownloadFileNameWithExtension = $"{Guid.NewGuid()}.zip",
             RelaunchAfterUpdate = false,
-            LogWriter = new SerilogWriter()
+            LogWriter = new SerilogWriter(),
+#pragma warning disable CS0618 // Type or member is obsolete
+            Configuration = new JSONConfiguration(new AssemblyReflectionAccessor(null))
+#pragma warning restore CS0618 // Type or member is obsolete
         };
 
-        _ = _updater.StartLoop(true, TimeSpan.FromMinutes(5));
+        _ = _updater.StartLoop(true, true, TimeSpan.FromMinutes(15));
     }
 
     private static void HandleRyuUpdater() {

@@ -12,11 +12,14 @@
         <IsPackable>false</IsPackable>
         <ApplicationIcon>UserInterface\Assets\Icons\SRMM_icon.ico</ApplicationIcon>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-        <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
         
         <!-- Versioning -->
-        <AssemblyVersion>1.2.0</AssemblyVersion>
+        <AssemblyVersion>1.2.1</AssemblyVersion>
         <VersionPrefix>$(AssemblyVersion)</VersionPrefix>
+        <AssemblyTitle>ShinRyuModManager-CE</AssemblyTitle>
+        <Company>SRMM Studio</Company>
+        <Product>ShinRyuModManager-CE</Product>
+        <Copyright>2025 SRMM Studio</Copyright>
         <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     </PropertyGroup>
     
