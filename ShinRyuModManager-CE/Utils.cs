@@ -18,34 +18,6 @@ public static class Utils {
     public static string NormalizeToNodePath(string path) {
         return NormalizeSeparator(path, NodeSystem.PathSeparator.ToCharArray()[0]);
     }
-
-    internal static bool CheckFlag(string flagName) {
-        var currentPath = Path.GetDirectoryName(Environment.CurrentDirectory);
-        var flagFilePath = Path.Combine(currentPath, flagName);
-
-        return File.Exists(flagFilePath);
-    }
-
-    internal static void CreateFlag(string flagName) {
-        if (CheckFlag(flagName))
-            return;
-
-        var currentPath = Path.GetDirectoryName(Environment.CurrentDirectory);
-        var flagFilePath = Path.Combine(currentPath, flagName);
-            
-        File.Create(flagFilePath);
-        File.SetAttributes(flagFilePath, File.GetAttributes(flagFilePath) | FileAttributes.Hidden);
-    }
-
-    internal static void DeleteFlag(string flagName) {
-        if (!CheckFlag(flagName))
-            return;
-        
-        var currentPath = Path.GetDirectoryName(Environment.CurrentDirectory);
-        var flagFilePath = Path.Combine(currentPath, flagName);
-        
-        File.Delete(flagFilePath);
-    }
     
     internal static bool IsFileLocked(string path) {
         if (!File.Exists(path))

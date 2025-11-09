@@ -30,10 +30,10 @@ public partial class MainWindow : Window {
 
     private void Window_OnLoaded(object sender, RoutedEventArgs e) {
         // Display change log if the recent update flag exists
-        if (Utils.CheckFlag(Settings.UPDATE_RECENT_FLAG_FILE_NAME)) {
+        if (Flags.CheckFlag(Constants.UPDATE_RECENT_FLAG_FILE_NAME)) {
             CreateOrActivateWindow<ChangeLogWindow>();
             
-            Utils.DeleteFlag(Settings.UPDATE_RECENT_FLAG_FILE_NAME);
+            Flags.DeleteFlag(Constants.UPDATE_RECENT_FLAG_FILE_NAME);
         }
         
         RunPreInitAsync().ConfigureAwait(false);

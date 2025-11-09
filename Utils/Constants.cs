@@ -1,6 +1,7 @@
 ﻿namespace Utils;
 
 public static class Constants {
+    // File Names
     public const string INI = "YakuzaParless.ini";
     public const string TXT = "ModList.txt";
     public const string TXT_OLD = "ModLoadOrder.txt";
@@ -28,4 +29,12 @@ public static class Constants {
         "particle",
         "stage"
     ];
+    
+    // Updates
+    public const string UPDATER_EXECUTABLE_NAME = "RyuUpdater.exe";
+    public const string UPDATE_FLAG_FILE_NAME = "update.txt";
+    public const string UPDATE_RECENT_FLAG_FILE_NAME = ".SRMM_RECENT_UPDATE_FLAG";
+    public const string UPDATE_INFO_REPO_OWNER = "SRMM-Studio";
+    public const string UPDATE_INFO_REPO = "srmm-version-info";
+    public const string UPDATE_INFO_FILE_PATH = "RyuUpdater/config.yaml";
 }
