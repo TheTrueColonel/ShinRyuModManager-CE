@@ -1,3 +1,8 @@
+> ### **%{color:orange} Version 1.2.3 %** ###
+* Implemented changed from SRMM 4.6.6
+
+---
+
 > ### **%{color:orange} Version 1.2.2 %** ###
 * Fixed bug with the recent update flag
 
