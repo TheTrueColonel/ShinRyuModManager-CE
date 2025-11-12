@@ -82,7 +82,7 @@ public class Compressor : IConverter<ParFile, ParFile> {
                 break;
             
             case 2 when inputDataStream.Length < 0x1B:
-                throw new FormatException($"SLLZv2: Input size must more than 0x1A.");
+                throw new FormatException("SLLZv2: Input size must more than 0x1A.");
             
             case 2:
                 compressedDataStream = CompressV2(inputDataStream);
@@ -135,9 +135,7 @@ public class Compressor : IConverter<ParFile, ParFile> {
         outputData[flagPosition] = 0x00;
         outputPosition++;
         
-        if (outputPosition >= outputSize) {
-            throw new SllzCompressorException("Compressed size is bigger than original size.");
-        }
+        ThrowIfCompressedIsLarger(outputPosition, outputSize);
         
         while (inputPosition < inputData.Length) {
             var windowSize = Math.Min(inputPosition, MAX_WINDOW_SIZE);
@@ -158,18 +156,14 @@ public class Compressor : IConverter<ParFile, ParFile> {
                     outputData[flagPosition] = 0x00;
                     outputPosition++;
                     
-                    if (outputPosition >= outputSize) {
-                        throw new SllzCompressorException("Compressed size is bigger than original size.");
-                    }
+                    ThrowIfCompressedIsLarger(outputPosition, outputSize);
                 }
                 
                 outputData[outputPosition] = inputData[inputPosition];
                 inputPosition++;
                 outputPosition++;
                 
-                if (outputPosition >= outputSize) {
-                    throw new SllzCompressorException("Compressed size is bigger than original size.");
-                }
+                ThrowIfCompressedIsLarger(outputPosition, outputSize);
             } else {
                 currentFlag |= (byte)(1 << (7 - bitCount));
                 bitCount++;
@@ -183,9 +177,7 @@ public class Compressor : IConverter<ParFile, ParFile> {
                     outputData[flagPosition] = 0x00;
                     outputPosition++;
                     
-                    if (outputPosition >= outputSize) {
-                        throw new SllzCompressorException("Compressed size is bigger than original size.");
-                    }
+                    ThrowIfCompressedIsLarger(outputPosition, outputSize);
                 }
                 
                 var offset = (short)((match.Item1 - 1) << 4);
@@ -195,16 +187,12 @@ public class Compressor : IConverter<ParFile, ParFile> {
                 outputData[outputPosition] = (byte)tuple;
                 outputPosition++;
                 
-                if (outputPosition >= outputSize) {
-                    throw new SllzCompressorException("Compressed size is bigger than original size.");
-                }
+                ThrowIfCompressedIsLarger(outputPosition, outputSize);
                 
                 outputData[outputPosition] = (byte)(tuple >> 8);
                 outputPosition++;
-                
-                if (outputPosition >= outputSize) {
-                    throw new SllzCompressorException("Compressed size is bigger than original size.");
-                }
+
+                ThrowIfCompressedIsLarger(outputPosition, outputSize);
                 
                 inputPosition += match.Item2;
             }
@@ -280,5 +268,11 @@ public class Compressor : IConverter<ParFile, ParFile> {
         zlibStream.Close();
         
         return outputMemoryStream.ToArray();
+    }
+
+    private static void ThrowIfCompressedIsLarger(uint outputPosition, uint outputSize) {
+        if (outputPosition >= outputSize) {
+            throw new SllzCompressorException("Compressed size is bigger than original size.");
+        }
     }
 }

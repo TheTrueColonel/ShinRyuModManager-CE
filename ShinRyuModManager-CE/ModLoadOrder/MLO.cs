@@ -9,10 +9,10 @@ public class MLO {
     private const uint VERSION = 0x020000; // 2.0
     private const uint FILESIZE = 0x0;     // Remaining faithful to RGG by adding a filesize that's not used
     
-    public readonly List<string> Mods;
-    public readonly List<ParlessFile> Files;
-    public readonly List<ParlessFolder> ParlessFolders;
-    public readonly List<CpkFolder> CpkFolders;
+    public List<string> Mods { get; }
+    public List<ParlessFile> Files { get; }
+    public List<ParlessFolder> ParlessFolders { get; }
+    public List<CpkFolder> CpkFolders { get; }
     
     public MLO(List<int> modIndices, List<string> mods, OrderedSet<string> fileSet, List<ParlessFolder> parlessFolders, Dictionary<string, List<int>> cpkFolders) {
         var files = fileSet.ToList();

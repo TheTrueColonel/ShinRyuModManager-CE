@@ -110,12 +110,13 @@ public static class Program {
         var list = new List<string>(args);
         
         if (list.Contains("-h") || list.Contains("--help")) {
-            Log.Information("Usage: run without arguments to generate mod load order.");
-            
-            Log.Information("       run with \"-s\" or \"--silent\" flag to prevent checking for updates and remove prompts.");
+            Log.Information("""
+                            Usage: run without arguments to generate mod load order.
+                              -s, --silent     prevent checking for updates and remove prompts.
+                              -h, --help       show this message and exit.
+                            """);
             
             //Log.Information("       run with \"-r\" or \"--run\" flag to run the game after the program finishes.");
-            Log.Information("       run with \"-h\" or \"--help\" flag to show this message and exit.");
             
             return;
         }
@@ -270,7 +271,7 @@ public static class Program {
                 _migrated = true;
                 
                 // Migrate old format to new
-                Log.Information("Old format load order file (" + Constants.TXT_OLD + ") was found. Importing to the new format...");
+                Log.Information("Old format load order file ({TxtOld}) was found. Importing to the new format...", Constants.TXT_OLD);
                 
                 mods.AddRange(ConvertOldToNewModList(ReadModLoadOrderTxt(Constants.TXT_OLD))
                     .Where(n => !mods.Any(m => EqualModNames(m.Name, n.Name))));
@@ -402,8 +403,8 @@ public static class Program {
 
         // Calculate the checksum for the game's exe to inform the user if their version might be unsupported
         if (LogLevel <= LogEventLevel.Warning && InvalidGameExe()) {
-            Log.Error("Warning: Game version is unrecognized. Please use the latest Steam version of the game.");
-            Log.Error("Shin Ryu Mod Manager will still generate the load order, but the game might CRASH or not function properly");
+            Log.Error("Warning: Game version is unrecognized. Please use the latest Steam version of the game.\n" +
+                "Shin Ryu Mod Manager will still generate the load order, but the game might CRASH or not function properly");
         }
 
         if (!_isSilent) {

@@ -2,7 +2,7 @@
 
 namespace Utils;
 
-public class GameHash {
+public static class GameHash {
     public static bool ValidateFile(string path, Game game) {
         try {
             //Xbox doesnt like being read!

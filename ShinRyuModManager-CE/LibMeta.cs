@@ -1,7 +1,9 @@
+using JetBrains.Annotations;
 using ShinRyuModManager.Helpers;
 
 namespace ShinRyuModManager;
 
+[UsedImplicitly]
 public class LibMeta {
     public Guid GUID { get; set; }
     public string Name { get; set; }

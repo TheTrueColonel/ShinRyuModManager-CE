@@ -9,14 +9,14 @@ namespace ShinRyuModManager;
 
 public static class Utils {
     // Static to be used through project
-    public static readonly HttpClient Client = new HttpClient();
+    public static HttpClient Client { get; } = new HttpClient();
     
     public static string NormalizeNameLower(string path) {
         return NormalizeSeparator(path.ToLowerInvariant());
     }
 
     public static string NormalizeToNodePath(string path) {
-        return NormalizeSeparator(path, NodeSystem.PathSeparator.ToCharArray()[0]);
+        return NormalizeSeparator(path, NodeSystem.PathSeparator[0]);
     }
     
     internal static bool IsFileLocked(string path) {

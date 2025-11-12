@@ -5,7 +5,7 @@ public class ModMeta {
     public string Author { get; internal set; }
     public string Version { get; internal set; }
     public string Description { get; internal set; }
-    public string Dependencies { get; internal init; }
+    public string Dependencies { get; internal set; }
 
     public static ModMeta GetPlaceholder() {
         return new ModMeta {
