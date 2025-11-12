@@ -136,13 +136,8 @@ public class Mod {
                 case "speech":
                     cpkDataPath = GamePath.RemoveModPath(path);
                 
-                    if (GamePath.CurrentGame == Game.Yakuza5) {
+                    if (GamePath.CurrentGame is Game.Yakuza5 or <= Game.YakuzaKiwami) {
                         RepackCpKs.Add(cpkDataPath + ".cpk");
-                        //Log.Verbose("Adding CPK folder: {CpkDataPath}", cpkDataPath);
-                    } else {
-                        if (GamePath.CurrentGame <= Game.YakuzaKiwami) {
-                            RepackCpKs.Add(cpkDataPath + ".cpk");
-                        }
                     }
                 
                     break;
@@ -264,10 +259,8 @@ public class Mod {
     }
     
     protected static string CheckFolder(string name) {
-        foreach (var folder in Constants.IncompatiblePars.Where(name.StartsWith)) {
-            return folder;
-        }
-        
-        return "";
+        var folder = Constants.IncompatiblePars.FirstOrDefault(name.StartsWith);
+
+        return folder ?? string.Empty;
     }
 }

@@ -85,7 +85,9 @@ public static class GameModel {
 
                     try {
                         new DirectoryInfo(outputFakeDir).Delete(true);
-                    } catch { }
+                    } catch {
+                        // ignore
+                    }
                 } else {
                     var outputPath = Path.Combine(parlessDir.FullName, dir.Name + ".par");
                     Gibbed.Yakuza0.Pack.Program.Main([dir.FullName], outputPath);

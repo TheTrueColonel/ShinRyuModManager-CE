@@ -207,7 +207,7 @@ public static class ParRepacker {
         // Add files in current directory
         foreach (var p in Directory.GetFiles(path).Where(f => !f.EndsWith(Constants.VORTEX_MANAGED_FILE)).Select(GamePath.GetDataPathFrom)) {
             files.Add(p);
-            Log.Verbose("Adding file: {file}", p);
+            Log.Verbose("Adding file: {File}", p);
         }
         
         // Get files for all subdirectories

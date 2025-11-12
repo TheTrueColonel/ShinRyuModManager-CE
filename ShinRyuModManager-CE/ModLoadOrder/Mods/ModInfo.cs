@@ -3,8 +3,7 @@ using Utils;
 
 namespace ShinRyuModManager.ModLoadOrder.Mods;
 
-public partial class ModInfo : ObservableObject, IEquatable<ModInfo> {
-
+public sealed partial class ModInfo : ObservableObject, IEquatable<ModInfo> {
     [ObservableProperty] private string _name;
     [ObservableProperty] private bool _enabled;
 

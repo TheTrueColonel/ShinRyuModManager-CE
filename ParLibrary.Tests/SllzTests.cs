@@ -26,7 +26,7 @@ public class SllzTests {
         var compressedBinaryFormat = (ParFile)ConvertFormat.With(typeof(Compressor), binaryFormat, parameters);
         var decompressedBinaryFormat = (ParFile)ConvertFormat.With(typeof(Decompressor), compressedBinaryFormat);
         
-        Assert.IsTrue(compressedBinaryFormat.Stream.Length < decompressedBinaryFormat.Stream.Length);
+        Assert.IsLessThan(decompressedBinaryFormat.Stream.Length, compressedBinaryFormat.Stream.Length);
         Assert.IsTrue(dataStream.Compare(decompressedBinaryFormat.Stream));
     }
 }

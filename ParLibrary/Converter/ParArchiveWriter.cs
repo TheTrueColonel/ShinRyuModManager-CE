@@ -246,22 +246,22 @@ public class ParArchiveWriter : IConverter<NodeContainerFormat, ParFile> {
     }
     
     private static void WriteFolders(DataWriter writer, IEnumerable<Node> folders) {
-        foreach (var node in folders) {
+        foreach (var tags in folders.Select(x => x.Tags)) {
             var attributes = 0x00000010;
             
-            if (node.Tags.TryGetValue("DirectoryInfo", out var directoryInfo)) {
+            if (tags.TryGetValue("DirectoryInfo", out var directoryInfo)) {
                 DirectoryInfo info = directoryInfo;
                 attributes = (int)info.Attributes;
             }
             
-            if (node.Tags.TryGetValue("Attributes", out var attrs)) {
+            if (tags.TryGetValue("Attributes", out var attrs)) {
                 attributes = (int)attrs;
             }
             
-            writer.Write((int)node.Tags["FolderCount"]);
-            writer.Write((int)node.Tags["FirstFolderIndex"]);
-            writer.Write((int)node.Tags["FileCount"]);
-            writer.Write((int)node.Tags["FirstFileIndex"]);
+            writer.Write((int)tags["FolderCount"]);
+            writer.Write((int)tags["FirstFolderIndex"]);
+            writer.Write((int)tags["FileCount"]);
+            writer.Write((int)tags["FirstFileIndex"]);
             writer.Write(attributes);
             writer.Write(0x00000000);
             writer.Write(0x00000000);
@@ -275,20 +275,16 @@ public class ParArchiveWriter : IConverter<NodeContainerFormat, ParFile> {
         foreach (var node in files) {
             var parFile = node.GetFormatAs<ParFile>();
             
-            if (parFile == null) {
+            if (parFile == null)
                 continue;
-            }
-            
-            if (node.Stream!.Length > 2048) {
-                blockSize = 2048 + (-node.Stream.Length % 2048);
+
+            var streamLength = node.Stream!.Length;
+
+            if (streamLength > 2048 || streamLength >= blockSize) {
+                blockSize = 2048 + (-streamLength % 2048);
                 dataPosition = Align(dataPosition, 2048);
             } else {
-                if (node.Stream.Length < blockSize) {
-                    blockSize -= node.Stream.Length;
-                } else {
-                    blockSize = 2048 + (-node.Stream.Length % 2048);
-                    dataPosition = Align(dataPosition, 2048);
-                }
+                blockSize -= streamLength;
             }
 
             ulong seconds = 0;
@@ -296,18 +292,16 @@ public class ParArchiveWriter : IConverter<NodeContainerFormat, ParFile> {
 
             if (!parameters.ResetFileDates) {
                 var date = parFile.FileDate;
-                var baseDate = new DateTime(1970, 1, 1);
+                var baseDate = DateTime.UnixEpoch;
             
                 if (node.Tags.TryGetValue("Timestamp", out var timestamp)) {
                     date = baseDate.AddSeconds(timestamp);
                 }
             
-                if (node.Tags.TryGetValue("FileInfo", out var fileInfo)) {
-                    if (fileInfo is FileInfo info) {
-                        attributes = HandleAttributes(info);
-                
-                        date = info.LastWriteTime;
-                    }
+                if (node.Tags.TryGetValue("FileInfo", out var fileInfo) && fileInfo is FileInfo info) {
+                    attributes = HandleAttributes(info);
+            
+                    date = info.LastWriteTime;
                 }
             
                 seconds = (ulong)(date - baseDate).TotalSeconds;
