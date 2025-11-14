@@ -1,0 +1,18 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="ParLibrary.Tests/ParLibrary.Tests.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="ParLibrary/ParLibrary.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="RyuUpdater/RyuUpdater.csproj" />
+  <Project Path="ShinRyuModManager-CE/ShinRyuModManager-CE.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Utils/Utils.csproj">
+    <Platform Project="x64" />
+  </Project>
+</Solution>

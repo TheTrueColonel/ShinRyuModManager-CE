@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Text;
 using SharpCompress.Common;
 using SharpCompress.Readers;

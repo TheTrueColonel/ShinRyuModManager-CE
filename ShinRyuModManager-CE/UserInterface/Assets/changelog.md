@@ -1,3 +1,9 @@
+> ### **%{color:orange} Version 1.2.4 %** ###
+* Upgraded to .NET 10
+* General Cleanup
+
+---
+
 > ### **%{color:orange} Version 1.2.3 %** ###
 * Implemented changed from SRMM 4.6.6
 

@@ -7,7 +7,7 @@ namespace ShinRyuModManager.UserInterface.Views;
 public partial class ChangeLogWindow : Window {
     public ChangeLogWindow() {
         DataContext = new ChangeLogWindowViewModel();
-        
+
         InitializeComponent();
     }
 
