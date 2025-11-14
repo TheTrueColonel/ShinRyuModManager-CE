@@ -649,7 +649,7 @@ public static class Program {
             Directory.Delete(destDir, true);
             
         Directory.CreateDirectory(destDir);
-        ZipFile.ExtractToDirectory(packagePath, destDir, true);
+        await ZipFile.ExtractToDirectoryAsync(packagePath, destDir, true);
     }
     
     private static async Task<string> DownloadLibraryPackageAsync(string fileName, LibMeta meta) {

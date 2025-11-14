@@ -2,9 +2,9 @@
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
+        <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks>
         <RootNamespace>ShinRyuModManager</RootNamespace>
-        <LangVersion>12</LangVersion>
+        <LangVersion>14</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>disable</Nullable>
         <Configurations>Debug;Release</Configurations>
@@ -14,7 +14,7 @@
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         
         <!-- Versioning -->
-        <AssemblyVersion>1.2.3</AssemblyVersion>
+        <AssemblyVersion>1.2.4</AssemblyVersion>
         <VersionPrefix>$(AssemblyVersion)</VersionPrefix>
         <AssemblyTitle>ShinRyuModManager-CE</AssemblyTitle>
         <Company>SRMM Studio</Company>
@@ -25,10 +25,12 @@
     
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
         <VersionSuffix>debug</VersionSuffix>
+        <DebugType>embedded</DebugType>
     </PropertyGroup>
     
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <VersionSuffix>$(BuildSuffix)</VersionSuffix>
+        <DebugType>embedded</DebugType>
         <!--<PublishTrimmed Condition="'$(SelfContained)' == 'true'">true</PublishTrimmed>-->
     </PropertyGroup>
 
@@ -54,7 +56,7 @@
         <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
         <PackageReference Include="Serilog.Expressions" Version="5.0.0" />
         <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="6.1.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
         <PackageReference Include="SharpCompress" Version="0.41.0" />
         <PackageReference Include="Skia.Controls.Avalonia" Version="11.3.6.2" />

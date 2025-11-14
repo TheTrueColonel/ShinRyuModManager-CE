@@ -30,7 +30,7 @@ public static class Program {
 
         await Task.Delay(500);
 
-        ZipFile.ExtractToDirectory(updateFile, targetDir, overwriteFiles: true);
+        await ZipFile.ExtractToDirectoryAsync(updateFile, targetDir, overwriteFiles: true);
         Directory.Delete(tempDir, recursive: true);
         
         Flags.CreateFlag(Constants.UPDATE_RECENT_FLAG_FILE_NAME);

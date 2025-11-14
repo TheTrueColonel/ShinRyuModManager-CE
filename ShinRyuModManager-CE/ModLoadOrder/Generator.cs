@@ -80,14 +80,15 @@ public static class Generator {
             
             foreach (var subPath in Directory.GetDirectories(modPath)) {
                 var subPathName = new DirectoryInfo(subPath).Name;
-                
-                if (!(GamePath.DirectoryExistsInData(subPathName) || GamePath.FileExistsInData($"{subPathName}.par"))) {
-                    // While "stream" isn't a folder in Y0 or Kiwami, it shouldn't warn the user as it's used in place of bgm.cpk
-                    if (GamePath.CurrentGame is Game.Yakuza0 or Game.YakuzaKiwami && subPathName == "stream")
-                        continue;
+
+                if (GamePath.DirectoryExistsInData(subPathName) || GamePath.FileExistsInData($"{subPathName}.par"))
+                    continue;
+
+                // While "stream" isn't a folder in Y0 or Kiwami, it shouldn't warn the user as it's used in place of bgm.cpk
+                if (GamePath.CurrentGame is Game.Yakuza0 or Game.YakuzaKiwami && subPathName == "stream")
+                    continue;
                     
-                    foldersNotFound.Add(subPathName);
-                }
+                foldersNotFound.Add(subPathName);
             }
             
             if (foldersNotFound.Count != 0) {
