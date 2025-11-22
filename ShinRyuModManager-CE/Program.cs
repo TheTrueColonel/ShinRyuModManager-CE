@@ -252,6 +252,7 @@ public static class Program {
                     
                 _iniData.Sections["Overrides"]["RebuildMLO"] = "0";
                 IniParser.WriteFile(Constants.INI, _iniData);
+                RebuildMlo = false;
             }
         }
         
@@ -302,6 +303,7 @@ public static class Program {
         
         _iniData.Sections["Overrides"]["RebuildMLO"] = "0";
         IniParser.WriteFile(Constants.INI, _iniData);
+        RebuildMlo = false;
         
         return mods;
     }
