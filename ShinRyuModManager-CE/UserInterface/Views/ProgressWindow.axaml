@@ -7,12 +7,14 @@
         x:Class="ShinRyuModManager.UserInterface.Views.ProgressWindow"
         x:DataType="vm:ProgressWindowViewModel"
         Icon="/UserInterface/Assets/Icons/SRMM_icon.ico"
-        Title="ProgressWindow"
+        Title="{Binding Title}"
         Height="175"
         Width="400"
         Background="#FF373535" 
         Foreground="White"
-        CanResize="False">
+        CanResize="False"
+        CanMinimize="False"
+        CanMaximize="False">
     
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
