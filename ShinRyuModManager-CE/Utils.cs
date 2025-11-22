@@ -1,4 +1,5 @@
 using System.Text;
+using SharpCompress.Archives.SevenZip;
 using SharpCompress.Common;
 using SharpCompress.Readers;
 using Utils;
@@ -54,8 +55,18 @@ public static class Utils {
     internal static async Task<bool> TryInstallModZipAsync(string path) {
         if (!File.Exists(path))
             return false;
-
+        
         await using var fs = File.OpenRead(path);
+
+        // TEMP: Handle .7z files. Remove when SharpCompress fixes this issue.
+        var is7Z = SevenZipArchive.IsSevenZipFile(fs);
+
+        fs.Seek(0, SeekOrigin.Begin);
+        
+        if (is7Z) {
+            return Extract7ZFile(fs);
+        }
+        
         using var reader = ReaderFactory.Open(fs);
 
         var options = new ExtractionOptions {
@@ -68,6 +79,20 @@ public static class Utils {
                 reader.WriteEntryToDirectory(GamePath.ModsPath, options);
             }
         }
+
+        return true;
+    }
+
+    // For some reason the SharpCompress doesn't handle .7z files automatically.
+    // This looks to be a working workaround for the time being.
+    private static bool Extract7ZFile(Stream stream) {
+        using var archive = SevenZipArchive.Open(stream);
+        using var reader = archive.ExtractAllEntries();
+        
+        reader.WriteAllToDirectory(GamePath.ModsPath, new ExtractionOptions {
+            ExtractFullPath = true,
+            Overwrite = true
+        });
 
         return true;
     }

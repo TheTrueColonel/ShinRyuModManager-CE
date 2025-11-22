@@ -172,16 +172,20 @@ public partial class MainWindow : Window {
                 var progressWindow = new ProgressWindow("Applying mods. Please wait...", true);
                 
                 progressWindow.Show(this);
+                
+                await Task.Yield();
 
-                try {
-                    await Program.RunGeneration(Program.ConvertNewToOldModList(viewModel.ModList.ToList()));
-                } catch (Exception ex) {
-                    Log.Error(ex, "Could not generate MLO!");
+                await Task.Run(async () => {
+                    try {
+                        await Program.RunGeneration(Program.ConvertNewToOldModList(viewModel.ModList.ToList()));
+                    } catch (Exception ex) {
+                        Log.Error(ex, "Could not generate MLO!");
                     
-                    _ = await MessageBoxWindow.Show(this, "Error", "Mods could not be applied. Please make sure that the game directory has write access." +
-                        "\n\nPlease check\"srmm_errors.txt\" for more info.");
-                }
-                    
+                        _ = await MessageBoxWindow.Show(this, "Error", "Mods could not be applied. Please make sure that the game directory has write access." +
+                            "\n\nPlease check\"srmm_errors.txt\" for more info.");
+                    }
+                });
+                
                 progressWindow.Close();
             } else {
                 _ = await MessageBoxWindow.Show(this, "Error", "Mod list is empty and was not saved.");
@@ -260,18 +264,29 @@ public partial class MainWindow : Window {
 
             if (files.Count == 0)
                 return;
-
-            foreach (var file in files) {
-                if (!File.Exists(file.TryGetLocalPath()))
-                    return;
-
-                if (!await Utils.TryInstallModZipAsync(file.TryGetLocalPath()))
-                    continue;
-
-                RefreshModList();
-            }
             
-            await Program.InstallAllModDependenciesAsync();
+            var progressWindow = new ProgressWindow("Installing mod(s). Please wait...", true);
+                
+            _ = progressWindow.ShowDialog(this);
+
+            await Task.Yield();
+
+            await Task.Run(async () => {
+                foreach (var file in files) {
+                    var localPath = file.TryGetLocalPath();
+                    
+                    if (!File.Exists(localPath))
+                        return;
+
+                    await Utils.TryInstallModZipAsync(localPath);
+                }
+                
+                await Program.InstallAllModDependenciesAsync();
+            });
+
+            RefreshModList();
+            
+            progressWindow.Close();
         } catch (Exception ex) {
             Log.Fatal(ex, "ModInstalled failed!");
             

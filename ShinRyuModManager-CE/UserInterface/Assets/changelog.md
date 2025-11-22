@@ -1,3 +1,12 @@
+> ### **%{color:orange} Version 1.2.5 %** ###
+* Added progress window to mod installation
+* Fixed *.7z files not being able to be installed
+* Fixed a bug with RebuildMLO
+* Fixed a CPK encoding bug
+* Fixed a bug with the progress window
+
+---
+
 > ### **%{color:orange} Version 1.2.4 %** ###
 * Upgraded to .NET 10
 * General Cleanup
