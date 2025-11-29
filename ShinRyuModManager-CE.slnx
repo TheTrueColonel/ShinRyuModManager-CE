@@ -2,6 +2,7 @@
   <Configurations>
     <Platform Name="x64" />
   </Configurations>
+  <Project Path="CpkTools/CpkTools.csproj" />
   <Project Path="ParLibrary.Tests/ParLibrary.Tests.csproj">
     <Platform Project="x64" />
   </Project>

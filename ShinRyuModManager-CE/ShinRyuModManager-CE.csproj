@@ -35,6 +35,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\CpkTools\CpkTools.csproj" />
         <ProjectReference Include="..\ParLibrary\ParLibrary.csproj" />
         <ProjectReference Include="..\Utils\Utils.csproj" />
     </ItemGroup>

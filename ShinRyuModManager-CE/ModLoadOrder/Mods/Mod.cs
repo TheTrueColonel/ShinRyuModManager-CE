@@ -134,10 +134,10 @@ public class Mod {
             
                 case "se":
                 case "speech":
-                    cpkDataPath = GamePath.RemoveModPath(path);
-                
                     if (GamePath.CurrentGame is Game.Yakuza5 or <= Game.YakuzaKiwami) {
-                        RepackCpKs.Add(cpkDataPath + ".cpk");
+                        // Removed adding ".cpk" to se folder. Seemed incorrect
+                        cpkDataPath = GamePath.RemoveModPath(path);
+                        RepackCpKs.Add(cpkDataPath);
                     }
                 
                     break;
