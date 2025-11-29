@@ -155,6 +155,8 @@ public partial class MainWindow : Window {
     }
 
     private async void ModSave_OnClick(object sender, RoutedEventArgs e) {
+        var progressWindow = new ProgressWindow("Applying mods. Please wait...", true);
+        
         try {
             if (DataContext is not MainWindowViewModel viewModel) 
                 return;
@@ -168,8 +170,6 @@ public partial class MainWindow : Window {
 
                     return;
                 }
-                
-                var progressWindow = new ProgressWindow("Applying mods. Please wait...", true);
                 
                 progressWindow.Show(this);
                 
@@ -188,10 +188,14 @@ public partial class MainWindow : Window {
                 
                 progressWindow.Close();
             } else {
+                progressWindow.Close();
+                
                 _ = await MessageBoxWindow.Show(this, "Error", "Mod list is empty and was not saved.");
             }
         } catch (Exception ex) {
             Log.Fatal(ex, "ModSave failed!");
+            
+            progressWindow.Close();
             
             _ = await MessageBoxWindow.Show(this, "Fatal", $"An error has occurred.\nPlease check\"srmm_errors.txt\" for more info.");
         }
