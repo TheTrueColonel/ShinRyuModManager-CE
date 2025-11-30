@@ -1,3 +1,8 @@
+> ### **%{color:orange} Version 1.3.0 %** ###
+* Rebuilt CPK tools code for better performance
+
+---
+
 > ### **%{color:orange} Version 1.2.5 %** ###
 * Added progress window to mod installation
 * Fixed *.7z files not being able to be installed
