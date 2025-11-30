@@ -12,12 +12,12 @@ fi
 while getopts s:u: flag; do
     case "${flag}" in
       s) SRMM_VERSION="${OPTARG}";;
-      u) UPDATER_VESION="${OPTARG}";;
+      u) UPDATER_VERSION="${OPTARG}";;
       *) echo "Usage: $0 -s <SRMM Version Number> -u <Updater Version Number>"; exit 1;;
     esac
 done
 
-if ! [[ "${SRMM_VERSION}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9_]+)?$ || "${UPDATER_VESION}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9_]+)?$ ]]; then
+if ! [[ "${SRMM_VERSION}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9_]+)?$ || "${UPDATER_VERSION}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9_]+)?$ ]]; then
   echo "Incorrect format!"
   echo "Usage: $0 -s <SRMM Version Number> -u <Updater Version Number>"
   exit 1
@@ -28,8 +28,8 @@ if [[ "${SRMM_VERSION}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9_]+)?$ ]]; then
   SRMM_VERSION=${SRMM_VERSION#v}
 fi
 
-if [[ "${UPDATER_VESION}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9_]+)?$ ]]; then
-  UPDATER_VESION=${UPDATER_VESION#v}
+if [[ "${UPDATER_VERSION}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9_]+)?$ ]]; then
+  UPDATER_VERSION=${UPDATER_VERSION#v}
 fi
 
 ### Variables
@@ -122,7 +122,7 @@ for TARGET in "${UPDATER_BUILD_DIRS[@]}"; do
     --output-file-name "appcast_ryuupdater-${TARGET}" \
     --use-ed25519-signature-attribute \
     --human-readable \
-    --file-version "${SRMM_VERSION}" \
+    --file-version "${UPDATER_VERSION}" \
     -u "${UPDATER_URL_BASE}" > /dev/null
 done
 
