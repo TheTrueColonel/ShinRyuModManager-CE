@@ -88,4 +88,8 @@
         </Compile>
     </ItemGroup>
 
+    <ItemGroup Condition="'$(SelfContained)' == 'false'">
+      <None Update="BuildAssets\README" Link="README" CopyToOutputDirectory="Always" />
+    </ItemGroup>
+
 </Project>

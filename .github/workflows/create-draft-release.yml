@@ -1,0 +1,108 @@
+name: Prepare for Release
+on:
+  workflow_dispatch: 
+    inputs:
+      name:
+        description: "Release name"
+        required: true
+        default: "ShinRyuModManager-CE 1.0.0"
+      tag:
+        description: "Tag for the release (example: 1.2.3)"
+        required: true
+        default: "1.0.0"
+      updater_version:
+        description: "Version for RyuUpdater (example: 1.2.3)"
+        required: true
+        default: "1.0.0"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        
+      - name: Checkout AppCast Repo
+        uses: actions/checkout@v4
+        with:
+          repository: 'TheTrueColonel/SRMM-AppCast'
+          token: '${{ secrets.REPO_PUSH_TOKEN }}'
+          path: AppcastRepo
+        
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+          
+      - name: Install Netsparkle Tool
+        run: dotnet tool install --global NetSparkleUpdater.Tools.AppCastGenerator
+
+      - name: Add .NET tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+        
+      - name: Create Draft Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.tag }}
+          release_name: ${{ github.event.inputs.name }}
+          draft: true
+          prerelease: false
+        
+      - name: Run Scripts
+        run: |
+          ./Scripts/build.sh
+          ./Scripts/package.sh -s ${{ github.event.inputs.tag }} -u ${{ github.event.inputs.updater_version }}
+        env:
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+          SPARKLE_PUBLIC_KEY: ${{ secrets.SPARKLE_PUBLIC_KEY }}
+          
+      - name: Upload SRMM Release Assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
+        run: |
+          for file in ${{ github.workspace }}/dist/srmm/out/*; do
+            name=$(basename "$file")
+            mime=$(file --brief --mime-type "$file")
+            echo "Uploading $name ($mime)"
+            curl \
+              -X POST \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "Content-Type: $mime" \
+              --data-binary @"$file" \
+              --no-progress-meter \
+              "${UPLOAD_URL%%\{*}?name=$name" > /dev/null
+          done
+  
+      - name: Commit Appcasts and Updater
+        run: |
+          cd ${{ github.workspace }}/AppcastRepo
+          branch="update-appcasts-${{ github.run_number }}"
+          git checkout -b "${branch}"
+          
+          git add .
+          git commit -m "Update Appcasts and Updater for SRMM version ${{ github.event.inputs.tag }} and Updater version ${{ github.event.inputs.updater_version }}"
+          git push origin "${branch}"
+        env:
+          GIT_AUTHOR_NAME: github-actions
+          GIT_AUTHOR_EMAIL: github-actions@github.com
+          GIT_COMMITTER_NAME: github-actions
+          GIT_COMMITTER_EMAIL: github-actions@github.com
+          
+      - name: Create Pull Request
+        run: |
+          cd ${{ github.workspace }}/AppcastRepo
+          branch="update-appcasts-${{ github.run_number }}"
+          
+          gh pr create \
+            --title "Update Appcasts and Updater" \
+            --body "Automated update for SRMM version ${{ github.event.inputs.tag }} and Updater version ${{ github.event.inputs.updater_version }}" \
+            --head "${branch}" \
+            --base main
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_PUSH_TOKEN }}
