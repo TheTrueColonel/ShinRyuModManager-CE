@@ -1,3 +1,8 @@
+> ### **%{color:orange} Version 1.3.1 %** ###
+* Repacked for updated Parless from SRMM 4.6.7
+
+---
+
 > ### **%{color:orange} Version 1.3.0 %** ###
 * Rebuilt CPK tools code for better performance
 
