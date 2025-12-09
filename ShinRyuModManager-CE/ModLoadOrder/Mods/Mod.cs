@@ -202,7 +202,7 @@ public class Mod {
                         if (!Directory.Exists(gmtFolderPath))
                             break;
 
-                        var baseParlessPath = Path.Combine(GamePath.ModsPath, "Parless", "motion", "gmt");
+                        var baseParlessPath = Path.Combine(GamePath.ParlessDir, "motion", "gmt");
 
                         foreach (var p in Directory.GetFiles(gmtFolderPath).Where(f => !f.EndsWith(Constants.VORTEX_MANAGED_FILE)).Select(GamePath.GetDataPathFrom)) {
                             // Copy any gmts to the appropriate hash folder in Parless

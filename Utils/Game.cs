@@ -9,6 +9,7 @@
         
         // Old Engine
         Yakuza0,
+        Yakuza0_DC,
         YakuzaKiwami,
         
         // Dragon Engine

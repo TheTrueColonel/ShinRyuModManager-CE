@@ -28,23 +28,19 @@ public static class Program {
     private static bool _isSilent;
     private static bool _migrated;
     private static IniData _iniData;
-    
-    private static readonly FileIniDataParser IniParser;
+
+    private static readonly FileIniDataParser IniParser = new() {
+        Parser = {
+            Configuration = {
+                AssigmentSpacer = string.Empty
+            }
+        }
+    };
 
     public static bool RebuildMlo { get; private set; } = true;
     public static bool IsRebuildMloSupported { get; private set; } = true;
     public static LogEventLevel LogLevel { get; private set; } = LogEventLevel.Information;
     public static List<LibMeta> LibraryMetaCache { get; set; } = [];
-
-    static Program() {
-        IniParser = new FileIniDataParser {
-            Parser = {
-                Configuration = {
-                    AssigmentSpacer = string.Empty
-                }
-            }
-        };
-    }
     
     [STAThread]
     private static void Main(string[] args) {
@@ -149,10 +145,8 @@ public static class Program {
                 _looseFilesEnabled = int.Parse(looseFiles) == 1;
             }
             
-            if (_iniData.TryGetKey("RyuModManager.Verbose", out var verbose)) {
-                if (int.Parse(verbose) == 1) {
-                    LogLevel = LogEventLevel.Verbose;
-                }
+            if (_iniData.TryGetKey("RyuModManager.Verbose", out var verbose) && int.Parse(verbose) == 1) {
+                LogLevel = LogEventLevel.Verbose;
             }
             
             if (_iniData.TryGetKey("RyuModManager.CheckForUpdates", out var check)) {
@@ -193,18 +187,9 @@ public static class Program {
     }
 
     internal static List<ModInfo> PreRun() {
-        if (GamePath.CurrentGame != Game.Unsupported && !Directory.Exists(GamePath.MODS)) {
-            if (!Directory.Exists(GamePath.MODS)) {
-                // Create mods folder if it does not exist
-                Log.Information($"\"{GamePath.MODS}\" folder was not found. Creating empty folder... ");
-                Directory.CreateDirectory(GamePath.MODS);
-            }
-            
-            if (!Directory.Exists(GamePath.LIBRARIES)) {
-                // Create libraries folder if it does not exist
-                Log.Information($"\"{GamePath.LIBRARIES}\" folder was not found. Creating empty folder... ");
-                Directory.CreateDirectory(GamePath.LIBRARIES);
-            }
+        if (GamePath.CurrentGame != Game.Unsupported) {
+            Directory.CreateDirectory(GamePath.MODS);
+            Directory.CreateDirectory(GamePath.LIBRARIES);
         }
         
         // TODO: Maybe move this to a separate "Game patches" file
@@ -245,15 +230,14 @@ public static class Program {
         // Read ini (again) to check if we should try importing the old load order file
         _iniData = IniParser.ReadFile(Constants.INI);
             
-        if (GamePath.CurrentGame is Game.Judgment or Game.LostJudgment or Game.LikeADragonPirates) {
+        if (GamePath.CurrentGame is Game.Judgment or Game.LostJudgment or Game.LikeADragonPirates 
+            && _iniData.TryGetKey("Overrides.RebuildMLO", out _)) {
             // Disable RebuildMLO when using an external mod manager
-            if (_iniData.TryGetKey("Overrides.RebuildMLO", out _)) {
-                Log.Warning("Game specific patch: Disabling RebuildMLO for some games when using an external mod manager...");
-                    
-                _iniData.Sections["Overrides"]["RebuildMLO"] = "0";
-                IniParser.WriteFile(Constants.INI, _iniData);
-                RebuildMlo = false;
-            }
+            Log.Warning("Game specific patch: Disabling RebuildMLO for some games when using an external mod manager...");
+                
+            _iniData.Sections["Overrides"]["RebuildMLO"] = "0";
+            IniParser.WriteFile(Constants.INI, _iniData);
+            RebuildMlo = false;
         }
         
         var mods = new List<ModInfo>();
@@ -293,12 +277,9 @@ public static class Program {
             }
         }
         
-        if (!GamePath.IsXbox(Path.Combine(GamePath.FullGamePath)))
+        if (!GamePath.IsXbox(Path.Combine(GamePath.FullGamePath)) || !_iniData.TryGetKey("Overrides.RebuildMLO", out _))
             return mods;
-        
-        if (!_iniData.TryGetKey("Overrides.RebuildMLO", out _))
-            return mods;
-        
+
         Log.Warning("Game specific patch: Disabling RebuildMLO for Xbox games...");
         
         _iniData.Sections["Overrides"]["RebuildMLO"] = "0";
@@ -318,78 +299,81 @@ public static class Program {
         
         // Remove previously repacked pars, to avoid unwanted side effects
         ParRepacker.RemoveOldRepackedPars();
-        
-        if (GamePath.CurrentGame != Game.Unsupported) {
-            if (mods is { Count: > 0 } || _looseFilesEnabled) {
-                // Create Parless mod as highest priority
-                mods.Remove("Parless");
-                mods.Insert(0, "Parless");
 
-                Directory.CreateDirectory(Constants.PARLESS_MODS_PATH);
+        if (GamePath.CurrentGame == Game.Unsupported) {
+            Log.Warning("Aborting: No supported game was found in this directory");
 
-                Log.Information("Generating MLO...");
-
-                var sw = Stopwatch.StartNew();
-                
-                var result = await Generator.GenerateModeLoadOrder(mods, _looseFilesEnabled, _cpkRepackingEnabled);
-                
-                if (GameModel.SupportsUBIK(GamePath.CurrentGame)) {
-                    GameModel.DoUBIKProcedure(result);
-                }
-
-                switch (GamePath.CurrentGame) {
-                    case Game.Yakuza5:
-                        GameModel.DoY5HActProcedure(result);
-                        break;
-                    
-                    case Game.Yakuza0:
-                    case Game.YakuzaKiwami:
-                        GameModel.DoOEHActProcedure(result);
-                        break;
-                    
-                    case Game.YakuzaKiwami2:
-                        GameModel.DoDEHActProcedure(result, "lexus2");
-                        break;
-                    
-                    case Game.Judgment:
-                        GameModel.DoDEHActProcedure(result, "judge");
-                        break;
-                    
-                    case Game.YakuzaLikeADragon:
-                        GameModel.DoDEHActProcedure(result, "yazawa");
-                        break;
-                    
-                    case Game.LikeADragonGaiden:
-                        GameModel.DoDEHActProcedure(result, "aston");
-                        break;
-                    
-                    case Game.LostJudgment:
-                        GameModel.DoDEHActProcedure(result, "coyote");
-                        break;
-                    
-                    case Game.LikeADragon8:
-                        GameModel.DoDEHActProcedure(result, "elvis");
-                        break;
-                    
-                    case Game.LikeADragonPirates:
-                        GameModel.DoDEHActProcedure(result, "spr");
-                        break;
-                    
-                    case Game.YakuzaKiwami3:
-                        GameModel.DoDEHActProcedure(result, "lexus3");
-                        break;
-                }
-                
-                sw.Stop();
-                Log.Information("MLO Generation took: {ElapsedTotalSeconds} seconds", sw.Elapsed.TotalSeconds);
-
-                return;
-            }
-            
-            Log.Warning("Aborting: No mods were found, and .parless paths are disabled");
+            return;
         }
         
-        Log.Warning("Aborting: No supported game was found in this directory");
+        if (mods is { Count: > 0 } || _looseFilesEnabled) {
+            // Create Parless mod as highest priority
+            mods.Remove("Parless");
+            mods.Insert(0, "Parless");
+
+            Directory.CreateDirectory(Constants.PARLESS_MODS_PATH);
+
+            Log.Information("Generating MLO...");
+
+            var sw = Stopwatch.StartNew();
+            
+            var result = await Generator.GenerateModeLoadOrder(mods, _looseFilesEnabled, _cpkRepackingEnabled);
+            
+            if (GameModel.SupportsUBIK(GamePath.CurrentGame)) {
+                GameModel.DoUBIKProcedure(result);
+            }
+
+            switch (GamePath.CurrentGame) {
+                case Game.Yakuza5:
+                    GameModel.DoY5HActProcedure(result);
+                    break;
+                
+                case Game.Yakuza0_DC:
+                    GameModel.DoOEHActProcedure(result);
+                    GameModel.DoY0DCLegacyModelSupport(result);
+                    break;
+                
+                case Game.Yakuza0:
+                case Game.YakuzaKiwami:
+                    GameModel.DoOEHActProcedure(result);
+                    break;
+                
+                case Game.YakuzaKiwami2:
+                    GameModel.DoDEHActProcedure(result, "lexus2");
+                    break;
+                
+                case Game.Judgment:
+                    GameModel.DoDEHActProcedure(result, "judge");
+                    break;
+                
+                case Game.YakuzaLikeADragon:
+                    GameModel.DoDEHActProcedure(result, "yazawa");
+                    break;
+                
+                case Game.LikeADragonGaiden:
+                    GameModel.DoDEHActProcedure(result, "aston");
+                    break;
+                
+                case Game.LostJudgment:
+                    GameModel.DoDEHActProcedure(result, "coyote");
+                    break;
+                
+                case Game.LikeADragon8:
+                    GameModel.DoDEHActProcedure(result, "elvis");
+                    break;
+                
+                case Game.LikeADragonPirates:
+                    GameModel.DoDEHActProcedure(result, "spr");
+                    break;
+                
+                case Game.YakuzaKiwami3:
+                    GameModel.DoDEHActProcedure(result, "lexus3");
+                    break;
+            }
+            
+            sw.Stop();
+            Log.Information("MLO Generation took: {ElapsedTotalSeconds} seconds", sw.Elapsed.TotalSeconds);
+        }
     }
 
     private static void PostRun() {
@@ -401,12 +385,6 @@ public static class Program {
         // Check if the ASI is not in the directory
         if (MissingAsi()) {
             Log.Warning($"Warning: \"{Constants.ASI}\" is missing from this directory. Shin Ryu Mod Manager will NOT function properly without this file");
-        }
-
-        // Calculate the checksum for the game's exe to inform the user if their version might be unsupported
-        if (LogLevel <= LogEventLevel.Warning && InvalidGameExe()) {
-            Log.Error("Warning: Game version is unrecognized. Please use the latest Steam version of the game.\n" +
-                "Shin Ryu Mod Manager will still generate the load order, but the game might CRASH or not function properly");
         }
 
         if (!_isSilent) {
@@ -467,15 +445,6 @@ public static class Program {
 
     internal static bool MissingAsi() {
         return !File.Exists(Constants.ASI);
-    }
-
-    internal static bool InvalidGameExe() {
-        return false;
-
-        /*
-        string path = Path.Combine(GetGamePath(), GetGameExe());
-        return GetGame() == Game.Unsupported || !GameHash.ValidateFile(path, GetGame());
-        */
     }
 
     public static List<ModInfo> ReadModListTxt(string text) {
@@ -704,10 +673,8 @@ public static class Program {
         if (string.IsNullOrEmpty(meta.Dependencies))
             return;
 
-        foreach (var dep in meta.Dependencies.Split(';')) {
-            if (!DoesLibraryExist(dep)) {
-                await InstallLibraryAsync(dep);
-            }
+        foreach (var dep in meta.Dependencies.Split(';').Where(x => !DoesLibraryExist(x))) {
+            await InstallLibraryAsync(dep);
         }
     }
 }
