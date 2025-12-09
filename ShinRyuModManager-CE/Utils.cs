@@ -123,4 +123,23 @@ public static class Utils {
                 return false;
         }
     }
+
+    public static void CopyDirectory(string srcDirectory, string destDirectory) {
+        if (!Directory.Exists(srcDirectory))
+            throw new DirectoryNotFoundException($"Directory \"{srcDirectory}\" doesn't exist.");
+
+        Directory.CreateDirectory(destDirectory);
+
+        foreach (var file in Directory.EnumerateFiles(srcDirectory)) {
+            var destFile = Path.Combine(destDirectory, Path.GetFileName(file));
+            
+            File.Copy(file, destFile, true);
+        }
+
+        foreach (var dir in Directory.EnumerateDirectories(srcDirectory)) {
+            var destSubDir = Path.Combine(destDirectory, Path.GetFileName(dir));
+            
+            CopyDirectory(dir, destSubDir);
+        }
+    }
 }

@@ -14,15 +14,12 @@ internal static class CpkPatcher {
         
         Log.Information("Repacking CPKs...");
         
-        var cpkPath = Path.Combine(GamePath.ModsPath, "Parless");
-        
-        if (!Directory.Exists(cpkPath))
-            Directory.CreateDirectory(cpkPath);
+        Directory.CreateDirectory(GamePath.ParlessDir);
         
         foreach (var kvp in cpkDict) {
             var key = kvp.Key.Trim(Path.DirectorySeparatorChar);
             
-            var cpkDir = Path.Combine(cpkPath, key);
+            var cpkDir = Path.Combine(GamePath.ParlessDir, key);
 
             string origCpk;
 

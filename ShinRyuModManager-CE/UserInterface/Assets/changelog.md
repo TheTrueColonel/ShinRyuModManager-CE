@@ -1,3 +1,6 @@
+> ### **%{color:orange} Version 1.3.2 %** ###
+* Implemented changes from SRMM 4.6.8
+
 > ### **%{color:orange} Version 1.3.1 %** ###
 * Repacked for updated Parless from SRMM 4.6.7
 
@@ -24,7 +27,7 @@
 ---
 
 > ### **%{color:orange} Version 1.2.3 %** ###
-* Implemented changed from SRMM 4.6.6
+* Implemented changes from SRMM 4.6.6
 
 ---
 
@@ -34,7 +37,7 @@
 ---
 
 > ### **%{color:orange} Version 1.2.1 %** ###
-* Fixed linux bug with auto updater failing to check version
+* Fixed Linux bug with auto updater failing to check version
 
 ---
 

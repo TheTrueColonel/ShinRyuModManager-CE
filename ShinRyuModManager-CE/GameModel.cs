@@ -31,9 +31,9 @@ public static class GameModel {
             var filePath = Path.Combine("mods", mod, file.Name.Trim('/'));
             var fileInfo = new FileInfo(filePath);
             // Get the folder from a path like so -> data/hact/h5000_some_hact/cmn/cmn.bin
-            var hactDir = fileInfo.Directory.Parent.Name;
+            var hactDir = fileInfo.Directory!.Parent!.Name;
 
-            if (fileInfo.Directory.Parent.Parent.Name == "hact") {
+            if (fileInfo.Directory.Parent.Parent!.Name == "hact") {
                 var hactPath = fileInfo.Directory.Parent.FullName;
                     
                 var parPath = Path.Combine(fileInfo.Directory.Parent.Parent.FullName, hactDir + ".par");
@@ -65,7 +65,7 @@ public static class GameModel {
 
         foreach (var hactDirPath in hactDirs) {
             var hactDir = new DirectoryInfo(hactDirPath);
-            var parlessDir = new DirectoryInfo(Path.Combine(GamePath.ModsPath, "Parless", "hact", hactDir.Name));
+            var parlessDir = new DirectoryInfo(Path.Combine(GamePath.ParlessDir, "hact", hactDir.Name));
 
             if (!parlessDir.Exists)
                 parlessDir.Create();
@@ -94,7 +94,28 @@ public static class GameModel {
                 }
             }
             
-            Gibbed.Yakuza0.Pack.Program.Main([parlessDir.FullName], Path.Combine(parlessDir.Parent.FullName, $"{hactDir.Name}.par"));
+            Gibbed.Yakuza0.Pack.Program.Main([parlessDir.FullName], Path.Combine(parlessDir.Parent!.FullName, $"{hactDir.Name}.par"));
+        }
+    }
+
+    public static void DoY0DCLegacyModelSupport(MLO mlo) {
+        var parlessDir = new DirectoryInfo(GamePath.ParlessDir);
+
+        parlessDir.Create();
+
+        foreach (var modName in mlo.Mods) {
+            var modDir = Path.Combine(GamePath.ModsPath, modName);
+            
+            if (!Directory.Exists(modDir))
+                continue;
+
+            var legacyCharaDir = Path.Combine(modDir, "chara", "w64");
+            var newCharaDir = Path.Combine(parlessDir.FullName, "chara", "ngen");
+            
+            if (!Directory.Exists(legacyCharaDir))
+                continue;
+            
+            Utils.CopyDirectory(legacyCharaDir, newCharaDir);
         }
     }
 
@@ -111,9 +132,9 @@ public static class GameModel {
             var fileInfo = new FileInfo(filePath);
 
             //get the folder from a path like this -> data/hact/h5000_some_hact/cmn/cmn.bin
-            var hactDir = fileInfo.Directory.Parent.Name;
+            var hactDir = fileInfo.Directory!.Parent!.Name;
 
-            if (fileInfo.Directory.Parent.Parent.Name == "hact") {
+            if (fileInfo.Directory.Parent.Parent!.Name == "hact") {
                 var hactPath = fileInfo.Directory.Parent.FullName;
 
                 var parPath = Path.Combine(fileInfo.Directory.Parent.Parent.FullName, hactDir + ".par");
@@ -126,10 +147,8 @@ public static class GameModel {
                 if (!Directory.Exists(Path.Combine(hactPath, "000")) || !Directory.Exists(Path.Combine(hactPath, "cmn")))
                     continue;
 
-                if (hactDirs.Contains(hactPath))
+                if (!hactDirs.Add(hactPath))
                     continue;
-
-                hactDirs.Add(hactPath);
             }
 
             hasHacts = true;
@@ -142,22 +161,22 @@ public static class GameModel {
         
         foreach (var hactDirPath in hactDirs) {
             var hactDir = new DirectoryInfo(hactDirPath);
-            var parlessDir = new DirectoryInfo(Path.Combine(GamePath.ModsPath, "Parless", "hact", hactDir.Name));
+            var parlessDir = new DirectoryInfo(Path.Combine(GamePath.ParlessDir, "hact", hactDir.Name));
 
             if (!parlessDir.Exists)
                 parlessDir.Create();
 
-            foreach (var dir in hactDir.GetDirectories()) {
+            foreach (var dirName in hactDir.EnumerateDirectories().Select(x => x.Name)) {
                 //We already repack ptc 
-                if (dir.Name == "ptc" /*&& File.Exists(Path.Combine(hactDir.FullName, "ptc.par"))*/)
+                if (dirName == "ptc" /*&& File.Exists(Path.Combine(hactDir.FullName, "ptc.par"))*/)
                     continue;
 
-                var outputFakeDir = Path.Combine(parlessDir.FullName, dir.Name);
+                var outputFakeDir = Path.Combine(parlessDir.FullName, dirName);
                
                 if(!Directory.Exists(outputFakeDir))
                     Directory.CreateDirectory(outputFakeDir);
 
-                var outputPath = Path.Combine(parlessDir.FullName, dir.Name + ".par");
+                var outputPath = Path.Combine(parlessDir.FullName, dirName + ".par");
                 
                 Gibbed.Yakuza0.Pack.Program.Main([outputFakeDir], outputPath);
                 
@@ -168,7 +187,7 @@ public static class GameModel {
                 }
             }
 
-            Gibbed.Yakuza0.Pack.Program.Main([parlessDir.FullName], Path.Combine(parlessDir.Parent.FullName, hactDir.Name + ".par"));
+            Gibbed.Yakuza0.Pack.Program.Main([parlessDir.FullName], Path.Combine(parlessDir.Parent!.FullName, hactDir.Name + ".par"));
         }
     }
     
@@ -185,9 +204,9 @@ public static class GameModel {
             var fileInfo = new FileInfo(filePath);
 
             //get the folder from a path like this -> data/hact_yazawa/h5000_some_hact/cmn/cmn.bin
-            var hactDir = fileInfo.Directory.Parent.Name;
+            var hactDir = fileInfo.Directory!.Parent!.Name;
 
-            if (fileInfo.Directory.Parent.Parent.Name == $"hact_{codename}") {
+            if (fileInfo.Directory.Parent.Parent!.Name == $"hact_{codename}") {
                 var hactPath = fileInfo.Directory.Parent.FullName;
 
                 var parPath = Path.Combine(fileInfo.Directory.Parent.Parent.FullName, hactDir + ".par");
@@ -219,7 +238,7 @@ public static class GameModel {
 
         foreach (var hactDirPath in hactDirs) {
             var hactDir = new DirectoryInfo(hactDirPath);
-            var parlessDir = new DirectoryInfo(Path.Combine(GamePath.ModsPath, "Parless", "hact_" + codename, hactDir.Name));
+            var parlessDir = new DirectoryInfo(Path.Combine(GamePath.ParlessDir, "hact_" + codename, hactDir.Name));
 
             if (!parlessDir.Exists)
                 parlessDir.Create();
@@ -233,7 +252,7 @@ public static class GameModel {
                 Gibbed.Yakuza0.Pack.Program.Main([dir.FullName], outputPath);
             }
 
-            Gibbed.Yakuza0.Pack.Program.Main([parlessDir.FullName], Path.Combine(parlessDir.Parent.FullName, hactDir.Name + ".par"));
+            Gibbed.Yakuza0.Pack.Program.Main([parlessDir.FullName], Path.Combine(parlessDir.Parent!.FullName, hactDir.Name + ".par"));
 
             new DirectoryInfo(parlessDir.FullName).Delete(true);
         }
@@ -267,12 +286,12 @@ public static class GameModel {
         foreach (var node in ubik!.Children) {
             var ubikFile = node.GetFormatAs<ParFile>();
             
-            if (ubikFile.IsCompressed)
+            if (ubikFile!.IsCompressed)
                 node.TransformWith<ParLibrary.Sllz.Decompressor>();
             
             var filePath = Path.Combine(ubikDir, node.Name);
             
-            if (node.Stream.Length > 0)
+            if (node.Stream!.Length > 0)
                 node.Stream.WriteTo(filePath);
         }
         

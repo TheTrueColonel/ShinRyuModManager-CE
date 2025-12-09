@@ -26,17 +26,15 @@ public static class ParRepacker {
     }
     
     public static void RemoveOldRepackedPars() {
-        var pathToParlessMods = Path.Combine(GamePath.ModsPath, "Parless");
-        
-        if (!Directory.Exists(pathToParlessMods))
+        if (!Directory.Exists(GamePath.ParlessDir))
             return;
         
         Log.Information("Removing old pars...");
         
         try {
-            DeleteDirectory(pathToParlessMods);
+            DeleteDirectory(GamePath.ParlessDir);
         } catch {
-            Log.Warning("Failed to remove old pars! {PathToParlessMods}", pathToParlessMods);
+            Log.Warning("Failed to remove old pars! {PathToParlessMods}", GamePath.ParlessDir);
         }
         
         Log.Information("Removed old pars.");
@@ -58,10 +56,6 @@ public static class ParRepacker {
         }
         
         await Task.WhenAll(parTasks);
-
-        /*foreach (var parModPair in parDictionary) {
-            RepackPar(parModPair.Key, parModPair.Value);
-        }*/
         
         Log.Information("Repacked {ParDictionaryCount} par(s)!", parDictionary.Count);
     }
@@ -71,7 +65,13 @@ public static class ParRepacker {
         
         var parPathReal = GamePath.GetRootParPath(parPath + ".par");
         var pathToPar = Path.Combine(GamePath.DataPath, parPathReal);
-        var pathToModPar = Path.Combine(GamePath.ModsPath, "Parless", parPath + ".par");
+        var pathToModPar = Path.Combine(GamePath.ParlessDir, parPath + ".par");
+
+        if (string.IsNullOrEmpty(parPathReal)) {
+            Log.Information("ParRepacker: ParPathReal is empty for {ParPath} - skipping", parPath);
+
+            return;
+        }
         
         // Check if actual repackable par is nested
         if (parPath + ".par" != parPathReal) {

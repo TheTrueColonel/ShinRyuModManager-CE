@@ -12,6 +12,7 @@ public static class GamePath {
     public static string FullGamePath { get; }
     public static string DataPath { get; }
     public static string ModsPath { get; }
+    public static string ParlessDir { get; }
     public static string ExternalModsPath { get; }
     public static string LibrariesPath { get; }
     public static string GameExe { get; }
@@ -20,6 +21,7 @@ public static class GamePath {
         FullGamePath = Environment.CurrentDirectory;
         DataPath = Path.Combine(FullGamePath, DATA);
         ModsPath = Path.Combine(FullGamePath, MODS);
+        ParlessDir = Path.Combine(ModsPath, "Parless");
         ExternalModsPath = Path.Combine(ModsPath, Constants.EXTERNAL_MODS);
         LibrariesPath = Path.Combine(FullGamePath, LIBRARIES);
         
@@ -205,6 +207,7 @@ public static class GamePath {
     public static string GetGameFriendlyName(Game g) {
         return g switch {
             Game.Yakuza0 => "Yakuza 0",
+            Game.Yakuza0_DC => "Yakuza 0: Director's Cut",
             Game.YakuzaKiwami => "Yakuza Kiwami",
             Game.YakuzaKiwami2 => "Yakuza Kiwami 2",
             Game.Yakuza3 => "Yakuza 3 Remastered",
@@ -228,6 +231,7 @@ public static class GamePath {
     public static int? GetGameSteamId(Game game) {
         return game switch {
             Game.Yakuza0 => 638970,
+            Game.Yakuza0_DC => 2988580,
             Game.YakuzaKiwami => 834530,
             Game.YakuzaKiwami2 => 927380,
             Game.Yakuza3 => 1088710,

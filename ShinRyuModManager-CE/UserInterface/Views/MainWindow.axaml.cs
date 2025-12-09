@@ -83,10 +83,6 @@ public partial class MainWindow : Window {
             if (Program.MissingAsi()) {
                 _ = await MessageBoxWindow.Show(this, "Warning", $"{Constants.ASI} is missing from this directory. Mods will NOT be applied without this file.");
             }
-
-            if (Program.InvalidGameExe()) {
-                _ = await MessageBoxWindow.Show(this, "Error", "Game version is unrecognized. Please use the latest Steam version of the game. The mod list will still be saved.\nMods may still work depending on the version.");
-            }
         }
     }
 
