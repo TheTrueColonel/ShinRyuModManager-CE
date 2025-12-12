@@ -1,8 +1,12 @@
 > ### **%{color:orange} Version 1.3.3 %** ###
 * Implemented changes from SRMM 4.6.9
 
+---
+
 > ### **%{color:orange} Version 1.3.2 %** ###
 * Implemented changes from SRMM 4.6.8
+
+---
 
 > ### **%{color:orange} Version 1.3.1 %** ###
 * Repacked for updated Parless from SRMM 4.6.7
