@@ -1,3 +1,8 @@
+> ### **%{color:gold} Version 1.3.4 %** ###
+* Repacked for updated Parless from SRMM 4.7.1
+
+---
+
 > ### **%{color:orange} Version 1.3.3 %** ###
 * Implemented changes from SRMM 4.6.9
 
