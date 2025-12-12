@@ -125,7 +125,7 @@ public class Mod {
         
             switch (basename) {
                 case "bgm":
-                    if (GamePath.CurrentGame <= Game.YakuzaKiwami) {
+                    if (GamePath.CurrentGame <= Game.YakuzaKiwami_R) {
                         cpkDataPath = GamePath.RemoveModPath(path);
                         RepackCpKs.Add(cpkDataPath);
                     }
@@ -134,7 +134,7 @@ public class Mod {
             
                 case "se":
                 case "speech":
-                    if (GamePath.CurrentGame is Game.Yakuza5 or <= Game.YakuzaKiwami) {
+                    if (GamePath.CurrentGame is Game.Yakuza5 or <= Game.YakuzaKiwami_R) {
                         // Removed adding ".cpk" to se folder. Seemed incorrect
                         cpkDataPath = GamePath.RemoveModPath(path);
                         RepackCpKs.Add(cpkDataPath);

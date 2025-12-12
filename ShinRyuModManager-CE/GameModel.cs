@@ -98,7 +98,7 @@ public static class GameModel {
         }
     }
 
-    public static void DoY0DCLegacyModelSupport(MLO mlo) {
+    public static void DoY0DCLegacyModelUpgrade(MLO mlo) {
         var parlessDir = new DirectoryInfo(GamePath.ParlessDir);
 
         parlessDir.Create();
@@ -110,12 +110,72 @@ public static class GameModel {
                 continue;
 
             var legacyCharaDir = Path.Combine(modDir, "chara", "w64");
-            var newCharaDir = Path.Combine(parlessDir.FullName, "chara", "ngen");
-            
+
             if (!Directory.Exists(legacyCharaDir))
                 continue;
+                    
+            var newCharaDir = Path.Combine(parlessDir.FullName, "chara", "ngen");
+
+            for (var i = 0; i < mlo.Files.Count; i++) {
+                var file = mlo.Files[i];
+
+                if (file.Name.Contains("chara/w64"))
+                    file = file with {
+                        Name = file.Name.Replace("chara/w64", "chara/ngen")
+                    };
+
+                mlo.Files[i] = file;
+            }
             
-            Utils.CopyDirectory(legacyCharaDir, newCharaDir);
+            Directory.Move(legacyCharaDir, newCharaDir);
+        }
+    }
+
+    public static void DoYK2RemasterLegacyDBUpgrade(MLO mlo) {
+        var parlessDir = new DirectoryInfo(GamePath.ParlessDir);
+
+        parlessDir.Create();
+
+        foreach (var modName in mlo.Mods) {
+            var modDir = Path.Combine(GamePath.ModsPath, modName);
+            
+            if (!Directory.Exists(modDir))
+                continue;
+
+            var legacyDBDir = Path.Combine(modDir, "db");
+            var newDBDir = Path.Combine(modDir, "db.lexus2");
+
+            var legacyPUIDDir = Path.Combine(modDir, "puid");
+            var newPUIDDir = Path.Combine(modDir, "puid.lexus2");
+
+            var haveOldDb = Directory.Exists(legacyDBDir);
+            var haveOldPuid = Directory.Exists(legacyPUIDDir);
+
+            if (haveOldDb || haveOldPuid) {
+                for (var i = 0; i < mlo.Files.Count; i++) {
+                    var file = mlo.Files[i];
+
+                    if (haveOldDb && file.Name.Contains("/db") && !file.Name.Contains("/db.lexus2")) {
+                        file = file with {
+                            Name = file.Name.Replace("/db", "/db.lexus2")
+                        };
+                    }
+
+                    if (haveOldPuid && file.Name.Contains("/puid") && !file.Name.Contains("/puid.lexus2")) {
+                        file = file with {
+                            Name = file.Name.Replace("/puid", "/puid.lexus2")
+                        };
+                    }
+
+                    mlo.Files[i] = file;
+                }
+            }
+            
+            if (haveOldDb)
+                Directory.Move(legacyDBDir, newDBDir);
+            
+            if (haveOldPuid)
+                Directory.Move(legacyPUIDDir, newPUIDDir);
         }
     }
 
