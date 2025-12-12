@@ -328,18 +328,24 @@ public static class Program {
                     GameModel.DoY5HActProcedure(result);
                     break;
                 
-                case Game.Yakuza0_DC:
-                    GameModel.DoOEHActProcedure(result);
-                    GameModel.DoY0DCLegacyModelSupport(result);
-                    break;
-                
                 case Game.Yakuza0:
                 case Game.YakuzaKiwami:
                     GameModel.DoOEHActProcedure(result);
                     break;
                 
+                case Game.Yakuza0_DC:
+                case Game.YakuzaKiwami_R:
+                    GameModel.DoOEHActProcedure(result);
+                    GameModel.DoY0DCLegacyModelUpgrade(result);
+                    break;
+                
                 case Game.YakuzaKiwami2:
                     GameModel.DoDEHActProcedure(result, "lexus2");
+                    break;
+                
+                case Game.YakuzaKiwami2_R:
+                    GameModel.DoDEHActProcedure(result, "lexus2");
+                    GameModel.DoYK2RemasterLegacyDBUpgrade(result);
                     break;
                 
                 case Game.Judgment:

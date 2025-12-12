@@ -11,10 +11,12 @@
         Yakuza0,
         Yakuza0_DC,
         YakuzaKiwami,
+        YakuzaKiwami_R,
         
         // Dragon Engine
         Yakuza6,
         YakuzaKiwami2,
+        YakuzaKiwami2_R,
         YakuzaLikeADragon,
         Judgment,
         LostJudgment,
