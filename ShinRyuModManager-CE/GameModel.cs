@@ -98,7 +98,8 @@ public static class GameModel {
         }
     }
 
-    public static void DoY0DCLegacyModelUpgrade(MLO mlo) {
+    // One time upgrade of old mods
+    public static void DoY0DCLegacyModsUpgrade(MLO mlo) {
         var parlessDir = new DirectoryInfo(GamePath.ParlessDir);
 
         parlessDir.Create();
@@ -110,24 +111,59 @@ public static class GameModel {
                 continue;
 
             var legacyCharaDir = Path.Combine(modDir, "chara", "w64");
+            var legacyStageDir = Path.Combine(modDir, "stage", "w64");
+            var legacyReactorDir = Path.Combine(modDir, "reactorpar", "reactor_w64");
 
-            if (!Directory.Exists(legacyCharaDir))
-                continue;
-                    
-            var newCharaDir = Path.Combine(parlessDir.FullName, "chara", "ngen");
+            if (Directory.Exists(legacyCharaDir)) {
+                var newCharaDir = Path.Combine(parlessDir.FullName, "chara", "ngen");
 
-            for (var i = 0; i < mlo.Files.Count; i++) {
-                var file = mlo.Files[i];
+                for (var i = 0; i < mlo.Files.Count; i++) {
+                    var file = mlo.Files[i];
 
-                if (file.Name.Contains("chara/w64"))
-                    file = file with {
-                        Name = file.Name.Replace("chara/w64", "chara/ngen")
-                    };
+                    if (file.Name.Contains("chara/w64"))
+                        file = file with {
+                            Name = file.Name.Replace("chara/w64", "chara/ngen")
+                        };
 
-                mlo.Files[i] = file;
+                    mlo.Files[i] = file;
+                }
+
+                Directory.Move(legacyCharaDir, newCharaDir);
             }
             
-            Directory.Move(legacyCharaDir, newCharaDir);
+            if (Directory.Exists(legacyStageDir)) {
+                var newStageDir = Path.Combine(parlessDir.FullName, "stage", "ngen");
+
+                for (var i = 0; i < mlo.Files.Count; i++) {
+                    var file = mlo.Files[i];
+
+                    if (file.Name.Contains("stage/w64"))
+                        file = file with {
+                            Name = file.Name.Replace("stage/w64", "stage/ngen")
+                        };
+
+                    mlo.Files[i] = file;
+                }
+
+                Directory.Move(legacyStageDir, newStageDir);
+            }
+            
+            if (Directory.Exists(legacyReactorDir)) {
+                var newReactorDir = Path.Combine(parlessDir.FullName, "reactorpar", "reactor_ngen");
+
+                for (var i = 0; i < mlo.Files.Count; i++) {
+                    var file = mlo.Files[i];
+
+                    if (file.Name.Contains("reactor_w64/"))
+                        file = file with {
+                            Name = file.Name.Replace("reactor_w64/", "reactor_ngen/")
+                        };
+
+                    mlo.Files[i] = file;
+                }
+
+                Directory.Move(legacyReactorDir, newReactorDir);
+            }
         }
     }
 

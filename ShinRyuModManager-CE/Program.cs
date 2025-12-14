@@ -336,7 +336,7 @@ public static class Program {
                 case Game.Yakuza0_DC:
                 case Game.YakuzaKiwami_R:
                     GameModel.DoOEHActProcedure(result);
-                    GameModel.DoY0DCLegacyModelUpgrade(result);
+                    GameModel.DoY0DCLegacyModsUpgrade(result);
                     break;
                 
                 case Game.YakuzaKiwami2:
