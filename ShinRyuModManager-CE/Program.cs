@@ -10,6 +10,7 @@ using Serilog.Core;
 using Serilog.Events;
 using Serilog.Exceptions;
 using Serilog.Formatting.Json;
+using ShinRyuModManager.Extensions;
 using ShinRyuModManager.Helpers;
 using ShinRyuModManager.ModLoadOrder;
 using ShinRyuModManager.ModLoadOrder.Mods;
@@ -44,10 +45,10 @@ public static class Program {
     
     [STAThread]
     private static void Main(string[] args) {
-        Directory.CreateDirectory(Settings.LOGS_BASE_PATH);
+        Directory.CreateDirectory(Constants.LOGS_BASE_PATH);
         
-        var defaultLogsPath = Path.Combine(Settings.LOGS_BASE_PATH, "srmm_logs.log");
-        var errorLogsPath = Path.Combine(Settings.LOGS_BASE_PATH, "srmm_errors.log");
+        var defaultLogsPath = Path.Combine(Constants.LOGS_BASE_PATH, "srmm_logs.log");
+        var errorLogsPath = Path.Combine(Constants.LOGS_BASE_PATH, "srmm_errors.log");
         
         LoadConfig();
         
@@ -66,7 +67,7 @@ public static class Program {
                                           .WriteTo.Async(a => a.File(new JsonFormatter(renderMessage: true), errorLogsPath, rollingInterval: RollingInterval.Day)))
                      .CreateLogger();
 
-        // TODO: Temporary, YakuzaParless.asi currently only supports the Windows binary. Currently disabling RebuildMLO on Linux
+        // TODO: Maybe temporary, YakuzaParless.asi currently only supports the Windows binary. Currently disabling RebuildMLO on Linux
         if (!OperatingSystem.IsWindows()) {
             IsRebuildMloSupported = false;
         }
@@ -306,7 +307,7 @@ public static class Program {
             return;
         }
         
-        if (mods is { Count: > 0 } || _looseFilesEnabled) {
+        if (!mods.IsNullOrEmpty() || _looseFilesEnabled) {
             // Create Parless mod as highest priority
             mods.Remove("Parless");
             mods.Insert(0, "Parless");
@@ -505,13 +506,13 @@ public static class Program {
     }
 
     private static async Task<bool> WriteModListTextAsync(List<ModInfo> mods) {
-        if (mods == null || mods.Count == 0)
+        if (mods.IsNullOrEmpty())
             return false;
 
         var sb = new StringBuilder();
 
         foreach (var mod in mods) {
-            sb.Append($"{(mod.Enabled ? "<" : ">")}{mod.Name}|");
+            sb.Append($"{(mod.Enabled ? '<' : '>')}{mod.Name}|");
         }
 
         // Remove leftover pipe
@@ -522,21 +523,11 @@ public static class Program {
         return true;
     }
     
-    public static string GetModDirectory(string mod)
-    {
-        return Path.Combine(GamePath.ModsPath, mod);
-    }
-    
-    public static string[] GetModDependencies(string mod)
-    {
-        string modDir = GetModDirectory(mod);
+    public static string[] GetModDependencies(string mod) {
+        var modDir = GamePath.GetModDirectory(mod);
+        var metaFile = Path.Combine(modDir, "mod-meta.yaml");
 
-        if (!Directory.Exists(modDir))
-            return [];
-
-        string metaFile = Path.Combine(modDir, "mod-meta.yaml");
-
-        if (!File.Exists(metaFile))
+        if (!Directory.Exists(modDir) || !File.Exists(metaFile))
             return [];
         
         var meta = YamlHelpers.DeserializeYamlFromPath<ModMeta>(metaFile);
@@ -547,20 +538,9 @@ public static class Program {
         return meta.Dependencies.Split(';');
     }
 
-    public static string GetLibraryPath(string guid)
-    {
-        return Path.Combine(GamePath.LibrariesPath, guid);
-    }
-
-    public static string GetLocalLibraryCopyPath()
-    {
-        return Path.Combine(GamePath.LibrariesPath, Settings.LIBRARIES_INFO_REPO_FILE_PATH);
-    }
-
     //Read cached data at startup if it exists
-    public static void ReadCachedLocalLibraryData()
-    {
-        string path = GetLocalLibraryCopyPath();
+    public static void ReadCachedLocalLibraryData() {
+        var path = GamePath.LocalLibrariesPath;
 
         if (!File.Exists(path))
             return;
@@ -568,47 +548,37 @@ public static class Program {
         LibMeta.ReadLibMetaManifest(File.ReadAllText(path));
     }
 
-    public static LibMeta GetLibMeta(string guid)
-    {
+    public static LibMeta GetLibMeta(string guid) {
         return LibraryMetaCache.FirstOrDefault(x => x.GUID.ToString() == guid);
     }
 
-    public static bool DoesLibraryExist(string guid)
-    {
-        string libDir = GetLibraryPath(guid);
+    public static bool DoesLibraryExist(string guid) {
+        var libDir = GamePath.GetLibraryPath(guid);
 
-        if (!Directory.Exists(libDir))
-            return false;
-
-        return true;
+        return Directory.Exists(libDir);
     }
 
-    public static bool IsLibraryEnabled(string guid)
-    {
+    public static bool IsLibraryEnabled(string guid) {
         if (!DoesLibraryExist(guid))
             return false;
 
-        if (File.Exists(Path.Combine(GetLibraryPath(guid), ".disabled")))
-            return false;
-
-        return true;
+        return !File.Exists(Path.Combine(GamePath.GetLibraryPath(guid), ".disabled"));
     }
 
-    public static string GetLibraryName(string guid)
-    {
+    public static string GetLibraryName(string guid) {
         var metaData = GetLibMeta(guid);
 
         if (metaData != null)
             return metaData.Name;
 
-        var path = Path.Combine(GetLibraryPath(guid), Settings.LIBRARIES_LIBMETA_FILE_NAME);
+        var path = Path.Combine(GamePath.GetLibraryPath(guid), Constants.LIBRARIES_LIBMETA_FILE_NAME);
 
         if (!File.Exists(path))
             return guid;
 
         var yamlString = File.ReadAllText(path);
         var meta = LibMeta.ReadLibMeta(yamlString);
-            
+
         return meta.Name;
     }
 
@@ -626,14 +596,15 @@ public static class Program {
             Directory.Delete(destDir, true);
             
         Directory.CreateDirectory(destDir);
+        
         await ZipFile.ExtractToDirectoryAsync(packagePath, destDir, true);
     }
     
     private static async Task<string> DownloadLibraryPackageAsync(string fileName, LibMeta meta) {
-        Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Settings.TEMP_DIRECTORY_NAME));
+        Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Constants.TEMP_DIRECTORY_NAME));
 
         try {
-            var path = Path.Combine(Path.GetTempPath(), Settings.TEMP_DIRECTORY_NAME, fileName);
+            var path = Path.Combine(Path.GetTempPath(), Constants.TEMP_DIRECTORY_NAME, fileName);
 
             await using var stream = await Utils.Client.GetStreamAsync(meta.Download);
             await using var fs = new FileStream(path, FileMode.Create, FileAccess.Write);
@@ -664,14 +635,10 @@ public static class Program {
     }
 
     public static async Task InstallModDependenciesAsync(string mod) {
-        var modDir = GetModDirectory(mod);
-        
-        if (!Directory.Exists(modDir))
-            return;
-
+        var modDir = GamePath.GetModDirectory(mod);
         var metaFile = Path.Combine(modDir, "mod-meta.yaml");
         
-        if (!File.Exists(metaFile))
+        if (!Directory.Exists(modDir) || !File.Exists(metaFile))
             return;
 
         var meta = await YamlHelpers.DeserializeYamlFromPathAsync<ModMeta>(metaFile);

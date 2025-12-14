@@ -179,8 +179,7 @@ public class Mod {
                 if (path.Contains("talk_")) {
                     if (char.IsDigit(basename[0]) || check == "cmn") {
                         needsRepack = true;
-                    }
-                    else {
+                    } else {
                         var tCmn = Path.Combine(path, "cmn");
                         var t000 = Path.Combine(path, "000");
                         

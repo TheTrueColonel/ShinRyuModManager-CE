@@ -105,7 +105,7 @@ public static class GameModel {
         parlessDir.Create();
 
         foreach (var modName in mlo.Mods) {
-            var modDir = Path.Combine(GamePath.ModsPath, modName);
+            var modDir = GamePath.GetModDirectory(modName);
             
             if (!Directory.Exists(modDir))
                 continue;
@@ -173,7 +173,7 @@ public static class GameModel {
         parlessDir.Create();
 
         foreach (var modName in mlo.Mods) {
-            var modDir = Path.Combine(GamePath.ModsPath, modName);
+            var modDir = GamePath.GetModDirectory(modName);
             
             if (!Directory.Exists(modDir))
                 continue;

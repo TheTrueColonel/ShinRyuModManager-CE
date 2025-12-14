@@ -1,6 +1,7 @@
 using CpkTools.Endian;
 using CpkTools.Model;
 using Serilog;
+using ShinRyuModManager.Extensions;
 using Utils;
 
 namespace ShinRyuModManager.ModLoadOrder;
@@ -8,7 +9,7 @@ namespace ShinRyuModManager.ModLoadOrder;
 // Intended only for OE bgm/se.cpk
 internal static class CpkPatcher {
     public static async Task RepackDictionary(Dictionary<string, List<string>> cpkDict) {
-        if (cpkDict == null || cpkDict.Count <= 0) {
+        if (cpkDict.IsNullOrEmpty()) {
             return;
         }
         

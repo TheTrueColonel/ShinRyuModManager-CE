@@ -33,7 +33,6 @@ public static class Generator {
         }
         
         var modsObjects = new Mod[mods.Count];
-        
         var cpkDictionary = new Dictionary<string, List<int>>();
         
         Log.Information("Reading mods...\n");
@@ -43,7 +42,8 @@ public static class Generator {
         // Use a reverse loop to be able to remove items from the list when necessary
         for (var i = mods.Count - 1; i >= 0; i--) {
             var mod = new Mod(mods[i]);
-            var modPath = Path.Combine(GamePath.ModsPath, mods[i]);
+            var modPath = GamePath.GetModDirectory(mods[i]);
+            
             mod.AddFiles(modPath, "");
             
             mod.PrintInfo();

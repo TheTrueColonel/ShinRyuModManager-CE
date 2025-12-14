@@ -459,9 +459,7 @@ public partial class MainWindow : Window {
     private async Task UpdateModMetaAsync(MainWindowViewModel viewModel, ModInfo mod) {
         const string modImagePattern = "mod-image.*";
         
-        var modPath = Path.Combine(GamePath.ModsPath, mod.Name);
-        //var libMetaPath = Path.Combine(modPath, "lib-meta.yaml");
-
+        var modPath = GamePath.GetModDirectory(mod.Name);
         var matchingModImages = Directory.EnumerateFiles(modPath, modImagePattern);
 
         Bitmap modImage = null;
@@ -496,7 +494,7 @@ public partial class MainWindow : Window {
     }
 
     private static async Task<ModMeta> GetModMetaAsync(string modName) {
-        var modPath = Path.Combine(GamePath.ModsPath, modName);
+        var modPath = GamePath.GetModDirectory(modName);
         var modMetaPath = Path.Combine(modPath, "mod-meta.yaml");
         
         var meta = ModMeta.GetPlaceholder(modName);

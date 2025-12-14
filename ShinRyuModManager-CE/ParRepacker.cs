@@ -1,5 +1,6 @@
 using ParLibrary.Converter;
 using Serilog;
+using ShinRyuModManager.Extensions;
 using Utils;
 using Yarhl.FileSystem;
 using Yarhl.IO;
@@ -43,7 +44,7 @@ public static class ParRepacker {
     public static async Task RepackDictionary(Dictionary<string, List<string>> parDictionary) {
         var parTasks = new List<Task>();
         
-        if (parDictionary.Count == 0) {
+        if (parDictionary.IsNullOrEmpty()) {
             Log.Information("No pars to repack.");
             
             return;
@@ -167,7 +168,7 @@ public static class ParRepacker {
         writerParams.IncludeDots = par.Children[0].Name == ".";
         writerParams.ResetFileDates = true;
         
-        containerNode.MoveChildrenTo(writerParams.IncludeDots ? par.Children[0] : par, true);
+        containerNode!.MoveChildrenTo(writerParams.IncludeDots ? par.Children[0] : par, true);
         par.SortChildren((x, y) => string.CompareOrdinal(x.Name.ToLowerInvariant(), y.Name.ToLowerInvariant()));
         
         writerParams.IncludeDots = false;
@@ -205,13 +206,13 @@ public static class ParRepacker {
         List<string> files = [];
         
         // Add files in current directory
-        foreach (var p in Directory.GetFiles(path).Where(f => !f.EndsWith(Constants.VORTEX_MANAGED_FILE)).Select(GamePath.GetDataPathFrom)) {
+        foreach (var p in Directory.EnumerateFiles(path).Where(f => !f.EndsWith(Constants.VORTEX_MANAGED_FILE)).Select(GamePath.GetDataPathFrom)) {
             files.Add(p);
             Log.Verbose("Adding file: {File}", p);
         }
         
         // Get files for all subdirectories
-        foreach (var folder in Directory.GetDirectories(path)) {
+        foreach (var folder in Directory.EnumerateDirectories(path)) {
             files.AddRange(GetModFiles(folder));
         }
         
@@ -230,15 +231,13 @@ public static class ParRepacker {
         
         container.Tags["DirectoryInfo"] = directoryInfo;
         
-        var files = directoryInfo.GetFiles();
-        foreach (var file in files) {
+        foreach (var file in directoryInfo.EnumerateFiles()) {
             var fileNode = NodeFactory.FromFile(file.FullName);
             
             container.Add(fileNode);
         }
         
-        var directories = directoryInfo.GetDirectories();
-        foreach (var directory in directories) {
+        foreach (var directory in directoryInfo.EnumerateDirectories()) {
             var directoryNode = ReadDirectory(directory.FullName);
             
             container.Add(directoryNode);

@@ -15,6 +15,7 @@ public static class GamePath {
     public static string ParlessDir { get; }
     public static string ExternalModsPath { get; }
     public static string LibrariesPath { get; }
+    public static string LocalLibrariesPath { get; }
     public static string GameExe { get; }
     
     static GamePath() {
@@ -24,6 +25,7 @@ public static class GamePath {
         ParlessDir = Path.Combine(ModsPath, "Parless");
         ExternalModsPath = Path.Combine(ModsPath, Constants.EXTERNAL_MODS);
         LibrariesPath = Path.Combine(FullGamePath, LIBRARIES);
+        LocalLibrariesPath = Path.Combine(GamePath.LibrariesPath, Constants.LIBRARIES_INFO_REPO_FILE_PATH);
         
         // Try to get game
         foreach (var file in Directory.GetFiles(FullGamePath, "*.exe")) {
@@ -41,10 +43,14 @@ public static class GamePath {
         return Path.GetFileName(path.TrimEnd(Path.DirectorySeparatorChar));
     }
     
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="path"></param>
+    public static string GetModDirectory(string mod) {
+        return Path.Combine(ModsPath, mod);
+    }
+    
+    public static string GetLibraryPath(string guid) {
+        return Path.Combine(LibrariesPath, guid);
+    }
+    
     /// <returns>Given path but starting after /mods/ModName/ </returns>
     public static string RemoveModPath(string path) {
         var modsPos = path.IndexOf("mods" + Path.DirectorySeparatorChar, StringComparison.Ordinal);
@@ -204,8 +210,8 @@ public static class GamePath {
         return potentialLocations.Any(Directory.Exists);
     }
     
-    public static string GetGameFriendlyName(Game g) {
-        return g switch {
+    public static string GetGameFriendlyName(Game game) {
+        return game switch {
             Game.Yakuza0 => "Yakuza 0",
             Game.Yakuza0_DC => "Yakuza 0: Director's Cut",
             Game.YakuzaKiwami => "Yakuza Kiwami",
