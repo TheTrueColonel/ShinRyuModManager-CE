@@ -9,7 +9,7 @@ namespace ShinRyuModManager;
 
 public static class Utils {
     // Static to be used through project
-    public static HttpClient Client { get; } = new HttpClient();
+    public static HttpClient Client { get; } = new();
     
     public static string NormalizeNameLower(string path) {
         return NormalizeSeparator(path.ToLowerInvariant());
@@ -27,13 +27,9 @@ public static class Utils {
             using var fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
 
             return false;
-        }
-        catch (IOException) // File is in use
-        {
+        } catch (IOException) { // File is in use
             return true; 
-        }
-        catch (UnauthorizedAccessException) // Unable to access
-        {
+        } catch (UnauthorizedAccessException) { // Unable to access
             return true;
         }
     }
@@ -103,25 +99,11 @@ public static class Utils {
     /// <param name="versionTarget">Target version.</param>
     /// <param name="versionCurrent">Current version to compare against.</param>
     /// <returns>A boolean.</returns>
-    internal static bool CompareVersionIsHigher(string versionTarget, string versionCurrent)
-    {
+    internal static bool CompareVersionIsHigher(string versionTarget, string versionCurrent) {
         var v1 = new Version(versionTarget);
         var v2 = new Version(versionCurrent);
-        
-        switch (v1.CompareTo(v2))
-        {
-            case 0: //same
-                return false;
 
-            case 1: //target is higher
-                return true;
-
-            case -1: //target is lower
-                return false;
-
-            default:
-                return false;
-        }
+        return v1.CompareTo(v2) == 1; // 1 mean target is higher
     }
 
     public static void CopyDirectory(string srcDirectory, string destDirectory) {

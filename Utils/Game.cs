@@ -1,4 +1,5 @@
 ﻿namespace Utils {
+    // ReSharper disable InconsistentNaming
     public enum Game {
         Unsupported = -1,
         

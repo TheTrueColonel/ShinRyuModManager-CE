@@ -35,7 +35,7 @@ public partial class LibraryManagerWindow : Window {
                 }
             }
         } catch (Exception ex) {
-            // Fetching library data from github failed. Connection issues or server down?
+            // Fetching library data from GitHub failed. Connection issues or server down?
             // Populate the list with data from the already installed libraries in case the user wants to uninstall or disable any
             
             Log.Fatal(ex, "Failed to fetch library data!");
@@ -43,7 +43,7 @@ public partial class LibraryManagerWindow : Window {
             var metaList = new List<LibMeta>();
 
             foreach (var dir in Directory.GetDirectories(GamePath.LibrariesPath)) {
-                var path = Path.Combine(dir, Settings.LIBRARIES_LIBMETA_FILE_NAME);
+                var path = Path.Combine(dir, Constants.LIBRARIES_LIBMETA_FILE_NAME);
 
                 if (!File.Exists(path))
                     continue;

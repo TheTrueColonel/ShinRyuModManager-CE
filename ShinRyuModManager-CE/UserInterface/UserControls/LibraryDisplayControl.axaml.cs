@@ -36,7 +36,7 @@ public partial class LibraryDisplayControl : UserControl {
         if (DataContext is not LibraryDisplayControlViewModel viewModel) return;
         
         var dirPath = Path.Combine(GamePath.LIBRARIES, _meta.GUID.ToString());
-        var metaPath = Path.Combine(dirPath, Settings.LIBRARIES_LIBMETA_FILE_NAME);
+        var metaPath = Path.Combine(dirPath, Constants.LIBRARIES_LIBMETA_FILE_NAME);
 
         if (Directory.Exists(dirPath)) {
             _isLibraryInstalled = true;

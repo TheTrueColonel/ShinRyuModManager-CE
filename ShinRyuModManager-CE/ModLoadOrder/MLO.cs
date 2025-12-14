@@ -48,23 +48,23 @@ public class MLO {
         writer.Write(FILESIZE);
         
         writer.Write(0x40); // Mods start (size of header)
-        writer.WriteOfType(typeof(uint), Mods.Count);
+        writer.WriteOfType((uint)Mods.Count);
         
         writer.Write(0); // Files start (to be written later)
-        writer.WriteOfType(typeof(uint), Files.Count);
+        writer.WriteOfType((uint)Files.Count);
         
         writer.Write(0); // Parless folders start (to be written later)
-        writer.WriteOfType(typeof(uint), ParlessFolders.Count);
+        writer.WriteOfType((uint)ParlessFolders.Count);
         
         writer.Write(0); // Cpk folders start (to be written later)
-        writer.WriteOfType(typeof(uint), CpkFolders.Count);
+        writer.WriteOfType((uint)CpkFolders.Count);
         
         writer.WriteTimes(0, 0x10); // Padding
         
         // 0x0: Length
         // 0x2: String
         foreach (var mod in Mods) {
-            writer.WriteOfType(typeof(ushort), mod.Length + 1);
+            writer.WriteOfType((ushort)mod.Length + 1);
             writer.Write(mod);
         }
         
@@ -74,8 +74,8 @@ public class MLO {
         // 0x2: Length
         // 0x4: String
         foreach (var file in Files) {
-            writer.WriteOfType(typeof(ushort), file.Index);
-            writer.WriteOfType(typeof(ushort), file.Name.Length + 1);
+            writer.WriteOfType((ushort)file.Index);
+            writer.WriteOfType((ushort)file.Name.Length + 1);
             writer.Write(file.Name);
         }
         
@@ -85,8 +85,8 @@ public class MLO {
         // 0x2: Length
         // 0x4: String
         foreach (var folder in ParlessFolders) {
-            writer.WriteOfType(typeof(ushort), folder.Index);
-            writer.WriteOfType(typeof(ushort), folder.Name.Length + 1);
+            writer.WriteOfType((ushort)folder.Index);
+            writer.WriteOfType((ushort)folder.Name.Length + 1);
             writer.Write(folder.Name);
         }
         
@@ -97,29 +97,29 @@ public class MLO {
         // 0x4: String
         // 0x?: Mod Indices
         foreach (var folder in CpkFolders) {
-            writer.WriteOfType(typeof(ushort), folder.Indices.Count);
-            writer.WriteOfType(typeof(ushort), folder.Name.Length + 1);
+            writer.WriteOfType((ushort)folder.Indices.Count);
+            writer.WriteOfType((ushort)folder.Name.Length + 1);
             writer.Write(folder.Name);
             
             foreach (var index in folder.Indices) {
-                writer.WriteOfType(typeof(ushort), index);
+                writer.WriteOfType(index);
             }
         }
         
         // Write file size
         writer.Stream.Seek(0xC);
-        writer.WriteOfType(typeof(uint), writer.Stream.Length);
+        writer.WriteOfType((uint)writer.Stream.Length);
         
         // Write file start position
         writer.Stream.Seek(0x18);
-        writer.WriteOfType(typeof(uint), fileStartPos);
+        writer.WriteOfType((uint)fileStartPos);
         
         // Write parless folders start position
         writer.Stream.Seek(0x20);
-        writer.WriteOfType(typeof(uint), parlessStartPos);
+        writer.WriteOfType((uint)parlessStartPos);
         
         // Write cpk folders start position
         writer.Stream.Seek(0x28);
-        writer.WriteOfType(typeof(uint), cpkFolderStartPos);
+        writer.WriteOfType((uint)cpkFolderStartPos);
     }
 }
