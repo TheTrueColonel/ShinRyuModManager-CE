@@ -1,4 +1,9 @@
-> ### **%{color:gold} Version 1.3.7 %** ###
+> ### **%{color:gold} Version 1.3.8 %** ###
+* Fixed MLO generation
+
+---
+
+> ### **%{color:orange} Version 1.3.7 %** ###
 * Implemented changes from SRMM 4.7.4
 * Code cleanup
 

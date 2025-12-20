@@ -64,7 +64,7 @@ public class MLO {
         // 0x0: Length
         // 0x2: String
         foreach (var mod in Mods) {
-            writer.WriteOfType((ushort)mod.Length + 1);
+            writer.WriteOfType((ushort)(mod.Length + 1));
             writer.Write(mod);
         }
         
@@ -75,7 +75,7 @@ public class MLO {
         // 0x4: String
         foreach (var file in Files) {
             writer.WriteOfType((ushort)file.Index);
-            writer.WriteOfType((ushort)file.Name.Length + 1);
+            writer.WriteOfType((ushort)(file.Name.Length + 1));
             writer.Write(file.Name);
         }
         
@@ -86,7 +86,7 @@ public class MLO {
         // 0x4: String
         foreach (var folder in ParlessFolders) {
             writer.WriteOfType((ushort)folder.Index);
-            writer.WriteOfType((ushort)folder.Name.Length + 1);
+            writer.WriteOfType((ushort)(folder.Name.Length + 1));
             writer.Write(folder.Name);
         }
         
@@ -98,7 +98,7 @@ public class MLO {
         // 0x?: Mod Indices
         foreach (var folder in CpkFolders) {
             writer.WriteOfType((ushort)folder.Indices.Count);
-            writer.WriteOfType((ushort)folder.Name.Length + 1);
+            writer.WriteOfType((ushort)(folder.Name.Length + 1));
             writer.Write(folder.Name);
             
             foreach (var index in folder.Indices) {
