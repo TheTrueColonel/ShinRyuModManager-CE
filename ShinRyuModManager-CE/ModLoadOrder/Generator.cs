@@ -6,7 +6,7 @@ using Utils;
 namespace ShinRyuModManager.ModLoadOrder;
 
 public static class Generator {
-    public static async Task<MLO> GenerateModeLoadOrder(List<string> mods, bool looseFilesEnabled, bool cpkRepackingEnabled) {
+    public static async Task<MLO> GenerateModeLoadOrder(List<ModInfo> mods, bool looseFilesEnabled, bool cpkRepackingEnabled) {
         List<int> modIndices = [0];
         var files = new OrderedSet<string>();
         var modsWithFoldersNotFound = new Dictionary<string, List<string>>(); // Dict of Mod, ListOfFolders
@@ -42,7 +42,7 @@ public static class Generator {
         // Use a reverse loop to be able to remove items from the list when necessary
         for (var i = mods.Count - 1; i >= 0; i--) {
             var mod = new Mod(mods[i]);
-            var modPath = GamePath.GetModDirectory(mods[i]);
+            var modPath = GamePath.GetModDirectory(mod.Name);
             
             mod.AddFiles(modPath, "");
             
@@ -104,9 +104,11 @@ public static class Generator {
         mods.Reverse();
         
         Log.Information($"Generating {Constants.MLO} file...");
+
+        var modNames = mods.Select(x => x.Name).ToList();
         
         // Generate MLO
-        var mlo = new MLO(modIndices, mods, files, loose.ParlessFolders, cpkDictionary);
+        var mlo = new MLO(modIndices, modNames, files, loose.ParlessFolders, cpkDictionary);
         
         mlo.WriteMLO(Path.Combine(GamePath.FullGamePath, Constants.MLO));
         
@@ -114,7 +116,7 @@ public static class Generator {
         
         // Check if a mod has a par that will override the repacked par, and skip repacking it in that case
         foreach (var key in parDictionary.Keys.ToList()) {
-            var value = parDictionary[key];
+            var value = new ModInfo(parDictionary[key][0], 0);
             
             // Faster lookup by checking in the OrderedSet
             if (!files.Contains($"{key}.par"))
@@ -124,7 +126,7 @@ public static class Generator {
             var matchIndex = mlo.Files.Find(f => f.Name == Utils.NormalizeToNodePath($"{key}.par")).Index;
             
             // Avoid repacking pars which exist as a file in mods that have a higher priority that the first mod in the par to be repacked
-            if (mods.IndexOf(value[0]) > matchIndex) {
+            if (mods.IndexOf(value) > matchIndex) {
                 parDictionary.Remove(key);
             }
         }

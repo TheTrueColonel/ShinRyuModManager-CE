@@ -53,8 +53,11 @@ public partial class MainWindow : Window {
 
     private async void FileSystemWatcher_Created(object _, FileSystemEventArgs e) {
         try {
+            if (DataContext is not MainWindowViewModel viewModel) 
+                return;
+            
             await Dispatcher.UIThread.InvokeAsync(RefreshModList);
-            await Program.InstallAllModDependenciesAsync();
+            await Program.InstallAllModDependenciesAsync(viewModel.ModList.ToList());
         } catch {
             // ignored
             // Prevents application crashing
@@ -157,8 +160,12 @@ public partial class MainWindow : Window {
             if (DataContext is not MainWindowViewModel viewModel) 
                 return;
 
-            if (await Program.SaveModListAsync(viewModel.ModList.ToList())) {
-                await CheckModDependenciesAsync();
+            if (viewModel.ModList.Count > 0) {
+                var mods = viewModel.ModList.ToList();
+                
+                Program.SaveModList(mods);
+                
+                await CheckModDependenciesAsync(mods);
                 
                 // Run generation only if it will not be run on game launch (i.e. if RebuildMlo is disabled or unsupported)
                 if (Program.RebuildMlo && Program.IsRebuildMloSupported) {
@@ -173,7 +180,7 @@ public partial class MainWindow : Window {
 
                 await Task.Run(async () => {
                     try {
-                        await Program.RunGeneration(Program.ConvertNewToOldModList(viewModel.ModList.ToList()));
+                        await Program.RunGeneration(mods.Where(x => x.Enabled).ToList());
                     } catch (Exception ex) {
                         Log.Error(ex, "Could not generate MLO!");
                     
@@ -197,14 +204,12 @@ public partial class MainWindow : Window {
         }
     }
 
-    private async Task CheckModDependenciesAsync() {
-        var modList = Program.ReadModListTxt(Constants.TXT);
-
+    private async Task CheckModDependenciesAsync(List<ModInfo> mods) {
         var modsWithDependencyProblems = new List<string>();
         var disabledLibraries = new List<string>();
         var missingLibraries = new List<string>();
 
-        foreach (var enabledMod in modList.Where(x => x.Enabled)) {
+        foreach (var enabledMod in mods.Where(x => x.Enabled)) {
             foreach (var dependencyGuid in Program.GetModDependencies(enabledMod.Name)) {
                 if (!Program.DoesLibraryExist(dependencyGuid)) {
                     if(!modsWithDependencyProblems.Contains(enabledMod.Name))
@@ -255,6 +260,9 @@ public partial class MainWindow : Window {
 
     private async void ModInstall_OnClick(object sender, RoutedEventArgs e) {
         try {
+            if (DataContext is not MainWindowViewModel viewModel) 
+                return;
+            
             Directory.CreateDirectory(GamePath.MODS);
 
             var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions {
@@ -281,7 +289,7 @@ public partial class MainWindow : Window {
                     await Utils.TryInstallModZipAsync(localPath);
                 }
                 
-                await Program.InstallAllModDependenciesAsync();
+                await Program.InstallAllModDependenciesAsync(viewModel.ModList.ToList());
             });
 
             RefreshModList();

@@ -116,6 +116,24 @@
                           Click="ChangeLog_OnClick" />
                 <!--<MenuItem Name="CheckUpdates" Header="{x:Static lang:MainWindow.Menu_CheckUpdates}" />-->
             </MenuItem>
+            <MenuItem Header="Profiles">
+                <MenuItem Name="Profile1" Header="Profile 1" Command="{Binding UpdateProfileCommand}" 
+                          CommandParameter="{x:Static mods:Profile.Profile1}" />
+                <MenuItem Name="Profile2" Header="Profile 2" Command="{Binding UpdateProfileCommand}" 
+                          CommandParameter="{x:Static mods:Profile.Profile2}" />
+                <MenuItem Name="Profile3" Header="Profile 3" Command="{Binding UpdateProfileCommand}" 
+                          CommandParameter="{x:Static mods:Profile.Profile3}" />
+                <MenuItem Name="Profile4" Header="Profile 4" Command="{Binding UpdateProfileCommand}" 
+                          CommandParameter="{x:Static mods:Profile.Profile4}" />
+                <MenuItem Name="Profile5" Header="Profile 5" Command="{Binding UpdateProfileCommand}" 
+                          CommandParameter="{x:Static mods:Profile.Profile5}" />
+                <MenuItem Name="Profile6" Header="Profile 6" Command="{Binding UpdateProfileCommand}" 
+                          CommandParameter="{x:Static mods:Profile.Profile6}" />
+                <MenuItem Name="Profile7" Header="Profile 7" Command="{Binding UpdateProfileCommand}" 
+                          CommandParameter="{x:Static mods:Profile.Profile7}" />
+                <MenuItem Name="Profile8" Header="Profile 8" Command="{Binding UpdateProfileCommand}" 
+                          CommandParameter="{x:Static mods:Profile.Profile8}" />
+            </MenuItem>
         </Menu>
         
         <!-- Background Image -->

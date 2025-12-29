@@ -18,6 +18,7 @@ using ShinRyuModManager.Templates;
 using ShinRyuModManager.UserInterface;
 using Utils;
 using Constants = Utils.Constants;
+using ModListSerializer = ShinRyuModManager.ModLoadOrder.Mods.Serialization.ModListSerializer;
 
 namespace ShinRyuModManager;
 
@@ -38,6 +39,10 @@ public static class Program {
         }
     };
 
+    // Mod List file information
+    public static byte CurrentModListVersion { get => 2; }
+    public static Profile ActiveProfile { get; set; } = Profile.Profile1;
+    
     public static bool RebuildMlo { get; private set; } = true;
     public static bool IsRebuildMloSupported { get; private set; } = true;
     public static LogEventLevel LogLevel { get; private set; } = LogEventLevel.Information;
@@ -75,10 +80,6 @@ public static class Program {
         // Check if there are any args, if so, run in CLI mode
         // Unfortunately, no one way to detect left Ctrl while being cross-platform
         if (args.Length == 0) {
-            if (_checkForUpdates) {
-                // TODO: Implement updates
-            }
-            
             Log.Information("Shin Ryu Mod Manager GUI Application Start");
             
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
@@ -121,8 +122,9 @@ public static class Program {
         if (list.Contains("-s") || list.Contains("--silent")) {
             _isSilent = true;
         }
+
+        await RunGeneration(PreRun());
         
-        await RunGeneration(ConvertNewToOldModList(PreRun()));
         PostRun();
 
         await Log.CloseAndFlushAsync();
@@ -187,7 +189,7 @@ public static class Program {
         }
     }
 
-    internal static List<ModInfo> PreRun() {
+    internal static List<ModInfo> PreRun(Profile? profile = null) {
         if (GamePath.CurrentGame != Game.Unsupported) {
             Directory.CreateDirectory(GamePath.MODS);
             Directory.CreateDirectory(GamePath.LIBRARIES);
@@ -240,39 +242,37 @@ public static class Program {
             IniParser.WriteFile(Constants.INI, _iniData);
             RebuildMlo = false;
         }
-        
+
         var mods = new List<ModInfo>();
         
         if (ShouldBeExternalOnly()) {
             // Only load the files inside the external mods path, and ignore the load order in the txt
-            mods.Add(new ModInfo(Constants.EXTERNAL_MODS));
+            mods.Add(new ModInfo(Constants.EXTERNAL_MODS, 0));
         } else {
-            var defaultEnabled = true;
-            
-            if (File.Exists(Constants.TXT_OLD) && _iniData.GetKey("SavedSettings.ModListImported") == null) {
-                // Scanned mods should be disabled, because that's how they were with the old txt format
-                defaultEnabled = false;
+            if (File.Exists(Constants.TXT_OLD)) {
+                mods.AddRange(ModListSerializer.Read(Constants.TXT_OLD, profile));
                 
-                // Set a flag so we can delete the old file after we actually save the mod list
-                _migrated = true;
-                
-                // Migrate old format to new
-                Log.Information("Old format load order file ({TxtOld}) was found. Importing to the new format...", Constants.TXT_OLD);
-                
-                mods.AddRange(ConvertOldToNewModList(ReadModLoadOrderTxt(Constants.TXT_OLD))
-                    .Where(n => !mods.Any(m => EqualModNames(m.Name, n.Name))));
+                File.Move(Constants.TXT_OLD, $"{Constants.TXT_OLD}.bak");
             } else if (File.Exists(Constants.TXT)) {
-                mods.AddRange(ReadModListTxt(Constants.TXT).Where(n => !mods.Any(m => EqualModNames(m.Name, n.Name))));
+                mods.AddRange(ModListSerializer.Read(Constants.TXT, profile));
+                
+                File.Move(Constants.TXT, $"{Constants.TXT}.bak");
+            } else if (File.Exists(Constants.MOD_LIST)) {
+                mods.AddRange(ModListSerializer.Read(Constants.MOD_LIST, profile));
             } else {
-                Log.Information($"{Constants.TXT} was not found. Will load all existing mods.\n");
+                Log.Information($"{Constants.MOD_LIST} was not found. Will load all existing mods.\n");
             }
-            
-            if (Directory.Exists(GamePath.MODS)) {
+
+            if (Directory.Exists(GamePath.ModsPath)) {
                 // Add all scanned mods that have not been added to the load order yet
                 Log.Information("Scanning for mods...");
-                
-                mods.AddRange(ScanMods().Where(n => !mods.Any(m => EqualModNames(m.Name, n)))
-                                        .Select(m => new ModInfo(m, defaultEnabled)));
+
+                foreach (var newMod in ScanMods()) {
+                    if (mods.Contains(newMod)) 
+                        continue;
+                    
+                    mods.Add(newMod);
+                }
                 
                 Log.Information("Found {ModsCount} mods.", mods.Count);
             }
@@ -286,11 +286,11 @@ public static class Program {
         _iniData.Sections["Overrides"]["RebuildMLO"] = "0";
         IniParser.WriteFile(Constants.INI, _iniData);
         RebuildMlo = false;
-        
+
         return mods;
     }
     
-    internal static async Task RunGeneration(List<string> mods) {
+    internal static async Task RunGeneration(List<ModInfo> mods) {
         if (File.Exists(Constants.MLO)) {
             Log.Information("Removing old MLO...");
             
@@ -309,8 +309,14 @@ public static class Program {
         
         if (!mods.IsNullOrEmpty() || _looseFilesEnabled) {
             // Create Parless mod as highest priority
-            mods.Remove("Parless");
-            mods.Insert(0, "Parless");
+            var parlessEntry = mods.FirstOrDefault(x => string.Equals(x.Name, "Parless", StringComparison.InvariantCultureIgnoreCase));
+
+            if (parlessEntry != null) {
+                mods.Remove(parlessEntry);
+                mods.Insert(0, parlessEntry);
+            } else {
+                mods.Insert(0, new ModInfo("Parless", 0));
+            }
 
             Directory.CreateDirectory(Constants.PARLESS_MODS_PATH);
 
@@ -400,50 +406,28 @@ public static class Program {
         }
     }
     
-    private static List<string> ReadModLoadOrderTxt(string txt) {
-        if (!File.Exists(txt)) {
-            return [];
-        }
-        
-        var mods = new HashSet<string>();
-        
-        foreach (var line in File.ReadLines(txt)) {
-            if (line.StartsWith(';'))
-                continue;
-            
-            var sanitizedLine = line.Split(';', 1)[0].Trim();
-            
-            // Add only valid and unique mods
-            if (!string.IsNullOrEmpty(sanitizedLine) &&
-                Directory.Exists(Path.Combine(GamePath.MODS, sanitizedLine))) {
-                mods.Add(sanitizedLine);
-            }
-        }
-        
-        return mods.ToList();
-    }
-    
-    private static List<ModInfo> ConvertOldToNewModList(List<string> mods) {
-        return mods.Select(m => new ModInfo(m)).ToList();
-    }
-    
-    internal static List<string> ConvertNewToOldModList(List<ModInfo> mods) {
-        return mods.Where(m => m.Enabled).Select(m => m.Name).ToList();
-    }
-    
     internal static bool ShouldBeExternalOnly() {
         return _externalModsOnly && Directory.Exists(GamePath.ExternalModsPath);
     }
-    
-    private static List<string> ScanMods() {
-        return Directory.GetDirectories(GamePath.ModsPath)
-                        .Select(d => Path.GetFileName(d.TrimEnd(Path.DirectorySeparatorChar)))
-                        .Where(m => !string.Equals(m, "Parless") && !string.Equals(m, Constants.EXTERNAL_MODS))
-                        .ToList();
-    }
-    
-    private static bool EqualModNames(string m, string n) {
-        return string.Compare(m, n, StringComparison.InvariantCultureIgnoreCase) == 0;
+
+    private static List<ModInfo> ScanMods(ProfileMask activeProfiles = ProfileMask.All) {
+        var mods = new List<ModInfo>();
+        
+        foreach (var dir in Directory.EnumerateDirectories(GamePath.ModsPath)) {
+            var modPath = Path.GetFileName(dir.TrimEnd(Path.DirectorySeparatorChar));
+                    
+            if (string.Equals(modPath, "Parless") || string.Equals(modPath, Constants.EXTERNAL_MODS))
+                continue;
+
+            var entry = new ModInfo(modPath, activeProfiles);
+            
+            if (mods.Contains(entry))
+                continue;
+            
+            mods.Add(entry);
+        }
+
+        return mods;
     }
 
     internal static bool MissingDll() {
@@ -454,73 +438,8 @@ public static class Program {
         return !File.Exists(Constants.ASI);
     }
 
-    public static List<ModInfo> ReadModListTxt(string text) {
-        var mods = new List<ModInfo>();
-
-        if (!File.Exists(text)) {
-            return mods;
-        }
-
-        using var file = new StreamReader(new FileInfo(text).FullName);
-        var line = file.ReadLine();
-
-        if (line == null)
-            return mods;
-
-        foreach (var mod in line.Split('|', StringSplitOptions.RemoveEmptyEntries)) {
-            if (!mod.StartsWith('<') && !mod.StartsWith('>'))
-                continue;
-
-            var info = new ModInfo(mod[1..], mod[0] == '<');
-
-            if (ModInfo.IsValid(info) && !mods.Contains(info)) {
-                mods.Add(info);
-            }
-        }
-
-        return mods;
-    }
-
-    internal static async Task<bool> SaveModListAsync(List<ModInfo> mods) {
-        var result = await WriteModListTextAsync(mods);
-
-        if (!_migrated)
-            return result;
-
-        try {
-            File.Delete(Constants.TXT_OLD);
-
-            var iniParser = new FileIniDataParser();
-            iniParser.Parser.Configuration.AssigmentSpacer = string.Empty;
-
-            var ini = iniParser.ReadFile(Constants.INI);
-
-            ini.Sections.AddSection("SavedSettings");
-            ini["SavedSettings"].AddKey("ModListImported", "true");
-            iniParser.WriteFile(Constants.INI, ini);
-        } catch {
-            Log.Warning($"Could not delete {Constants.TXT_OLD}. This file should be deleted manually.");
-        }
-
-        return result;
-    }
-
-    private static async Task<bool> WriteModListTextAsync(List<ModInfo> mods) {
-        if (mods.IsNullOrEmpty())
-            return false;
-
-        var sb = new StringBuilder();
-
-        foreach (var mod in mods) {
-            sb.Append($"{(mod.Enabled ? '<' : '>')}{mod.Name}|");
-        }
-
-        // Remove leftover pipe
-        sb.Length -= 1;
-        
-        await File.WriteAllTextAsync(Constants.TXT, sb.ToString());
-
-        return true;
+    internal static void SaveModList(List<ModInfo> mods) {
+        ModListSerializer.Write(Constants.MOD_LIST, mods);
     }
     
     public static string[] GetModDependencies(string mod) {
@@ -620,16 +539,14 @@ public static class Program {
         }
     }
 
-    public static async Task InstallAllModDependenciesAsync() {
+    public static async Task InstallAllModDependenciesAsync(List<ModInfo> mods) {
         try {
             await LibMeta.FetchAsync();
         } catch {
             // ignored
         }
 
-        var modList = ReadModListTxt(Constants.TXT);
-
-        foreach (var mod in modList.Where(x => x.Enabled)) {
+        foreach (var mod in mods.Where(x => x.Enabled)) {
             await InstallModDependenciesAsync(mod.Name);
         }
     }
