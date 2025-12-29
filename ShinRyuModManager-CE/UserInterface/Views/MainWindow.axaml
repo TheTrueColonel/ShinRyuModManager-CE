@@ -63,6 +63,13 @@
             <Setter Property="VerticalAlignment" Value="Bottom" />
         </Style>
         
+        <Style Selector="Label.PreviewIndicator">
+            <Setter Property="Opacity" Value="0.4" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Canvas.Bottom" Value="0" />
+            <Setter Property="Canvas.Right" Value="0" />
+        </Style>
+        
         <Style Selector="StackPanel Button">
             <Setter Property="Background" Value="#4B4B4B" />
             <Setter Property="Foreground" Value="White" />
@@ -149,6 +156,11 @@
             
             <!-- App Version -->
             <Label Grid.Column="0" Classes="AppVersion" Content="{Binding AppVersionText}" />
+            
+            <!-- Preview Overlay -->
+            <Canvas Grid.Column="2">
+                <Label Classes="PreviewIndicator" Content="Preview" />
+            </Canvas>
             
             <!-- Mod List and Controls -->
             <Grid Grid.Column="0">
