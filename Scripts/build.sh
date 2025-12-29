@@ -6,7 +6,7 @@ set -euo pipefail
 while getopts p: flag; do
     case "${flag}" in
       p) IS_PREVIEW=true;;
-      *) echo "Usage: $0 -s <SRMM Version Number> -u <Updater Version Number>"; exit 1;;
+      *) IS_PREVIEW=false;;
     esac
 done
 
