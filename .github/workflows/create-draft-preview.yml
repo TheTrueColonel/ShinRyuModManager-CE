@@ -1,0 +1,75 @@
+name: Prepare for Release
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: "Release name"
+        required: true
+        default: "ShinRyuModManager-CE 1.0.0"
+      tag:
+        description: "Tag for the release (example: 1.2.3)"
+        required: true
+        default: "1.0.0"
+      updater_version:
+        description: "Version for RyuUpdater (example: 1.2.3)"
+        required: true
+        default: "1.0.0"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+
+      - name: Checkout AppCast Repo
+        uses: actions/checkout@v6
+        with:
+          repository: 'TheTrueColonel/SRMM-AppCast'
+          token: '${{ secrets.SRMM_APPCAST_TOKEN }}'
+          path: AppcastRepo
+
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Add .NET tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Create Draft Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: "v${{ github.event.inputs.tag }}"
+          name: ${{ github.event.inputs.name }}
+          draft: true
+          generateReleaseNotesPreviousTag: true
+
+      - name: Run Scripts
+        run: |
+          ./Scripts/build.sh -p
+          ./Scripts/package.sh -s ${{ github.event.inputs.tag }} -u ${{ github.event.inputs.updater_version }}
+        env:
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+          SPARKLE_PUBLIC_KEY: ${{ secrets.SPARKLE_PUBLIC_KEY }}
+
+      - name: Upload SRMM Release Assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
+        run: |
+          for file in ${{ github.workspace }}/dist/srmm/out/*; do
+            name=$(basename "$file")
+            mime=$(file --brief --mime-type "$file")
+            echo "Uploading $name ($mime)"
+            curl \
+              -X POST \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "Content-Type: $mime" \
+              --data-binary @"$file" \
+              --no-progress-meter \
+              "${UPLOAD_URL%%\{*}?name=$name" > /dev/null
+          done

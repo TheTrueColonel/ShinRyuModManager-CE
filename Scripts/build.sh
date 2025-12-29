@@ -2,6 +2,14 @@
 
 set -euo pipefail
 
+### Check arguments
+while getopts p: flag; do
+    case "${flag}" in
+      p) IS_PREVIEW=true;;
+      *) IS_PREVIEW=false;;
+    esac
+done
+
 ### Variables
 SRMM_PROJECT="$GITHUB_WORKSPACE/ShinRyuModManager-CE/ShinRyuModManager-CE.csproj"
 UPDATER_PROJECT="$GITHUB_WORKSPACE/RyuUpdater/RyuUpdater.csproj"
@@ -21,12 +29,25 @@ FILES_TO_COPY=(
 )
 
 # Declares runtime and known build params
-declare -A TARGET_ARGS=(
+declare -A TARGET_ARGS_PROD=(
   ["linux"]="linux-x64;--self-contained -p:BuildSuffix=linux"
   ["linux-slim"]="linux-x64;--no-self-contained -p:BuildSuffix=linux-slim"
   ["windows"]="win-x64;--self-contained -p:BuildSuffix=windows"
   ["windows-slim"]="win-x64;--no-self-contained -p:BuildSuffix=windows-slim"
 )
+
+declare -A TARGET_ARGS_PREVIEW=(
+  ["linux"]="linux-x64;--self-contained -p:BuildSuffix=linux-preview"
+  ["linux-slim"]="linux-x64;--no-self-contained -p:BuildSuffix=linux-slim-preview"
+  ["windows"]="win-x64;--self-contained -p:BuildSuffix=windows-preview"
+  ["windows-slim"]="win-x64;--no-self-contained -p:BuildSuffix=windows-slim-preview"
+)
+
+if [ "$IS_PREVIEW" = true ]; then
+  declare -n TARGET_ARGS=TARGET_ARGS_PREVIEW;
+else
+  declare -n TARGET_ARGS=TARGET_ARGS_PROD;
+fi
   
 declare -A UPDATER_TARGET_ARGS=(
   ["linux"]="linux-x64;--self-contained"
