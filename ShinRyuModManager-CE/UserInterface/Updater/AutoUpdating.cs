@@ -18,6 +18,8 @@ public static class AutoUpdating {
     private static string _tempDir;
     private static SparkleUpdater _updater;
     
+    private static readonly string[] IgnoredBuilds = ["debug", "test"];
+    
     public static void Init() {
         _tempDir = Path.Combine(Environment.CurrentDirectory, "srmm_temp");
 
@@ -31,7 +33,7 @@ public static class AutoUpdating {
         
         var suffix = AssemblyVersion.GetBuildSuffix();
         
-        if (string.Equals(suffix, "debug", StringComparison.OrdinalIgnoreCase)) {
+        if (IgnoredBuilds.Contains(suffix, StringComparer.OrdinalIgnoreCase)) {
             return; // Don't need to be annoyed with "Update Now" when debugging
         }
         
