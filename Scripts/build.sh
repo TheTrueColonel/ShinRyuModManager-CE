@@ -2,11 +2,12 @@
 
 set -euo pipefail
 
+IS_PREVIEW=false
+
 ### Check arguments
-while getopts p: flag; do
+while getopts "p" flag; do
     case "${flag}" in
-      p) IS_PREVIEW=true;;
-      *) IS_PREVIEW=false;;
+      p) IS_PREVIEW=true ;;
     esac
 done
 
