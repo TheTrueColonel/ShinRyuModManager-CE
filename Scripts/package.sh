@@ -96,41 +96,43 @@ for TARGET in "${SRMM_BUILD_DIRS[@]}"; do
   
 done
 
-for TARGET in "${UPDATER_BUILD_DIRS[@]}"; do
-  DIR="${UPDATER_SELECTOR}/${TARGET}"
-  OUTPUT_TARGET_STR=$(echo "${TARGET}" | sed -e "s/\b\(.\)/\u\1/g") # Capitalizes each target word: linux-slim -> Linux-Slim
-  OUTPUT_FILE_BASE="${UPDATER_BASE_NAME}-${OUTPUT_TARGET_STR}-Latest"
+if [ "$IS_PREVIEW" = false ]; then
+  for TARGET in "${UPDATER_BUILD_DIRS[@]}"; do
+    DIR="${UPDATER_SELECTOR}/${TARGET}"
+    OUTPUT_TARGET_STR=$(echo "${TARGET}" | sed -e "s/\b\(.\)/\u\1/g") # Capitalizes each target word: linux-slim -> Linux-Slim
+    OUTPUT_FILE_BASE="${UPDATER_BASE_NAME}-${OUTPUT_TARGET_STR}-Latest"
+    
+    echo "Compressing ${OUTPUT_FILE_BASE}..."
   
-  echo "Compressing ${OUTPUT_FILE_BASE}..."
-
-  7za a "${UPDATER_OUTPUT_DIR}/${OUTPUT_FILE_BASE}.zip" -tzip -bd -y "${DIR}/*" > /dev/null
-  tar czf "${UPDATER_OUTPUT_DIR}/${OUTPUT_FILE_BASE}.tar.gz" --owner=0 --group=0 --numeric-owner -C "${DIR}/" .
-  
-  cp -r "${UPDATER_OUTPUT_DIR}/." $GITHUB_WORKSPACE/AppcastRepo/updater/
-  
-  ### Create Appcast
-  
-  # Really hate how this is done, but I can't think of anything better
-  if [[ "${OUTPUT_FILE_BASE}" =~ -Linux- ]]; then
-    OS_NAME="linux"
-    EXEC_NAME="${UPDATER_BASE_NAME}"
-  elif [[ "${OUTPUT_FILE_BASE}" =~ -Windows- ]]; then
-    OS_NAME="windows"
-    EXEC_NAME="${UPDATER_BASE_NAME}.exe"
-  fi
-  
-  # Create only for .zip, as that's universally available
-  netsparkle-generate-appcast \
-    -a "${APPCAST_OUTPUT_DIR}" \
-    --single-file "${UPDATER_OUTPUT_DIR}/${OUTPUT_FILE_BASE}.zip" \
-    -o "${OS_NAME}" \
-    -n "${EXEC_NAME}" \
-    --output-file-name "appcast_ryuupdater-${TARGET}" \
-    --use-ed25519-signature-attribute \
-    --human-readable \
-    --file-version "${UPDATER_VERSION}" \
-    -u "${UPDATER_URL_BASE}" > /dev/null
-done
+    7za a "${UPDATER_OUTPUT_DIR}/${OUTPUT_FILE_BASE}.zip" -tzip -bd -y "${DIR}/*" > /dev/null
+    tar czf "${UPDATER_OUTPUT_DIR}/${OUTPUT_FILE_BASE}.tar.gz" --owner=0 --group=0 --numeric-owner -C "${DIR}/" .
+    
+    cp -r "${UPDATER_OUTPUT_DIR}/." $GITHUB_WORKSPACE/AppcastRepo/updater/
+    
+    ### Create Appcast
+    
+    # Really hate how this is done, but I can't think of anything better
+    if [[ "${OUTPUT_FILE_BASE}" =~ -Linux- ]]; then
+      OS_NAME="linux"
+      EXEC_NAME="${UPDATER_BASE_NAME}"
+    elif [[ "${OUTPUT_FILE_BASE}" =~ -Windows- ]]; then
+      OS_NAME="windows"
+      EXEC_NAME="${UPDATER_BASE_NAME}.exe"
+    fi
+    
+    # Create only for .zip, as that's universally available
+    netsparkle-generate-appcast \
+      -a "${APPCAST_OUTPUT_DIR}" \
+      --single-file "${UPDATER_OUTPUT_DIR}/${OUTPUT_FILE_BASE}.zip" \
+      -o "${OS_NAME}" \
+      -n "${EXEC_NAME}" \
+      --output-file-name "appcast_ryuupdater-${TARGET}" \
+      --use-ed25519-signature-attribute \
+      --human-readable \
+      --file-version "${UPDATER_VERSION}" \
+      -u "${UPDATER_URL_BASE}" > /dev/null
+  done
+fi
 
 ### Copy AppCasts to repo
 
