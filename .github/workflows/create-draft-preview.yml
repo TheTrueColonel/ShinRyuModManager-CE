@@ -51,7 +51,7 @@ jobs:
       - name: Run Scripts
         run: |
           ./Scripts/build.sh -p
-          ./Scripts/package.sh -s ${{ github.event.inputs.tag }} -u ${{ github.event.inputs.updater_version }}
+          ./Scripts/package.sh -p -s ${{ github.event.inputs.tag }} -u ${{ github.event.inputs.updater_version }}
         env:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
           SPARKLE_PUBLIC_KEY: ${{ secrets.SPARKLE_PUBLIC_KEY }}
