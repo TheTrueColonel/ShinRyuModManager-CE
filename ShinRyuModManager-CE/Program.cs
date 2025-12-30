@@ -123,7 +123,7 @@ public static class Program {
             _isSilent = true;
         }
 
-        await RunGeneration(PreRun());
+        await RunGeneration(PreRun().Where(x => x.Enabled).ToList());
         
         PostRun();
 
