@@ -32,7 +32,7 @@ public partial class MainWindowViewModel : ViewModelBase {
     }
     
     [RelayCommand]
-    public void UpdateProfile(Profile profile) {
+    private void UpdateProfile(Profile profile) {
         Program.ActiveProfile = profile;
         
         Log.Information("Setting Profile to ");
@@ -42,13 +42,7 @@ public partial class MainWindowViewModel : ViewModelBase {
 
     private void Initialize() {
         AppVersionText = $"v{AssemblyVersion.GetVersion()}";
-
-        // Prefer launching through Steam, but if Windows, allow launching via exe
-        if (GamePath.IsSteamInstalled()) {
-            GameLaunchPath = $"steam://launch/{GamePath.GetGameSteamId(GamePath.CurrentGame)}";
-        } else if (OperatingSystem.IsWindows()) {
-            GameLaunchPath = GamePath.GameExe;
-        }
+        GameLaunchPath = GamePath.GetGameLaunchPath();
 
         Directory.CreateDirectory(GamePath.MODS);
         Directory.CreateDirectory(GamePath.LIBRARIES);

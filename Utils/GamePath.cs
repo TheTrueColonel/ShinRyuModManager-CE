@@ -126,7 +126,20 @@ public static class GamePath {
             File.Exists(Path.Combine(path, "MicrosoftGame.config"));
     }
 
-    public static bool IsSteamInstalled() {
+    public static string GetGameLaunchPath() {
+        // Prefer launching through Steam, but if Windows, allow launching via exe
+        if (IsSteamInstalled()) {
+            return $"steam://launch/{GetGameSteamId(CurrentGame)}";
+        } 
+        
+        if (OperatingSystem.IsWindows()) {
+            return GameExe;
+        }
+
+        return null;
+    }
+
+    private static bool IsSteamInstalled() {
         if (OperatingSystem.IsWindows()) {
             return IsSteamInstalledWindows();
         }
@@ -236,7 +249,7 @@ public static class GamePath {
         };
     }
 
-    public static int? GetGameSteamId(Game game) {
+    private static int? GetGameSteamId(Game game) {
         return game switch {
             Game.Yakuza0 => 638970,
             Game.Yakuza0_DC => 2988580,

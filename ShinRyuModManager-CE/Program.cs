@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.IO.Compression;
-using System.Text;
 using Avalonia;
 using Avalonia.Svg.Skia;
 using IniParser;
@@ -14,11 +13,11 @@ using ShinRyuModManager.Extensions;
 using ShinRyuModManager.Helpers;
 using ShinRyuModManager.ModLoadOrder;
 using ShinRyuModManager.ModLoadOrder.Mods;
+using ShinRyuModManager.ModLoadOrder.Mods.Serialization;
 using ShinRyuModManager.Templates;
 using ShinRyuModManager.UserInterface;
 using Utils;
 using Constants = Utils.Constants;
-using ModListSerializer = ShinRyuModManager.ModLoadOrder.Mods.Serialization.ModListSerializer;
 
 namespace ShinRyuModManager;
 
@@ -28,7 +27,6 @@ public static class Program {
     private static bool _cpkRepackingEnabled = true;
     private static bool _checkForUpdates = true;
     private static bool _isSilent;
-    private static bool _migrated;
     private static IniData _iniData;
 
     private static readonly FileIniDataParser IniParser = new() {
@@ -72,7 +70,6 @@ public static class Program {
                                           .WriteTo.Async(a => a.File(new JsonFormatter(renderMessage: true), errorLogsPath, rollingInterval: RollingInterval.Day)))
                      .CreateLogger();
 
-        // TODO: Maybe temporary, YakuzaParless.asi currently only supports the Windows binary. Currently disabling RebuildMLO on Linux
         if (!OperatingSystem.IsWindows()) {
             IsRebuildMloSupported = false;
         }
@@ -112,9 +109,8 @@ public static class Program {
                             Usage: run without arguments to generate mod load order.
                               -s, --silent     prevent checking for updates and remove prompts.
                               -h, --help       show this message and exit.
+                              -r, --run        run the game after the program finishes.
                             """);
-            
-            //Log.Information("       run with \"-r\" or \"--run\" flag to run the game after the program finishes.");
             
             return;
         }
@@ -129,15 +125,21 @@ public static class Program {
 
         await Log.CloseAndFlushAsync();
 
-        // TODO: Update with logic from the UI
-        /*if (list.Contains("-r") || list.Contains("--run")) {
-            if (File.Exists(GamePath.GameExe)) {
-                Console.WriteLine($"Launching \"{GamePath.GameExe}\"...");
-                Process.Start(GamePath.GameExe);
+        if (list.Contains("-r") || list.Contains("--run")) {
+            var gameLaunchPath = GamePath.GetGameLaunchPath();
+            
+            if (!string.IsNullOrEmpty(gameLaunchPath)) {
+                if (OperatingSystem.IsWindows()) {
+                    Process.Start(new ProcessStartInfo(gameLaunchPath) {
+                        UseShellExecute = true
+                    });
+                } else if (OperatingSystem.IsLinux()) {
+                    Process.Start("xdg-open", gameLaunchPath);
+                }
             } else {
-                Console.WriteLine($"Warning: Could not run game because \"{GamePath.GameExe}\" does not exist.");
+                Log.Error("The game can't be launched. Please launch manually.");
             }
-        }*/
+        }
     }
 
     private static void LoadConfig() {
@@ -194,6 +196,8 @@ public static class Program {
             Directory.CreateDirectory(GamePath.MODS);
             Directory.CreateDirectory(GamePath.LIBRARIES);
         }
+        
+        Log.Information("Active Profile: {Profile}", profile?.GetDescription() ?? ActiveProfile.GetDescription());
         
         // TODO: Maybe move this to a separate "Game patches" file
         // Virtua Fighter eSports crashes when used with dinput8.dll as the ASI loader
@@ -267,14 +271,17 @@ public static class Program {
                 // Add all scanned mods that have not been added to the load order yet
                 Log.Information("Scanning for mods...");
 
-                foreach (var newMod in ScanMods()) {
-                    if (mods.Contains(newMod)) 
-                        continue;
-                    
+                foreach (var newMod in ScanMods().Where(newMod => !mods.Contains(newMod))) {
                     mods.Add(newMod);
                 }
                 
                 Log.Information("Found {ModsCount} mods.", mods.Count);
+            }
+
+            Log.Information("Enabled Mods:");
+            
+            foreach (var mod in mods.Where(x => x.Enabled)) {
+                Log.Information("    {ModName}", mod.Name);
             }
         }
         
