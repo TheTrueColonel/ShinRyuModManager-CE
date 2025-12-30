@@ -9,10 +9,13 @@ if ! [[ "${#}" -gt 3 ]]; then
   exit 1
 fi
 
-while getopts s:u: flag; do
+IS_PREVIEW=false;
+
+while getopts "s:u:p" flag; do
     case "${flag}" in
       s) SRMM_VERSION="${OPTARG}";;
       u) UPDATER_VERSION="${OPTARG}";;
+      p) IS_PREVIEW=true;;
       *) echo "Usage: $0 -s <SRMM Version Number> -u <Updater Version Number>"; exit 1;;
     esac
 done
@@ -78,16 +81,19 @@ for TARGET in "${SRMM_BUILD_DIRS[@]}"; do
   fi
   
   # Create only for .zip, as that's universally available
-  netsparkle-generate-appcast \
-    -a "${APPCAST_OUTPUT_DIR}" \
-    --single-file "${SRMM_OUTPUT_DIR}/${OUTPUT_FILE_BASE}.zip" \
-    -o "${OS_NAME}" \
-    -n "${EXEC_NAME}" \
-    --output-file-name "appcast_${TARGET}" \
-    --use-ed25519-signature-attribute \
-    --human-readable \
-    --file-version "${SRMM_VERSION}-${TARGET}" \
-    -u "${SRMM_URL_BASE}${SRMM_VERSION}/" > /dev/null
+  if [ "$IS_PREVIEW" = false ]; then
+    netsparkle-generate-appcast \
+        -a "${APPCAST_OUTPUT_DIR}" \
+        --single-file "${SRMM_OUTPUT_DIR}/${OUTPUT_FILE_BASE}.zip" \
+        -o "${OS_NAME}" \
+        -n "${EXEC_NAME}" \
+        --output-file-name "appcast_${TARGET}" \
+        --use-ed25519-signature-attribute \
+        --human-readable \
+        --file-version "${SRMM_VERSION}-${TARGET}" \
+        -u "${SRMM_URL_BASE}${SRMM_VERSION}/" > /dev/null
+  fi
+  
 done
 
 for TARGET in "${UPDATER_BUILD_DIRS[@]}"; do
