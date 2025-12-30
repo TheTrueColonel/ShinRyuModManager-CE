@@ -132,8 +132,8 @@ if [ "$IS_PREVIEW" = false ]; then
       --file-version "${UPDATER_VERSION}" \
       -u "${UPDATER_URL_BASE}" > /dev/null
   done
+
+  ### Copy AppCasts to repo
+  
+  cp -r "${APPCAST_OUTPUT_DIR}/." $GITHUB_WORKSPACE/AppcastRepo/releases/
 fi
-
-### Copy AppCasts to repo
-
-cp -r "${APPCAST_OUTPUT_DIR}/." $GITHUB_WORKSPACE/AppcastRepo/releases/
