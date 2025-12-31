@@ -123,22 +123,30 @@
                           Click="ChangeLog_OnClick" />
                 <!--<MenuItem Name="CheckUpdates" Header="{x:Static lang:MainWindow.Menu_CheckUpdates}" />-->
             </MenuItem>
-            <MenuItem Header="Profiles">
-                <MenuItem Name="Profile1" Header="Profile 1" Command="{Binding UpdateProfileCommand}" 
+            <MenuItem Header="{x:Static lang:MainWindow.Menu_Profiles}">
+                <MenuItem Name="Profile1" Header="{x:Static lang:MainWindow.Menu_Profile1}"
+                          Command="{Binding UpdateProfileCommand}"
                           CommandParameter="{x:Static mods:Profile.Profile1}" />
-                <MenuItem Name="Profile2" Header="Profile 2" Command="{Binding UpdateProfileCommand}" 
+                <MenuItem Name="Profile2" Header="{x:Static lang:MainWindow.Menu_Profile2}"
+                          Command="{Binding UpdateProfileCommand}"
                           CommandParameter="{x:Static mods:Profile.Profile2}" />
-                <MenuItem Name="Profile3" Header="Profile 3" Command="{Binding UpdateProfileCommand}" 
+                <MenuItem Name="Profile3" Header="{x:Static lang:MainWindow.Menu_Profile3}"
+                          Command="{Binding UpdateProfileCommand}"
                           CommandParameter="{x:Static mods:Profile.Profile3}" />
-                <MenuItem Name="Profile4" Header="Profile 4" Command="{Binding UpdateProfileCommand}" 
+                <MenuItem Name="Profile4" Header="{x:Static lang:MainWindow.Menu_Profile4}"
+                          Command="{Binding UpdateProfileCommand}"
                           CommandParameter="{x:Static mods:Profile.Profile4}" />
-                <MenuItem Name="Profile5" Header="Profile 5" Command="{Binding UpdateProfileCommand}" 
+                <MenuItem Name="Profile5" Header="{x:Static lang:MainWindow.Menu_Profile5}"
+                          Command="{Binding UpdateProfileCommand}"
                           CommandParameter="{x:Static mods:Profile.Profile5}" />
-                <MenuItem Name="Profile6" Header="Profile 6" Command="{Binding UpdateProfileCommand}" 
+                <MenuItem Name="Profile6" Header="{x:Static lang:MainWindow.Menu_Profile6}"
+                          Command="{Binding UpdateProfileCommand}"
                           CommandParameter="{x:Static mods:Profile.Profile6}" />
-                <MenuItem Name="Profile7" Header="Profile 7" Command="{Binding UpdateProfileCommand}" 
+                <MenuItem Name="Profile7" Header="{x:Static lang:MainWindow.Menu_Profile7}"
+                          Command="{Binding UpdateProfileCommand}"
                           CommandParameter="{x:Static mods:Profile.Profile7}" />
-                <MenuItem Name="Profile8" Header="Profile 8" Command="{Binding UpdateProfileCommand}" 
+                <MenuItem Name="Profile8" Header="{x:Static lang:MainWindow.Menu_Profile8}"
+                          Command="{Binding UpdateProfileCommand}"
                           CommandParameter="{x:Static mods:Profile.Profile8}" />
             </MenuItem>
         </Menu>
@@ -158,9 +166,9 @@
             <Label Grid.Column="0" Classes="AppVersion" Content="{Binding AppVersionText}" />
             
             <!-- Preview Overlay -->
-            <Canvas Grid.Column="2">
+            <!--<Canvas Grid.Column="2">
                 <Label Classes="PreviewIndicator" Content="Preview" />
-            </Canvas>
+            </Canvas>-->
             
             <!-- Mod List and Controls -->
             <Grid Grid.Column="0">
