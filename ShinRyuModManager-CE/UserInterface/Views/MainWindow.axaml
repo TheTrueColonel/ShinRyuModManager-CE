@@ -63,6 +63,13 @@
             <Setter Property="VerticalAlignment" Value="Bottom" />
         </Style>
         
+        <Style Selector="Label.PreviewIndicator">
+            <Setter Property="Opacity" Value="0.4" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Canvas.Bottom" Value="0" />
+            <Setter Property="Canvas.Right" Value="0" />
+        </Style>
+        
         <Style Selector="StackPanel Button">
             <Setter Property="Background" Value="#4B4B4B" />
             <Setter Property="Foreground" Value="White" />
@@ -116,6 +123,32 @@
                           Click="ChangeLog_OnClick" />
                 <!--<MenuItem Name="CheckUpdates" Header="{x:Static lang:MainWindow.Menu_CheckUpdates}" />-->
             </MenuItem>
+            <MenuItem Header="{x:Static lang:MainWindow.Menu_Profiles}">
+                <MenuItem Name="Profile1" Header="{x:Static lang:MainWindow.Menu_Profile1}"
+                          Command="{Binding UpdateProfileCommand}"
+                          CommandParameter="{x:Static mods:Profile.Profile1}" />
+                <MenuItem Name="Profile2" Header="{x:Static lang:MainWindow.Menu_Profile2}"
+                          Command="{Binding UpdateProfileCommand}"
+                          CommandParameter="{x:Static mods:Profile.Profile2}" />
+                <MenuItem Name="Profile3" Header="{x:Static lang:MainWindow.Menu_Profile3}"
+                          Command="{Binding UpdateProfileCommand}"
+                          CommandParameter="{x:Static mods:Profile.Profile3}" />
+                <MenuItem Name="Profile4" Header="{x:Static lang:MainWindow.Menu_Profile4}"
+                          Command="{Binding UpdateProfileCommand}"
+                          CommandParameter="{x:Static mods:Profile.Profile4}" />
+                <MenuItem Name="Profile5" Header="{x:Static lang:MainWindow.Menu_Profile5}"
+                          Command="{Binding UpdateProfileCommand}"
+                          CommandParameter="{x:Static mods:Profile.Profile5}" />
+                <MenuItem Name="Profile6" Header="{x:Static lang:MainWindow.Menu_Profile6}"
+                          Command="{Binding UpdateProfileCommand}"
+                          CommandParameter="{x:Static mods:Profile.Profile6}" />
+                <MenuItem Name="Profile7" Header="{x:Static lang:MainWindow.Menu_Profile7}"
+                          Command="{Binding UpdateProfileCommand}"
+                          CommandParameter="{x:Static mods:Profile.Profile7}" />
+                <MenuItem Name="Profile8" Header="{x:Static lang:MainWindow.Menu_Profile8}"
+                          Command="{Binding UpdateProfileCommand}"
+                          CommandParameter="{x:Static mods:Profile.Profile8}" />
+            </MenuItem>
         </Menu>
         
         <!-- Background Image -->
@@ -131,6 +164,11 @@
             
             <!-- App Version -->
             <Label Grid.Column="0" Classes="AppVersion" Content="{Binding AppVersionText}" />
+            
+            <!-- Preview Overlay -->
+            <!--<Canvas Grid.Column="2">
+                <Label Classes="PreviewIndicator" Content="Preview" />
+            </Canvas>-->
             
             <!-- Mod List and Controls -->
             <Grid Grid.Column="0">

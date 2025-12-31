@@ -27,7 +27,7 @@
             *
         </Grid.RowDefinitions>
         
-        <md:MarkdownScrollViewer Grid.Row="0" Markdown="{ReflectionBinding ChangeLogText}" />
+        <md:MarkdownScrollViewer Grid.Row="0" Markdown="{Binding ChangeLogText}" />
         
         <Button Grid.Row="1" Background="#FF4B4B4B" Foreground="White" VerticalAlignment="Bottom" 
                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Content="Close" FontSize="16" 

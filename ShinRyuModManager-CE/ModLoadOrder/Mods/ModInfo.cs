@@ -1,23 +1,31 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using Utils;
+using ShinRyuModManager.Extensions;
 
 namespace ShinRyuModManager.ModLoadOrder.Mods;
 
 public sealed partial class ModInfo : ObservableObject, IEquatable<ModInfo> {
     [ObservableProperty] private string _name;
-    [ObservableProperty] private bool _enabled;
 
-    public ModInfo(string name, bool enabled = true) {
+    public ProfileMask EnabledProfiles { get; set; }
+
+    public bool Enabled {
+        get => EnabledProfiles.AppliesTo(Program.ActiveProfile);
+        set {
+            if (value) {
+                EnabledProfiles |= Program.ActiveProfile.ToMask();
+            } else {
+                EnabledProfiles &= ~Program.ActiveProfile.ToMask();
+            }
+        }
+    }
+
+    public ModInfo(string name, ProfileMask enabledMask = ProfileMask.All) {
         Name = name;
-        Enabled = enabled;
+        EnabledProfiles = enabledMask;
     }
 
     public void ToggleEnabled() {
         Enabled = !Enabled;
-    }
-    
-    public static bool IsValid(ModInfo info) {
-        return (info != null) && Directory.Exists(Path.Combine(GamePath.MODS, info.Name));
     }
 
     public bool Equals(ModInfo other) {
@@ -44,6 +52,6 @@ public sealed partial class ModInfo : ObservableObject, IEquatable<ModInfo> {
     }
 
     public override int GetHashCode() {
-        return HashCode.Combine(Name, Enabled);
+        return Name.GetHashCode();
     }
 }

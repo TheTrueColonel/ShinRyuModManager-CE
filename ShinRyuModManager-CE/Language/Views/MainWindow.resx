@@ -99,4 +99,31 @@
     <data name="ModUp_Tooltip" xml:space="preserve">
         <value>Move the selected mod(s) up</value>
     </data>
+    <data name="Menu_Profiles" xml:space="preserve">
+        <value>Profiles</value>
+    </data>
+    <data name="Menu_Profile1" xml:space="preserve">
+        <value>Profile 1</value>
+    </data>
+    <data name="Menu_Profile2" xml:space="preserve">
+        <value>Profile 2</value>
+    </data>
+    <data name="Menu_Profile3" xml:space="preserve">
+        <value>Profile 3</value>
+    </data>
+    <data name="Menu_Profile4" xml:space="preserve">
+        <value>Profile 4</value>
+    </data>
+    <data name="Menu_Profile5" xml:space="preserve">
+        <value>Profile 5</value>
+    </data>
+    <data name="Menu_Profile6" xml:space="preserve">
+        <value>Profile 6</value>
+    </data>
+    <data name="Menu_Profile7" xml:space="preserve">
+        <value>Profile 7</value>
+    </data>
+    <data name="Menu_Profile8" xml:space="preserve">
+        <value>Profile 8</value>
+    </data>
 </root>

@@ -26,6 +26,8 @@ public class Mod {
     /// Folders that need to be repacked.
     /// </summary>
     public List<string> RepackCpKs { get; }
+
+    public Mod(ModInfo modInfo) : this(modInfo.Name) { }
     
     public Mod(string name) {
         Name = name;

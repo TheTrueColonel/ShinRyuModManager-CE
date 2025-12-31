@@ -1,5 +1,9 @@
 using System.Collections.ObjectModel;
+using Avalonia.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Serilog;
+using ShinRyuModManager.Extensions;
 using ShinRyuModManager.ModLoadOrder.Mods;
 using Utils;
 
@@ -26,23 +30,27 @@ public partial class MainWindowViewModel : ViewModelBase {
         ModAuthor = mod.Author;
         ModVersion = mod.Version;
     }
+    
+    [RelayCommand]
+    private void UpdateProfile(Profile profile) {
+        Program.ActiveProfile = profile;
+        
+        Log.Information("Setting Profile to ");
+        
+        LoadModList(profile);
+    }
 
     private void Initialize() {
-        TitleText = $"Shin Ryu Mod Manager [{GamePath.GetGameFriendlyName(GamePath.CurrentGame)}]";
         AppVersionText = $"v{AssemblyVersion.GetVersion()}";
-
-        // Prefer launching through Steam, but if Windows, allow launching via exe
-        if (GamePath.IsSteamInstalled()) {
-            GameLaunchPath = $"steam://launch/{GamePath.GetGameSteamId(GamePath.CurrentGame)}";
-        } else if (OperatingSystem.IsWindows()) {
-            GameLaunchPath = GamePath.GameExe;
-        }
+        GameLaunchPath = GamePath.GetGameLaunchPath();
 
         Directory.CreateDirectory(GamePath.MODS);
         Directory.CreateDirectory(GamePath.LIBRARIES);
     }
 
-    internal void LoadModList() {
-        ModList = new ObservableCollection<ModInfo>(Program.PreRun());
+    internal void LoadModList(Profile? profile = null) {
+        ModList = new ObservableCollection<ModInfo>(Program.PreRun(profile));
+        
+        TitleText = $"Shin Ryu Mod Manager [{GamePath.GetGameFriendlyName(GamePath.CurrentGame)}] [{Program.ActiveProfile.GetDescription()}]";
     }
 }

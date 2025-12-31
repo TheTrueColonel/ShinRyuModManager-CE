@@ -1,6 +1,7 @@
 name: Prepare Preview
 on:
-  workflow_dispatch:
+
+  workflow_dispatch: 
     inputs:
       name:
         description: "Release name"
@@ -23,7 +24,7 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v6
-
+        
       - name: Checkout AppCast Repo
         uses: actions/checkout@v6
         with:

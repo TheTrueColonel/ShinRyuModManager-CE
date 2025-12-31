@@ -206,5 +206,59 @@ namespace ShinRyuModManager.Language.Views {
                 return ResourceManager.GetString("ModUp_Tooltip", resourceCulture);
             }
         }
+        
+        public static string Menu_Profiles {
+            get {
+                return ResourceManager.GetString("Menu_Profiles", resourceCulture);
+            }
+        }
+        
+        public static string Menu_Profile1 {
+            get {
+                return ResourceManager.GetString("Menu_Profile1", resourceCulture);
+            }
+        }
+        
+        public static string Menu_Profile2 {
+            get {
+                return ResourceManager.GetString("Menu_Profile2", resourceCulture);
+            }
+        }
+        
+        public static string Menu_Profile3 {
+            get {
+                return ResourceManager.GetString("Menu_Profile3", resourceCulture);
+            }
+        }
+        
+        public static string Menu_Profile4 {
+            get {
+                return ResourceManager.GetString("Menu_Profile4", resourceCulture);
+            }
+        }
+        
+        public static string Menu_Profile5 {
+            get {
+                return ResourceManager.GetString("Menu_Profile5", resourceCulture);
+            }
+        }
+        
+        public static string Menu_Profile6 {
+            get {
+                return ResourceManager.GetString("Menu_Profile6", resourceCulture);
+            }
+        }
+        
+        public static string Menu_Profile7 {
+            get {
+                return ResourceManager.GetString("Menu_Profile7", resourceCulture);
+            }
+        }
+        
+        public static string Menu_Profile8 {
+            get {
+                return ResourceManager.GetString("Menu_Profile8", resourceCulture);
+            }
+        }
     }
 }

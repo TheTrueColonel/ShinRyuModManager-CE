@@ -1,4 +1,13 @@
-> ### **%{color:gold} Version 1.3.8 %** ###
+> ### **%{color:gold} Version 1.4.0 %** ###
+* Added multiple profiles
+* Updated mod list save file to version 2
+  * New file name is `ModList.ml`
+  * Old mod list will be appended `.bak` in case it needs to be recovered
+* Re-added auto running game option in CLI mode
+
+---
+
+> ### **%{color:orange} Version 1.3.8 %** ###
 * Fixed MLO generation
 
 ---
