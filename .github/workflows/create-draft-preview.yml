@@ -1,5 +1,6 @@
 name: Prepare Preview
 on:
+
   workflow_dispatch: 
     inputs:
       name:
@@ -30,7 +31,7 @@ jobs:
           repository: 'TheTrueColonel/SRMM-AppCast'
           token: '${{ secrets.SRMM_APPCAST_TOKEN }}'
           path: AppcastRepo
-        
+
       - name: Install .NET SDK
         uses: actions/setup-dotnet@v5
         with:
@@ -38,7 +39,7 @@ jobs:
 
       - name: Add .NET tools to PATH
         run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
-        
+
       - name: Create Draft Release
         id: create_release
         uses: ncipollo/release-action@v1
@@ -47,7 +48,7 @@ jobs:
           name: ${{ github.event.inputs.name }}
           draft: true
           generateReleaseNotesPreviousTag: true
-        
+
       - name: Run Scripts
         run: |
           ./Scripts/build.sh -p
@@ -55,7 +56,7 @@ jobs:
         env:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
           SPARKLE_PUBLIC_KEY: ${{ secrets.SPARKLE_PUBLIC_KEY }}
-          
+
       - name: Upload SRMM Release Assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
