@@ -18,7 +18,13 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    permissions: write-all
+    permissions: 
+      contents: read
+    
+    env: 
+      PR_NAME: ${{ github.event.inputs.name }}
+      PR_TAG: ${{ github.event.inputs.tag }}
+      UPDATER_VERSION: {{ github.event.inputs.updater_version }}
     
     steps:
       - name: Checkout Repo
@@ -44,17 +50,17 @@ jobs:
         
       - name: Create Draft Release
         id: create_release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b # v1.20
         with:
-          tag: "v${{ github.event.inputs.tag }}"
-          name: ${{ github.event.inputs.name }}
+          tag: "v$PR_TAG"
+          name: $PR_NAME
           draft: true
           generateReleaseNotesPreviousTag: true
         
       - name: Run Scripts
         run: |
           ./Scripts/build.sh
-          ./Scripts/package.sh -s ${{ github.event.inputs.tag }} -u ${{ github.event.inputs.updater_version }}
+          ./Scripts/package.sh -s $PR_TAG -u $UPDATER_VERSION
         env:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
           SPARKLE_PUBLIC_KEY: ${{ secrets.SPARKLE_PUBLIC_KEY }}
@@ -84,7 +90,7 @@ jobs:
           git checkout -b "${branch}"
           
           git add .
-          git commit -m "Update Appcasts and Updater for SRMM version ${{ github.event.inputs.tag }} and Updater version ${{ github.event.inputs.updater_version }}"
+          git commit -m "Update Appcasts and Updater for SRMM version $PR_TAG and Updater version $UPDATER_VERSION"
           git push origin "${branch}"
         env:
           GIT_AUTHOR_NAME: github-actions
@@ -99,7 +105,7 @@ jobs:
           
           gh pr create \
             --title "Update Appcasts and Updater" \
-            --body "Automated update for SRMM version ${{ github.event.inputs.tag }} and Updater version ${{ github.event.inputs.updater_version }}" \
+            --body "Automated update for SRMM version $PR_TAG and Updater version $" \
             --head "${branch}" \
             --base main
         env:
