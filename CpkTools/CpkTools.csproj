@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.4.0" />
+      <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.1" />
     </ItemGroup>
 
 </Project>

@@ -21,13 +21,15 @@ public class ParArchiveReader : IConverter<BinaryFormat, NodeContainerFormat> {
     /// <summary>
     /// Initializes a new instance of the <see cref="ParArchiveReader"/> class.
     /// </summary>
-    public ParArchiveReader() { }
+    public ParArchiveReader() {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ParArchiveReader"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public ParArchiveReader(ParArchiveReaderParameters parameters) {
+    public ParArchiveReader(ParArchiveReaderParameters parameters) : this() {
         _parameters = parameters;
     }
     

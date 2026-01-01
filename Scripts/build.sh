@@ -44,7 +44,7 @@ declare -A TARGET_ARGS_PREVIEW=(
   ["windows-slim"]="win-x64;--no-self-contained -p:BuildSuffix=windows-slim-preview"
 )
 
-if [ "$IS_PREVIEW" = true ]; then
+if [[ "$IS_PREVIEW" = true ]]; then
   declare -n TARGET_ARGS=TARGET_ARGS_PREVIEW;
 else
   declare -n TARGET_ARGS=TARGET_ARGS_PROD;
@@ -67,7 +67,7 @@ ASSET_URL=$(curl -s "${API_URL}" | jq -r \
   ')
   
 if [[ -z "${ASSET_URL}" ]]; then
-  echo "ERROR: No assets matching pattern '${PATTERN}' found."
+  echo "ERROR: No assets matching pattern '${PATTERN}' found." >&2
   exit 1
 fi
 

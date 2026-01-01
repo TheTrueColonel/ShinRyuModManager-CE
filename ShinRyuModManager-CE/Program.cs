@@ -2,6 +2,7 @@
 using System.IO.Compression;
 using Avalonia;
 using Avalonia.Svg.Skia;
+using CpkTools.Model;
 using IniParser;
 using IniParser.Model;
 using Serilog;
@@ -83,7 +84,7 @@ public static class Program {
         } else {
             Log.Information("Shin Ryu Mod Manager CLI Mode Start");
             
-            MainCLI(args).GetAwaiter().GetResult();
+            MainCli(args).GetAwaiter().GetResult();
         }
     }
     
@@ -97,7 +98,7 @@ public static class Program {
                          .LogToTrace();
     }
     
-    private static async Task MainCLI(string[] args) {
+    private static async Task MainCli(string[] args) {
         Log.Information("Shin Ryu Mod Manager-CE v{Version}", AssemblyVersion.GetVersion());
         Log.Information("By TheTrueColonel (a port of SRMM Studio's work)");
         

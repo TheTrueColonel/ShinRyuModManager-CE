@@ -81,7 +81,7 @@ for TARGET in "${SRMM_BUILD_DIRS[@]}"; do
   fi
   
   # Create only for .zip, as that's universally available
-  if [ "$IS_PREVIEW" = false ]; then
+  if [[ "$IS_PREVIEW" = false ]]; then
     netsparkle-generate-appcast \
         -a "${APPCAST_OUTPUT_DIR}" \
         --single-file "${SRMM_OUTPUT_DIR}/${OUTPUT_FILE_BASE}.zip" \
@@ -96,7 +96,7 @@ for TARGET in "${SRMM_BUILD_DIRS[@]}"; do
   
 done
 
-if [ "$IS_PREVIEW" = false ]; then
+if [[ "$IS_PREVIEW" = false ]]; then
   for TARGET in "${UPDATER_BUILD_DIRS[@]}"; do
     DIR="${UPDATER_SELECTOR}/${TARGET}"
     OUTPUT_TARGET_STR=$(echo "${TARGET}" | sed -e "s/\b\(.\)/\u\1/g") # Capitalizes each target word: linux-slim -> Linux-Slim

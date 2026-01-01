@@ -4,6 +4,10 @@ using CpkTools.Endian;
 namespace CpkTools;
 
 public static class Tools {
+    static Tools() {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+    }
+    
     public static string ReadCString(EndianReader reader, int maxLength = -1, long lOffset = -1, Encoding? enc = null) {
         enc ??= Encoding.GetEncoding(932);
         

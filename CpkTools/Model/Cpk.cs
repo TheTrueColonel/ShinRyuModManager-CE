@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using System.Numerics;
 using System.Text;
 using CpkTools.Comparers;
 using CpkTools.Endian;
@@ -603,7 +604,7 @@ public sealed class Cpk {
         return new ColumnData<T>(default!, -1, null);
     }
 
-    private static DataInfo<T> GetFileSizeInfo<T>(ColumnData<byte[]> inputData) {
+    private static DataInfo<T> GetFileSizeInfo<T>(ColumnData<byte[]> inputData) where T : INumber<T> {
         var result = new DataInfo<T>();
         
         if (inputData.Value == null)
@@ -623,7 +624,7 @@ public sealed class Cpk {
 
             var extractSize = GetColumnData<T>(utfData, i, "ExtractSize");
             
-            if (extractSize.Value != null) {
+            if (extractSize.Value != default) {
                 extractSize.Position += inputData.Position;
                 
                 result.CSizeTable.Add(id, extractSize);

@@ -44,17 +44,19 @@ public class ParArchiveWriter : IConverter<NodeContainerFormat, ParFile> {
     /// Occurs after the file is compressed.
     /// </summary>
     public static event NodeEventHandler FileCompressed;
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ParArchiveWriter"/> class.
     /// </summary>
-    public ParArchiveWriter() { }
+    public ParArchiveWriter() {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+    }
     
     /// <summary>
     /// Initializes a new instance of the <see cref="ParArchiveWriter"/> class.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
-    public ParArchiveWriter(ParArchiveWriterParameters parameters) {
+    public ParArchiveWriter(ParArchiveWriterParameters parameters) : this() {
         _parameters = parameters;
     }
     
