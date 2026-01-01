@@ -53,8 +53,8 @@ jobs:
         id: create_release
         uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b # v1.20
         with:
-          tag: "v$PR_TAG"
-          name: "$PR_NAME"
+          tag: "v${{ env.PR_TAG }}"
+          name: ${{ env.PR_NAME }}
           draft: true
           generateReleaseNotesPreviousTag: true
         
@@ -106,7 +106,7 @@ jobs:
           
           gh pr create \
             --title "Update Appcasts and Updater" \
-            --body "Automated update for SRMM version $PR_TAG and Updater version $" \
+            --body "Automated update for SRMM version $PR_TAG and Updater version $PR_UPDATER_VERSION" \
             --head "${branch}" \
             --base main
         env:
