@@ -15,17 +15,17 @@ on:
         required: true
         default: "1.0.0"
 
+env:
+  PR_NAME: ${{ github.event.inputs.name }}
+  PR_TAG: ${{ github.event.inputs.tag }}
+  PR_UPDATER_VERSION: ${{ github.event.inputs.updater_version }}
+      
 jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
-    
-    env: 
-      PR_NAME: ${{ github.event.inputs.name }}
-      PR_TAG: ${{ github.event.inputs.tag }}
-      UPDATER_VERSION: ${{ github.event.inputs.updater_version }}
     
     steps:
       - name: Checkout Repo
@@ -54,14 +54,14 @@ jobs:
         uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b # v1.20
         with:
           tag: "v$PR_TAG"
-          name: $PR_NAME
+          name: "$PR_NAME"
           draft: true
           generateReleaseNotesPreviousTag: true
         
       - name: Run Scripts
         run: |
           ./Scripts/build.sh
-          ./Scripts/package.sh -s $PR_TAG -u $UPDATER_VERSION
+          ./Scripts/package.sh -s $PR_TAG -u $PR_UPDATER_VERSION
         env:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
           SPARKLE_PUBLIC_KEY: ${{ secrets.SPARKLE_PUBLIC_KEY }}
@@ -91,7 +91,7 @@ jobs:
           git checkout -b "${branch}"
           
           git add .
-          git commit -m "Update Appcasts and Updater for SRMM version $PR_TAG and Updater version $UPDATER_VERSION"
+          git commit -m "Update Appcasts and Updater for SRMM version $PR_TAG and Updater version $PR_UPDATER_VERSION"
           git push origin "${branch}"
         env:
           GIT_AUTHOR_NAME: github-actions
