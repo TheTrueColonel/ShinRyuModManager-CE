@@ -30,13 +30,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v6
-        
-      - name: Checkout AppCast Repo
-        uses: actions/checkout@v6
-        with:
-          repository: 'TheTrueColonel/SRMM-AppCast'
-          token: '$PR_TAG'
-          path: AppcastRepo
 
       - name: Install .NET SDK
         uses: actions/setup-dotnet@v5
