@@ -19,7 +19,8 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    permissions: write-all
+    permissions:
+      contents: write
     
     env:
       PR_NAME: ${{ github.event.inputs.name }}
