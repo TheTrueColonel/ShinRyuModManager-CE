@@ -26,6 +26,8 @@ If applicable, add screenshots to help explain your problem.
 **Additional Information (please complete the following information):**
  - OS: [e.g. Ubunutu, Fadora, Steam Deck, etc]
  - SRMM Version [e.g. v1.0.0-linux-slim, etc]
+ - Game you're modding: [e.g. Yakuza Kiwami, Lost Judgment]
+ - Version of game: [e.g. Steam, GOG]
 
 **Additional context**
 Add any other context about the problem here.
@@ -33,3 +35,5 @@ Add any other context about the problem here.
 ## Include the SRMM and Error logs (if applicable). It's much harder to help you without them.
 - SRMM log location: <Directory SRMM is in>/srmm-logs/srmm_logs<date>.log
 - Error log location: <Directory SRMM is in>/srmm-logs/srmm_errors<date>.log
+
+## You won't get any support if your game is pirated
