@@ -1,4 +1,11 @@
-> ### **%{color:gold} Version 1.4.0 %** ###
+> ### **%{color:gold} Version 1.4.1 %** ###
+* Yakuza Kiwami 3 Support
+* Fixed PYIH gmt hash lookup
+* Fixed bug when removing an installed mod
+
+---
+
+> ### **%{color:orange} Version 1.4.0 %** ###
 * Added multiple profiles
 * Updated mod list save file to version 2
   * New file name is `ModList.ml`

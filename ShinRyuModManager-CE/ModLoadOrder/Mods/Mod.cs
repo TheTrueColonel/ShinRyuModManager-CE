@@ -204,14 +204,18 @@ public class Mod {
                             break;
 
                         var baseParlessPath = Path.Combine(GamePath.ParlessDir, "motion", "gmt");
-
-                        foreach (var p in Directory.GetFiles(gmtFolderPath).Where(f => !f.EndsWith(Constants.VORTEX_MANAGED_FILE)).Select(GamePath.GetDataPathFrom)) {
+                        
+                        foreach (var p in Directory.EnumerateFiles(gmtFolderPath).Where(f => !f.EndsWith(Constants.VORTEX_MANAGED_FILE)).Select(GamePath.GetDataPathFrom)) {
                             // Copy any gmts to the appropriate hash folder in Parless
                             if (!p.EndsWith(".gmt", StringComparison.InvariantCultureIgnoreCase))
                                 continue;
 
-                            var gmtPath = Path.Combine(gmtFolderPath, Path.GetFileName(p));
-                            var checksum = ((Func<string, string>)(s => (Encoding.UTF8.GetBytes(s).Sum(b => b) % 256).ToString("x2").PadLeft(4, '0')))(Path.GetFileNameWithoutExtension(p).ToLowerInvariant());
+                            var fileName = Path.GetFileName(p);
+                            var fileNameNoExt = Path.GetFileNameWithoutExtension(p);
+                            var gmtHashName = fileNameNoExt.Length <= 30 ? fileNameNoExt : fileNameNoExt[..30];
+                            var gmtPath = Path.Combine(gmtFolderPath, fileName);
+                            
+                            var checksum = ComputePirateYakuzaChecksum(gmtHashName);
                             var destinationDirectory = Path.Combine(baseParlessPath, checksum);
 
                             if (!Directory.Exists(destinationDirectory))
@@ -263,5 +267,11 @@ public class Mod {
         var folder = Constants.IncompatiblePars.FirstOrDefault(name.StartsWith);
 
         return folder ?? string.Empty;
+    }
+
+    private static string ComputePirateYakuzaChecksum(string input) {
+        var sum = Encoding.UTF8.GetBytes(input).Sum(b => b) % 256;
+
+        return sum.ToString("x4");
     }
 }

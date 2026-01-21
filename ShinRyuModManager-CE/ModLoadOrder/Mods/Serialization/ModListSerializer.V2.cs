@@ -1,4 +1,5 @@
 using System.Text;
+using Utils;
 
 namespace ShinRyuModManager.ModLoadOrder.Mods.Serialization;
 
@@ -17,6 +18,9 @@ public static partial class ModListSerializer {
         
         for (var i = 0; i < entryCount; i++) {
             var entry = ReadEntryV2(reader);
+            
+            if (!Directory.Exists(GamePath.GetModDirectory(entry.Name)))
+                continue;
             
             mods.Add(entry);
         }

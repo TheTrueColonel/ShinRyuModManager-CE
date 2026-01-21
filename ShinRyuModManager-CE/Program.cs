@@ -388,7 +388,7 @@ public static class Program {
                     break;
                 
                 case Game.YakuzaKiwami3:
-                    GameModel.DoDEHActProcedure(result, "lexus3");
+                    GameModel.DoDEHActProcedure(result, "bis");
                     break;
             }
             
