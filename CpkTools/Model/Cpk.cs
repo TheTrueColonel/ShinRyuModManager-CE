@@ -18,7 +18,9 @@ public sealed class Cpk {
     private Memory<byte> _tocPacket;
     private Memory<byte> _itocPacket;
     private Memory<byte> _etocPacket;
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
     private Memory<byte> _gtocPacket;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
     private ulong _tocOffset = ulong.MaxValue;
     private ulong _etocOffset = ulong.MaxValue;
     private ulong _itocOffset = ulong.MaxValue;

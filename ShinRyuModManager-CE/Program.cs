@@ -388,7 +388,8 @@ public static class Program {
                     break;
                 
                 case Game.YakuzaKiwami3:
-                    GameModel.DoDEHActProcedure(result, "bis");
+                    GameModel.DoYK3HActProcedure(result, "bis");
+                    GameModel.DoTalkProcedureYK3(result, "bis");
                     break;
             }
             

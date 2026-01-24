@@ -176,7 +176,7 @@ public class Mod {
                 }
             }
 
-            if (GamePath.CurrentGame >= Game.Yakuza6) {
+            if (GamePath.CurrentGame >= Game.Yakuza6 && GamePath.CurrentGame != Game.YakuzaKiwami3) {
                 //Dragon Engine talks use pars directly for these
                 if (path.Contains("talk_")) {
                     if (char.IsDigit(basename[0]) || check == "cmn") {
