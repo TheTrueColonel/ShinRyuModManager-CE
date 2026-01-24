@@ -1,4 +1,9 @@
-> ### **%{color:gold} Version 1.4.1 %** ###
+> ### **%{color:gold} Version 1.4.2 %** ###
+* Implemented **experimental** Talk and HAct repack methods from SRMM 4.7.6
+
+---
+
+> ### **%{color:orange} Version 1.4.1 %** ###
 * Yakuza Kiwami 3 Support
 * Fixed PYIH gmt hash lookup
 * Fixed bug when removing an installed mod

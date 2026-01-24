@@ -25,7 +25,7 @@ public static class GamePath {
         ParlessDir = Path.Combine(ModsPath, "Parless");
         ExternalModsPath = Path.Combine(ModsPath, Constants.EXTERNAL_MODS);
         LibrariesPath = Path.Combine(FullGamePath, LIBRARIES);
-        LocalLibrariesPath = Path.Combine(GamePath.LibrariesPath, Constants.LIBRARIES_INFO_REPO_FILE_PATH);
+        LocalLibrariesPath = Path.Combine(LibrariesPath, Constants.LIBRARIES_INFO_REPO_FILE_PATH);
         
         // Try to get game
         foreach (var file in Directory.GetFiles(FullGamePath, "*.exe")) {
