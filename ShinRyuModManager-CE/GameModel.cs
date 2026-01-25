@@ -403,14 +403,16 @@ public static class GameModel {
     }
 
     public static void DoYK3HActProcedure(MLO mlo, string codename) {
-        var hactDir = new DirectoryInfo(GamePath.DataPath).EnumerateDirectories().FirstOrDefault(x => x.Name.StartsWith("hact_"))?.FullName;
-
-        if (string.IsNullOrEmpty(hactDir))
-            return;
-
-        var haveTalk = mlo.Files.Any(x => x.Name.Contains("/hact_"));
+        var haveHAct = mlo.Files.Any(x => x.Name.Contains("/hact_"));
         
-        if (!haveTalk)
+        if (!haveHAct)
+            return;
+        
+        var hactDir = new DirectoryInfo(GamePath.DataPath)
+                      .EnumerateDirectories()
+                      .FirstOrDefault(x => x.Name.StartsWith("hact_"))?.FullName;
+        
+        if (string.IsNullOrEmpty(hactDir))
             return;
 
         var rootHActDir = Path.Combine(GamePath.ParlessDir, "hact_" + codename);
@@ -433,6 +435,7 @@ public static class GameModel {
             if (string.IsNullOrEmpty(hActDirPath))
                 continue;
 
+            
             var hActDir = new DirectoryInfo(hActDirPath);
 
             foreach (var dir in hActDir.EnumerateDirectories()) {
@@ -448,14 +451,16 @@ public static class GameModel {
     }
 
     public static void DoTalkProcedureYK3(MLO mlo, string codename) {
-        var hactDir = new DirectoryInfo(GamePath.DataPath).GetDirectories().FirstOrDefault(x => x.Name.StartsWith("hact_"))?.FullName;
-
-        if (string.IsNullOrEmpty(hactDir))
-            return;
-
         var haveTalk = mlo.Files.Any(x => x.Name.Contains("/talk_"));
 
         if (!haveTalk)
+            return;
+        
+        var hactDir = new DirectoryInfo(GamePath.DataPath)
+                      .EnumerateDirectories()
+                      .FirstOrDefault(x => x.Name.StartsWith("hact_"))?.FullName;
+
+        if (string.IsNullOrEmpty(hactDir))
             return;
 
         var rootTalkDir = Path.Combine(GamePath.ParlessDir, "talk_" + codename);

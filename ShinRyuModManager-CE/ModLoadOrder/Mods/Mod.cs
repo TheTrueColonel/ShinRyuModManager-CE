@@ -211,11 +211,14 @@ public class Mod {
                                 continue;
 
                             var fileName = Path.GetFileName(p);
-                            var fileNameNoExt = Path.GetFileNameWithoutExtension(p);
-                            var gmtHashName = fileNameNoExt.Length <= 30 ? fileNameNoExt : fileNameNoExt[..30];
-                            var gmtPath = Path.Combine(gmtFolderPath, fileName);
+                            var fileNameNoExt = Path.GetFileNameWithoutExtension(p).ToLowerInvariant();
+
+                            var hash = new PXDHash();
+                            hash.Set(fileNameNoExt);
                             
-                            var checksum = ComputePirateYakuzaChecksum(gmtHashName);
+                            var gmtPath = Path.Combine(gmtFolderPath, fileName);
+
+                            var checksum = string.Concat("00", hash.Checksum.ToString("x4").AsSpan(2, 2));
                             var destinationDirectory = Path.Combine(baseParlessPath, checksum);
 
                             if (!Directory.Exists(destinationDirectory))
@@ -267,11 +270,5 @@ public class Mod {
         var folder = Constants.IncompatiblePars.FirstOrDefault(name.StartsWith);
 
         return folder ?? string.Empty;
-    }
-
-    private static string ComputePirateYakuzaChecksum(string input) {
-        var sum = Encoding.UTF8.GetBytes(input).Sum(b => b) % 256;
-
-        return sum.ToString("x4");
     }
 }
