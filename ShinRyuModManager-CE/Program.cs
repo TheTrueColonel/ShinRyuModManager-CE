@@ -257,11 +257,11 @@ public static class Program {
             if (File.Exists(Constants.TXT_OLD)) {
                 mods.AddRange(ModListSerializer.Read(Constants.TXT_OLD, profile));
                 
-                File.Move(Constants.TXT_OLD, $"{Constants.TXT_OLD}.bak");
+                File.Move(Constants.TXT_OLD, $"{Constants.TXT_OLD}.bak", true);
             } else if (File.Exists(Constants.TXT)) {
                 mods.AddRange(ModListSerializer.Read(Constants.TXT, profile));
                 
-                File.Move(Constants.TXT, $"{Constants.TXT}.bak");
+                File.Move(Constants.TXT, $"{Constants.TXT}.bak", true);
             } else if (File.Exists(Constants.MOD_LIST)) {
                 mods.AddRange(ModListSerializer.Read(Constants.MOD_LIST, profile));
             } else {

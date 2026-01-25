@@ -78,7 +78,7 @@ public static class Generator {
             // Check for folders which do not exist in the data path in the mod's root
             List<string> foldersNotFound = [];
             
-            foreach (var subPath in Directory.GetDirectories(modPath)) {
+            foreach (var subPath in Directory.EnumerateDirectories(modPath)) {
                 var subPathName = new DirectoryInfo(subPath).Name;
 
                 if (GamePath.DirectoryExistsInData(subPathName) || GamePath.FileExistsInData($"{subPathName}.par"))

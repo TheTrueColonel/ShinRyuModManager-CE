@@ -1,4 +1,9 @@
-> ### **%{color:gold} Version 1.4.2 %** ###
+> ### **%{color:gold} Version 1.4.3 %** ###
+* Implemented improved PYIH and newer hashing from SRMM 4.7.7
+
+---
+
+> ### **%{color:orange} Version 1.4.2 %** ###
 * Implemented **experimental** Talk and HAct repack methods from SRMM 4.7.6
 
 ---
