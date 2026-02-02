@@ -219,7 +219,7 @@ public static class ParRepacker {
         return files;
     }
     
-    private static Node ReadDirectory(string dirPath, string nodeName = "") {
+    public static Node ReadDirectory(string dirPath, string nodeName = "") {
         dirPath = Path.GetFullPath(dirPath);
         
         if (string.IsNullOrEmpty(nodeName)) {

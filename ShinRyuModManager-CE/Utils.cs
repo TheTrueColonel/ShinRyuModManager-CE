@@ -1,4 +1,5 @@
 using System.Text;
+using ParLibrary.Converter;
 using SharpCompress.Archives.SevenZip;
 using SharpCompress.Common;
 using SharpCompress.Readers;
@@ -123,5 +124,22 @@ public static class Utils {
             
             CopyDirectory(dir, destSubDir);
         }
+    }
+
+    public static void CreateParFromDirectory(string inputPath, string outputPath) {
+        var parameters = new ParArchiveWriterParameters {
+            CompressorVersion = 0,
+            OutputPath = outputPath,
+            IncludeDots = true,
+            ResetFileDates = true
+        };
+
+        var nodeName = new DirectoryInfo(inputPath).Name;
+        using var node = ParRepacker.ReadDirectory(inputPath, nodeName);
+        
+        node.SortChildren((x, y) => string.CompareOrdinal(x.Name.ToLowerInvariant(), y.Name.ToLowerInvariant()));
+
+        using var containerNode = node.GetFormatAs<NodeContainerFormat>();
+        using var par = node.TransformWith(typeof(ParArchiveWriter), parameters);
     }
 }

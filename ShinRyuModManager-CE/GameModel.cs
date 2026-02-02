@@ -472,10 +472,6 @@ public static class GameModel {
         //Get the smallest hact in the hact dir
         //Use that as a dummy file.
         //Our created pars inf load the game for some reason.
-        var smallestHAct = new DirectoryInfo(hactDir)
-                           .GetFiles("*.par", SearchOption.TopDirectoryOnly)
-                           .OrderBy(f => f.Length)
-                           .First();
 
         foreach (var mod in mlo.Mods) {
             var modPath = GamePath.GetModDirectory(mod);
@@ -485,14 +481,28 @@ public static class GameModel {
                 var talksDirs = new DirectoryInfo(modTalkDir).EnumerateDirectories();
 
                 foreach (var talkCategory in talksDirs) {
+                    var dummyParDir = new DirectoryInfo(Path.Combine(rootTalkDir, talkCategory.Name));
+
+                    if (!dummyParDir.Exists)
+                        dummyParDir.Create();
+                    
                     foreach (var talkDir in talkCategory.EnumerateDirectories()) {
-                        var dummyParDir = new DirectoryInfo(Path.Combine(rootTalkDir, talkCategory.Name));
+                        var talkPath = Path.Combine(dummyParDir.FullName, talkDir.Name);
 
-                        if (!dummyParDir.Exists)
-                            dummyParDir.Create();
+                        Directory.CreateDirectory(talkPath);
+                        
+                        if (!Directory.Exists(Path.Combine(talkDir.FullName, "000")) || !Directory.Exists(Path.Combine(talkDir.FullName, "cmn")))
+                            continue;
 
-                        var dummyParPath = new FileInfo(Path.Combine(dummyParDir.FullName, talkDir.Name + ".par"));
-                        File.Copy(smallestHAct.FullName, dummyParPath.FullName, true);
+                        foreach (var dir in talkDir.EnumerateDirectories()) {
+                            var outputPath = Path.Combine(talkPath, $"{dir.Name}.par");
+
+                            Utils.CreateParFromDirectory(dir.FullName, outputPath);
+                        }
+                        
+                        Utils.CreateParFromDirectory(talkPath, $"{talkPath}.par");
+                        
+                        new DirectoryInfo(talkPath).Delete(true);
                     }
                 }
             }
