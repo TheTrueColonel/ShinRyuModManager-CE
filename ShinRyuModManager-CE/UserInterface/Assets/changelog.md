@@ -1,4 +1,4 @@
-> ### **%{color:gold} Version 1.4.3 %** ###
+> ### **%{color:gold} Version 1.4.4 %** ###
 * Implemented changes from SRMM 4.7.8
 
 ---

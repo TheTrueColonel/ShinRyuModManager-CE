@@ -14,7 +14,7 @@
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         
         <!-- Versioning -->
-        <AssemblyVersion>1.4.3</AssemblyVersion>
+        <AssemblyVersion>1.4.4</AssemblyVersion>
         <VersionPrefix>$(AssemblyVersion)</VersionPrefix>
         <AssemblyTitle>ShinRyuModManager-CE</AssemblyTitle>
         <Company>SRMM Studio</Company>
