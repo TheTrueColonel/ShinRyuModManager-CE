@@ -214,7 +214,7 @@ public static class Program {
                 // Rename dinput8.dll to version.dll to prevent the game from crashing
                 File.Move(Constants.DINPUT8DLL, Constants.VERSIONDLL);
             }
-        } else if (GamePath.CurrentGame is Game.Judgment or Game.LostJudgment) {
+        } else if (GamePath.CurrentGame is >= Game.YakuzaKiwami2 and not Game.LikeADragonGaiden) {
             // Lost Judgment (and Judgment post update 1) does not like Ultimate ASI Loader, so instead we use a custom build of DllSpoofer (https://github.com/Kazurin-775/DllSpoofer)
             if (File.Exists(Constants.DINPUT8DLL)) {
                 Log.Warning($"Game specific patch: Deleting {Constants.DINPUT8DLL} because it causes crashes with Judgment games...");

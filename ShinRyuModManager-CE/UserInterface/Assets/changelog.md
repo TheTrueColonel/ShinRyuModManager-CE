@@ -1,4 +1,9 @@
 > ### **%{color:gold} Version 1.4.3 %** ###
+* Implemented changes from SRMM 4.7.8
+
+---
+
+> ### **%{color:orange} Version 1.4.3 %** ###
 * Implemented improved PYIH and newer hashing from SRMM 4.7.7
 
 ---
