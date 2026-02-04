@@ -17,7 +17,6 @@ UPDATER_PROJECT="$GITHUB_WORKSPACE/RyuUpdater/RyuUpdater.csproj"
 SRMM_OUTPUT_DIR="$GITHUB_WORKSPACE/dist/srmm"
 UPDATER_OUTPUT_DIR="$GITHUB_WORKSPACE/dist/updater"
 TEMP_DIR="$RUNNER_TEMP"
-PATTERN=".*\.zip$"
 
 FRAMEWORK="net10.0"
 
@@ -55,32 +54,6 @@ declare -A UPDATER_TARGET_ARGS=(
   ["windows"]="win-x64;--self-contained"
 )
 
-### Get required files from SRMM release
-API_URL="https://api.github.com/repos/${DOWNLOAD_REPO}/releases/latest"
-
-# Using `jq` to parse json response
-ASSET_URL=$(curl -s "${API_URL}" | jq -r \
-  --arg pattern "${PATTERN}" '
-    .assets[]
-    | select(.name | test($pattern))
-    | .browser_download_url
-  ')
-  
-if [[ -z "${ASSET_URL}" ]]; then
-  echo "ERROR: No assets matching pattern '${PATTERN}' found." >&2
-  exit 1
-fi
-
-echo "Downloading asset from: ${ASSET_URL}"
-
-ASSET_FILE="${TEMP_DIR}/release.zip"
-curl -L "${ASSET_URL}" -o "${ASSET_FILE}"
-
-echo "Extracting release to ${TEMP_DIR}/extracted"
-
-mkdir -p "${TEMP_DIR}/extracted"
-unzip -q "${ASSET_FILE}" -d "${TEMP_DIR}/extracted"
-
 ### Build
 
 # Build SRMM
@@ -106,7 +79,7 @@ for TARGET in "${!TARGET_ARGS[@]}"; do
     ${arr[1]}
     
   for FILE in "${FILES_TO_COPY[@]}"; do
-    SRC="${TEMP_DIR}/extracted/${FILE}"
+    SRC="${TEMP_DIR}/external/${FILE}"
     
     if [[ -f "${SRC}" ]]; then
       cp "${SRC}" "${OUT_DIR}/${FILE}"

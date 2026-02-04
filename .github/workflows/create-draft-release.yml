@@ -16,11 +16,50 @@ on:
         default: "1.0.0"
 
 env:
-  PR_NAME: ${{ github.event.inputs.name }}
+  PR_NAME: 'ShinRyuModManager-CE ${{ github.event.inputs.tag }}'
   PR_TAG: ${{ github.event.inputs.tag }}
   PR_UPDATER_VERSION: ${{ github.event.inputs.updater_version }}
       
 jobs:
+  build-parless:
+    runs-on: windows-latest
+    permissions: 
+      contents: write
+      
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+        with:
+          repository: SRMM-Studio/YakuzaParless
+          path: external/parless
+          submodules: recursive
+
+      - name: Install Premake 5
+        uses: abel0b/setup-premake@v2.4
+        with:
+          version: "5.0.0-beta2"
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+      
+      - name: Generate VS Project
+        working-directory: external/parless
+        run: premake5 vs2022
+        
+      - name: Build Parless
+        working-directory: external/parless/build
+        run: msbuild YakuzaParless.sln /p:Configuration=Release /p:Platform=Win64
+        
+      - name: Upload Parless Artifact
+        uses: actions/upload-artifact@v6
+        with: 
+          name: 'ParlessArtifact'
+          path: external\parless\build\bin\Win64\Release\YakuzaParless.asi
+          if-no-files-found: 'error'
+          retention-days: 1
+          compression-level: 0
+          overwrite: true
+  
   release:
     runs-on: ubuntu-latest
     permissions:
@@ -37,7 +76,17 @@ jobs:
           repository: 'TheTrueColonel/SRMM-AppCast'
           token: '${{ secrets.SRMM_APPCAST_TOKEN }}'
           path: AppcastRepo
-        
+          
+      - name: Download Parless Artifact
+        uses: actions/download-artifact@v7
+        with: 
+          path: '${{ runner.temp }}/external'
+          
+      - name: Download dinput and winmm
+        run: |
+          curl -L https://github.com/SRMM-Studio/srmm-distrib/raw/refs/heads/main/Native/dinput8.dll -o $RUNNER_TEMP/external/dinput8.dll
+          curl -L https://github.com/SRMM-Studio/srmm-distrib/raw/refs/heads/main/Native/winmm.lj -o $RUNNER_TEMP/external/winmm.lj
+      
       - name: Install .NET SDK
         uses: actions/setup-dotnet@v5
         with:
