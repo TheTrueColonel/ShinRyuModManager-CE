@@ -61,6 +61,8 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      
+    needs: build-parless
     
     steps:
       - name: Checkout Repo
