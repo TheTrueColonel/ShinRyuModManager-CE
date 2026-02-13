@@ -1,3 +1,8 @@
+> ### **%{color:gold} Version 1.4.5 %** ###
+* Repack for updated Parless
+
+---
+
 > ### **%{color:gold} Version 1.4.4 %** ###
 * Implemented changes from SRMM 4.7.8
 
