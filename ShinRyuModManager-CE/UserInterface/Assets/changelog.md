@@ -1,4 +1,9 @@
-> ### **%{color:gold} Version 1.4.6 %** ###
+> ### **%{color:gold} Version 1.4.7 %** ###
+* Fixed launching Kiwami 3 from in app
+
+---
+
+> ### **%{color:orange} Version 1.4.6 %** ###
 * Implemented changes from SRMM 4.8.0
 
 ---
