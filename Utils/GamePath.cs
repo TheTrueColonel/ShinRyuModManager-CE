@@ -232,6 +232,7 @@ public static class GamePath {
             Game.YakuzaKiwami2 => "Yakuza Kiwami 2",
             Game.YakuzaKiwami2_R => "Yakuza Kiwami 2 Remastered",
             Game.Yakuza3 => "Yakuza 3 Remastered",
+            Game.YakuzaKiwami3 => "Yakuza Kiwami 3",
             Game.Yakuza4 => "Yakuza 4 Remastered",
             Game.Yakuza5 => "Yakuza 5 Remastered",
             Game.Yakuza6 => "Yakuza 6",
@@ -244,7 +245,6 @@ public static class GamePath {
             Game.VFREVOBETA => "Virtua Fighter 5 R.E.V.O. Beta",
             Game.VFREVO => "Virtua Fighter 5 R.E.V.O.",
             Game.StrangerThanHeaven => "Stranger Than Heaven",
-            Game.YakuzaKiwami3 => "Yakuza Kiwami 3",
             _ => "<unknown>"
         };
     }
@@ -258,6 +258,7 @@ public static class GamePath {
             Game.YakuzaKiwami2 => 927380,
             Game.YakuzaKiwami2_R => 3717340,
             Game.Yakuza3 => 1088710,
+            Game.YakuzaKiwami3 => 3937550,
             Game.Yakuza4 => 1105500,
             Game.Yakuza5 => 1105510,
             Game.Yakuza6 => 1388590,
@@ -270,7 +271,6 @@ public static class GamePath {
             Game.VFREVOBETA => 3283250,
             Game.VFREVO => 3112260,
             Game.StrangerThanHeaven => null,
-            Game.YakuzaKiwami3 => null,
             _ => null
         };
     }
