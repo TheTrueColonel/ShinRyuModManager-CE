@@ -23,8 +23,7 @@ FRAMEWORK="net10.0"
 DOWNLOAD_REPO="SRMM-Studio/ShinRyuModManager"
 
 FILES_TO_COPY=(
-  "dinput8.dll"
-  "winmm.lj"
+  "version.dll"
   "YakuzaParless.asi"
 )
 

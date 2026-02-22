@@ -33,7 +33,7 @@ $ ./ShinRyuModManager-CE --cli
 ```
 
 # Building
-Clone the repository, then open the solution file (.sln) in Visual Studio. You can then `dotnet publish` the `ShinRyuModManager-CE` project.
+Clone the repository, then open the solution file (.slnx) in Visual Studio. You can then `dotnet publish` the `ShinRyuModManager-CE` project.
 
 # Differences/Known Issues
 Given this is a port, and a cross-platform one at that, there are likely going to be differences between this version and the original.
