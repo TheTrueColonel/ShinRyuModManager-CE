@@ -1,4 +1,10 @@
-> ### **%{color:gold} Version 1.4.7 %** ###
+> ### **%{color:gold} Version 1.4.8 %** ###
+* Implemented changes from SRMM 4.8.1 (Fixed mods not loading for Kiwami 3)
+  * Delete `winmm.dll` and `dinput8.dll` from your game directory
+
+---
+
+> ### **%{color:orange} Version 1.4.7 %** ###
 * Fixed launching Kiwami 3 from in app
 
 ---
