@@ -25,7 +25,7 @@ public record struct Row() {
         };
     }
         
-    public new Type? GetType() {
+    public Type? GetValueType() {
         return Type switch {
             0 or 1 => UInt8.GetType(),
             2 or 3 => UInt16.GetType(),
