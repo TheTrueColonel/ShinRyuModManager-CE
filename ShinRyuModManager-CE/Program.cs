@@ -104,8 +104,6 @@ public static class Program {
         Log.Information("Shin Ryu Mod Manager-CE v{Version}", AssemblyVersion.GetVersion());
         Log.Information("By TheTrueColonel (a port of SRMM Studio's work)");
         
-        HandleLoader();
-        
         // Parse arguments
         var list = new List<string>(args);
         
@@ -415,7 +413,7 @@ public static class Program {
     }
 
     internal static bool MissingDll() {
-        return File.Exists(Constants.VERSIONDLL) || File.Exists(Constants.DINPUT8DLL);
+        return !File.Exists(Constants.VERSIONDLL) && !File.Exists(Constants.DINPUT8DLL);
     }
 
     internal static bool MissingAsi() {
