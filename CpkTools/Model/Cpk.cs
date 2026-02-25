@@ -1,4 +1,3 @@
-using System.Buffers.Binary;
 using System.Numerics;
 using System.Text;
 using CpkTools.Comparers;
@@ -60,14 +59,6 @@ public sealed class Cpk {
         if (!_utf.ReadUtf(_utfPacket)) {
             return false;
         }
-
-        /*try {
-            for (var i = 0; i < _utf.Columns.Count; i++) {
-                _cpkData.Add(_utf.Columns[i].Name, _utf.Rows[0][i].GetValue()!);
-            }
-        } catch (Exception ex) {
-            Console.WriteLine(ex);
-        }*/
 
         ContentOffset = TryGetColumnData<ulong>(_utf, 0, "ContentOffset", out var content) ? content.Value : ulong.MaxValue;
 
@@ -273,7 +264,7 @@ public sealed class Cpk {
     }
 
     private static void WritePacket(EndianWriter writer, string id, ulong position, Memory<byte> packet) {
-        if (position == 0xffffffffffffffff)
+        if (position == ulong.MaxValue)
             return;
         
         writer.Seek((long)position, SeekOrigin.Begin);
@@ -576,17 +567,14 @@ public sealed class Cpk {
     
     private static ColumnData<T> GetColumnData<T>(Utf utf, int rowIndex, string columnName) {
         try {
-            var columnIndex = utf.Columns!.FindIndex(c => c.Name == columnName);
-
-            if (columnIndex == -1) {
+            if (!utf.ColumnIndex!.TryGetValue(columnName, out var columnIndex))
                 return new ColumnData<T>(default!, -1, null);
-            }
             
             var row = utf.Rows![rowIndex][columnIndex];
 
             var cell = row.GetValue();
             var position = row.Position;
-            var type = row.GetType();
+            var type = row.GetValueType();
 
             if (cell is T value)
                 return new ColumnData<T>(value, position, type);
