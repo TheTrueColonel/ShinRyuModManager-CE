@@ -1,4 +1,10 @@
-> ### **%{color:gold} Version 1.4.9 %** ###
+> ### **%{color:gold} Version 1.4.10 %** ###
+* Fixed logic bug in check for Version.dll
+* Massive improvements in memory usage for CPK repacking
+
+---
+
+> ### **%{color:orange} Version 1.4.9 %** ###
 * Implemented changes from SRMM 4.8.2 (Fixed mods not loading for Yakuza 6 and earlier)
   * Windows 11 just wants to be complicated
 
