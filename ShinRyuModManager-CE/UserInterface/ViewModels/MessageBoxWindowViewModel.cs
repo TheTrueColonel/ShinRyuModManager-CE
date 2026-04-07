@@ -3,13 +3,16 @@ using CommunityToolkit.Mvvm.ComponentModel;
 namespace ShinRyuModManager.UserInterface.ViewModels;
 
 public partial class MessageBoxWindowViewModel : ViewModelBase {
-    [ObservableProperty] private string _messageText;
-    [ObservableProperty] private bool _isVisible;
+    [ObservableProperty] private bool _showCancel;
+    [ObservableProperty] private bool _showDontRemind;
 
-    public MessageBoxWindowViewModel() { }
+    public MessageBoxWindowViewModel() {
+        ShowCancel = true;
+        ShowDontRemind = true;
+    }
 
-    public MessageBoxWindowViewModel(string messageText, bool isVisible) {
-        MessageText = messageText;
-        IsVisible = isVisible;
+    public MessageBoxWindowViewModel(bool showCancel, bool dontRemindButton) {
+        ShowCancel = showCancel;
+        ShowDontRemind = dontRemindButton;
     }
 }
