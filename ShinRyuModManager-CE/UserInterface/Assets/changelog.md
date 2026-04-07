@@ -1,4 +1,10 @@
-> ### **%{color:gold} Version 1.4.10 %** ###
+> ### **%{color:gold} Version 1.4.11 %** ###
+* Various internal improvements to message boxes
+* Added message for Linux users, directing to the wiki
+
+---
+
+> ### **%{color:orange} Version 1.4.10 %** ###
 * Fixed logic bug in check for Version.dll
 * Massive improvements in memory usage for CPK repacking
 
