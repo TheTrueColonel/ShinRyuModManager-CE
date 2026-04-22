@@ -496,3 +496,4 @@ fabric.properties
 launchSettings.json
 .idea/.idea.ShinRyuModManager-CE/.idea/sonarlint.xml
 dist/
+.idea/.idea.ShinRyuModManager-CE/.idea/awsToolkit.xml
