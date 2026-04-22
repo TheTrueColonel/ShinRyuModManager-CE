@@ -1,4 +1,9 @@
-> ### **%{color:gold} Version 1.4.11 %** ###
+> ### **%{color:gold} Version 1.4.12 %** ###
+* Fixed bug in Y0 mod upgrader method
+
+---
+
+> ### **%{color:orange} Version 1.4.11 %** ###
 * Various internal improvements to message boxes
 * Added message for Linux users, directing to the wiki
 
