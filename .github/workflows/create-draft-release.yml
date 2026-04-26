@@ -47,6 +47,8 @@ jobs:
 
       - name: Setup MSVC
         uses: TheMrMilchmann/setup-msvc-dev@79dac248aac9d0059f86eae9d8b5bfab4e95e97c # v4.0.0
+        with:
+          arch: x64
       
       - name: Generate VS Project
         working-directory: external/parless
