@@ -71,10 +71,6 @@ public static class Program {
                                           .WriteTo.Async(a => a.File(new JsonFormatter(renderMessage: true), errorLogsPath, rollingInterval: RollingInterval.Day)))
                      .CreateLogger();
 
-        if (!OperatingSystem.IsWindows()) {
-            IsRebuildMloSupported = false;
-        }
-
         HandleLoader();
         
         // Check if there are any args, if so, run in CLI mode

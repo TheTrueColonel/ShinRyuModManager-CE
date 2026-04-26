@@ -1,4 +1,9 @@
-> ### **%{color:gold} Version 1.4.12 %** ###
+> ### **%{color:gold} Version 1.5.0 %** ###
+* Enabled RebuildMLO for Linux users
+
+---
+
+> ### **%{color:orange} Version 1.4.12 %** ###
 * Fixed bug in Y0 mod upgrader method
 
 ---
