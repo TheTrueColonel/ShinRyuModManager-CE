@@ -1,5 +1,6 @@
 > ### **%{color:gold} Version 1.5.0 %** ###
-* Enabled RebuildMLO for Linux users
+* Partial RebuildMLO support for Linux users
+  * `linux` "non-slim" users only, until a workaround is found for `linux-slim` users
 
 ---
 

@@ -33,6 +33,10 @@
         <DebugType>embedded</DebugType>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(Configuration)' == 'Release' And '$(BuildSuffix)' == 'linux-slim'">
+        <DefineConstants>$(DefineConstants);LINUX_SLIM</DefineConstants>
+    </PropertyGroup>
+
     <ItemGroup>
         <ProjectReference Include="..\CpkTools\CpkTools.csproj" />
         <ProjectReference Include="..\ParLibrary\ParLibrary.csproj" />
