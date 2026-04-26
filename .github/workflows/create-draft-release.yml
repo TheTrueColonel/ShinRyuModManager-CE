@@ -92,7 +92,7 @@ jobs:
         with: 
           path: '${{ runner.temp }}/external'
           
-      - name: Download dinput and winmm
+      - name: Download version.dll
         run: |
           curl -L https://github.com/SRMM-Studio/srmm-distrib/raw/refs/heads/main/Native/version.dll -o $RUNNER_TEMP/external/version.dll
       
