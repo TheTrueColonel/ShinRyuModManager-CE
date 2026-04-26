@@ -1,4 +1,10 @@
-> ### **%{color:gold} Version 1.4.12 %** ###
+> ### **%{color:gold} Version 1.5.0 %** ###
+* Partial RebuildMLO support for Linux users
+  * `linux` "non-slim" users only, until a workaround is found for `linux-slim` users
+
+---
+
+> ### **%{color:orange} Version 1.4.12 %** ###
 * Fixed bug in Y0 mod upgrader method
 
 ---

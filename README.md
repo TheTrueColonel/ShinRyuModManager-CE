@@ -42,7 +42,6 @@ Here will be listed the known differences and issues that the port brings.
 - Opening the CLI version with `Left-CTRL` doesn't work as there's no good way to detect this on all supported platforms.
 - Console output doesn't currently work on Windows.
 - MessageBoxes are different. This is strictly because Avalonia [doesn't have native support](https://docs.avaloniaui.net/docs/basics/user-interface/messagebox) yet, but it does look to be planned for the next major release.
-- On Linux you must run in CLI mode, or press the "Save mod list" button for the `.mlo` to generate. This is because Parless only searches for the Windows `.exe`.
 
 # Credits
 Original project by [SutandoTsukai181](https://github.com/SutandoTsukai181).
