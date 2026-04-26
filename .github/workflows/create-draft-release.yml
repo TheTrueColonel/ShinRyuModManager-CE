@@ -29,6 +29,16 @@ jobs:
           repository: TheTrueColonel/YakuzaParless # Migrate to "SRMM-Studio/YakuzaParless" later
           path: external/parless
           submodules: recursive
+          
+      - name: Verify Submodules
+        working-directory: external/parless
+        run: git submodule status --recursive
+        
+      - name: Verify Submodule Contents
+        working-directory: external/parless
+        run: |
+          dir source\Utils
+          dir source\minhook
 
       - name: Install Premake 5
         uses: abel0b/setup-premake@b80dc6f70e8ab159fb854bdadbeb1a53cfc28723 # v2.4
