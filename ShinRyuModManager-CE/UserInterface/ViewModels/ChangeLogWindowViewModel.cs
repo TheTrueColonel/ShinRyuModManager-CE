@@ -3,7 +3,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 namespace ShinRyuModManager.UserInterface.ViewModels;
 
 public partial class ChangeLogWindowViewModel : ViewModelBase {
-    [ObservableProperty] private string _changeLogText;
+    [ObservableProperty]
+    public partial string ChangeLogText { get; set; }
 
     public ChangeLogWindowViewModel() {
         Initialize();

@@ -4,8 +4,9 @@ using ShinRyuModManager.Extensions;
 namespace ShinRyuModManager.ModLoadOrder.Mods;
 
 public sealed partial class ModInfo : ObservableObject, IEquatable<ModInfo> {
-    [ObservableProperty] private string _name;
-
+    [ObservableProperty]
+    public partial string Name { get; set; }
+    
     public ProfileMask EnabledProfiles { get; set; }
 
     public bool Enabled {
@@ -16,6 +17,7 @@ public sealed partial class ModInfo : ObservableObject, IEquatable<ModInfo> {
             } else {
                 EnabledProfiles &= ~Program.ActiveProfile.ToMask();
             }
+            OnPropertyChanged();
         }
     }
 

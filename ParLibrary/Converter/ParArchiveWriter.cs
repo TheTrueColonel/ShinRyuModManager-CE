@@ -183,11 +183,12 @@ public class ParArchiveWriter : IConverter<NodeContainerFormat, ParFile> {
                         
                         files.Add(child);
                         fileIndex++;
-                        folder.Tags["FileCount"]++;
+                        
+                        folder.Tags["FileCount"] = (int)folder.Tags["FileCount"] + 1;
                     } else {
                         folders.Add(child);
                         folderIndex++;
-                        folder.Tags["FolderCount"]++;
+                        folder.Tags["FolderCount"] = (int)folder.Tags["FolderCount"] + 1;
                         
                         queue.Enqueue(child);
                     }
@@ -198,7 +199,7 @@ public class ParArchiveWriter : IConverter<NodeContainerFormat, ParFile> {
                     
                     files.Add(child);
                     fileIndex++;
-                    folder.Tags["FileCount"]++;
+                    folder.Tags["FileCount"] = (int)folder.Tags["FileCount"] + 1;
                 }
             }
         }
@@ -252,7 +253,7 @@ public class ParArchiveWriter : IConverter<NodeContainerFormat, ParFile> {
             var attributes = 0x00000010;
             
             if (tags.TryGetValue("DirectoryInfo", out var directoryInfo)) {
-                DirectoryInfo info = directoryInfo;
+                var info = (DirectoryInfo)directoryInfo;
                 attributes = (int)info.Attributes;
             }
             
@@ -297,7 +298,7 @@ public class ParArchiveWriter : IConverter<NodeContainerFormat, ParFile> {
                 var baseDate = DateTime.UnixEpoch;
             
                 if (node.Tags.TryGetValue("Timestamp", out var timestamp)) {
-                    date = baseDate.AddSeconds(timestamp);
+                    date = baseDate.AddSeconds((double)timestamp);
                 }
             
                 if (node.Tags.TryGetValue("FileInfo", out var fileInfo) && fileInfo is FileInfo info) {
