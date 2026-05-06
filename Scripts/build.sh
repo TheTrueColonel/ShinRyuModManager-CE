@@ -100,7 +100,7 @@ for TARGET in "${!UPDATER_TARGET_ARGS[@]}"; do
   mkdir -p "${OUT_DIR}"
   
   # Reads the target's arguments and split them into an array
-  IFS=";" read -r -a arr <<< "${TARGET_ARGS[${TARGET}]}"
+  IFS=";" read -r -a arr <<< "${UPDATER_TARGET_ARGS[${TARGET}]}"
   
   echo "Buidling RyuUpdater ${TARGET}..."
   
