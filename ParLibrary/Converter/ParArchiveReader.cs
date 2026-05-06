@@ -166,8 +166,8 @@ public class ParArchiveReader : IConverter<BinaryFormat, NodeContainerFormat> {
     }
     
     private static void BuildTree(Node node, IReadOnlyList<Node> folders, IReadOnlyList<Node> files, ParArchiveReaderParameters parameters) {
-        int firstFolderIndex = node.Tags["FirstFolderIndex"];
-        int folderCount = node.Tags["FolderCount"];
+        var firstFolderIndex = (int)node.Tags["FirstFolderIndex"];
+        var folderCount = (int)node.Tags["FolderCount"];
         
         for (var i = firstFolderIndex; i < firstFolderIndex + folderCount; i++) {
             node.Add(folders[i]);
@@ -175,8 +175,8 @@ public class ParArchiveReader : IConverter<BinaryFormat, NodeContainerFormat> {
             BuildTree(folders[i], folders, files, parameters);
         }
         
-        int firstFileIndex = node.Tags["FirstFileIndex"];
-        int fileCount = node.Tags["FileCount"];
+        var firstFileIndex = (int)node.Tags["FirstFileIndex"];
+        var fileCount = (int)node.Tags["FileCount"];
         
         for (var i = firstFileIndex; i < firstFileIndex + fileCount; i++) {
             if (parameters.Recursive &&

@@ -1,4 +1,10 @@
-> ### **%{color:gold} Version 1.5.0 %** ###
+> ### **%{color:gold} Version 1.6.0 %** ###
+* Migrated to Avalonia 12
+* Bumped all other packages
+
+---
+
+> ### **%{color:orange} Version 1.5.0 %** ###
 * Partial RebuildMLO support for Linux users
   * `linux` "non-slim" users only, until a workaround is found for `linux-slim` users
 
