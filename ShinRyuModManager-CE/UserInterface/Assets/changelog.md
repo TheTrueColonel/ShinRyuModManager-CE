@@ -1,4 +1,10 @@
-> ### **%{color:gold} Version 1.6.0 %** ###
+> ### **%{color:gold} Version 1.6.1 %** ###
+* Bumped vulnerable package
+* Repack for updated Parless
+
+---
+
+> ### **%{color:orange} Version 1.6.0 %** ###
 * Migrated to Avalonia 12
 * Bumped all other packages
 
