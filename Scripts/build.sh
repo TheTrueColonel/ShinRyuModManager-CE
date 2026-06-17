@@ -20,8 +20,6 @@ TEMP_DIR="$RUNNER_TEMP"
 
 FRAMEWORK="net10.0"
 
-DOWNLOAD_REPO="SRMM-Studio/ShinRyuModManager"
-
 FILES_TO_COPY=(
   "version.dll"
   "YakuzaParless.asi"
