@@ -1,4 +1,9 @@
-> ### **%{color:gold} Version 1.6.1 %** ###
+> ### **%{color:gold} Version 1.6.2 %** ###
+* Repack for updated Parless
+
+---
+
+> ### **%{color:orange} Version 1.6.1 %** ###
 * Bumped vulnerable package
 * Repack for updated Parless
 
