@@ -2,7 +2,6 @@
 using System.IO.Compression;
 using Avalonia;
 using Avalonia.Svg.Skia;
-using CpkTools.Model;
 using IniParser;
 using IniParser.Model;
 using Serilog;
@@ -23,10 +22,11 @@ using Constants = Utils.Constants;
 namespace ShinRyuModManager;
 
 public static class Program {
+    public static bool CheckForUpdates { get; private set; }
+
     private static bool _externalModsOnly = true;
     private static bool _looseFilesEnabled;
     private static bool _cpkRepackingEnabled = true;
-    private static bool _checkForUpdates = true;
     private static bool _isSilent;
     private static IniData _iniData;
 
@@ -160,7 +160,7 @@ public static class Program {
             }
             
             if (_iniData.TryGetKey("RyuModManager.CheckForUpdates", out var check)) {
-                _checkForUpdates = int.Parse(check) == 1;
+                CheckForUpdates = int.Parse(check) == 1;
             }
             
             if (_iniData.TryGetKey("RyuModManager.ShowWarnings", out var showWarnings)) {
@@ -194,6 +194,19 @@ public static class Program {
             Log.Information($"{Constants.INI} was not found. Creating default ini...");
             IniParser.WriteFile(Constants.INI, IniTemplate.NewIni());
         }
+    }
+
+    internal static void DisableAutoUpdate() {
+        CheckForUpdates = false;
+
+        if (!File.Exists(Constants.INI))
+            return;
+
+        _iniData = IniParser.ReadFile(Constants.INI);
+
+        _iniData.Sections["RyuModManager"]["CheckForUpdates"] = "0";
+            
+        IniParser.WriteFile(Constants.INI, IniTemplate.UpdateIni(_iniData));
     }
 
     internal static List<ModInfo> PreRun(Profile? profile = null) {
