@@ -1,4 +1,9 @@
-> ### **%{color:gold} Version 1.6.3 %** ###
+> ### **%{color:gold} Version 1.6.4 %** ###
+* Added option to disable auto updates from updater window
+
+---
+
+> ### **%{color:orange} Version 1.6.3 %** ###
 * Repack for updated Parless
 
 ---
