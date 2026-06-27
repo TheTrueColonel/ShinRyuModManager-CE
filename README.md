@@ -1,3 +1,7 @@
+> [!IMPORTANT]
+>
+> This repo is now archived. The port has been merged into the [main SRMM repository](https://github.com/SRMM-Studio/ShinRyuModManager) as of v5.0.0.
+
 # Shin Ryu Mod Manager-CE
 Mod manager for Yakuza series PC games. Please check the [Supported Games](../../wiki/Supported-Games) list before using.
 
